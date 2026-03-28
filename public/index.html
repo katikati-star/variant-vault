@@ -689,6 +689,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    user-select: text;
+    cursor: text;
   }
 
   .parent-badge {
@@ -732,9 +734,9 @@
   }
 
   .tag-color {
-    background: rgba(249,115,22,0.08);
-    color: var(--orange);
-    border: 1px solid rgba(249,115,22,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #a0aec0;
+    border: 1px solid #1e2535;
   }
 
   .content-check-left {
@@ -1629,21 +1631,23 @@ async function startProcessing() {
   const productLines = products.map(p => '[' + p.idx + '] ' + p.title).join('\n');
   const prompt = `Product grouping task for e-commerce listings.
 
-GOAL: Group items that are the SAME base product offered in different variants. Different variants of the same product should be in one group. Completely different products must never be grouped together.
+GOAL: Group items that are the SAME base product offered in different SIZE or COLOR variants only. Do not group based on any other relationship.
 
 WHAT COUNTS AS A VARIANT (group these together):
-- Size/quantity variants: different weights, volumes, counts, dimensions, or coverage areas of the same product (e.g. 1 lb vs 3 lb vs 5 lb, 1 gal vs 1.33 gal, 10-count vs 12-count)
-- Multi-packs: a single unit and its bundle/pack versions are the same product (e.g. "Product X" and "Product X (2-pack)" or "Product X (6-pack)")
-- Color/finish/scent/flavor variants: the same product in different colors, finishes, scents, or flavors
-- Format variants: the same product in a different form factor — e.g. a device and its refill or refill kit, a concentrate and its ready-to-use version, a starter kit and its replacement/refill — as long as they share the same core product identity
-- Minor title wording differences: ignore small differences like punctuation, abbreviations (lb vs lbs), word order, or slight descriptor changes if the core product is clearly the same
+- Size/quantity variants: different weights, volumes, counts, dimensions, or coverage areas of the exact same product (e.g. 1 lb vs 3 lb vs 5 lb, 1 gal vs 1.33 gal, 10-count vs 12-count)
+- Multi-packs: a single unit and its bundle/pack versions (e.g. "Product X" and "Product X (2-pack)" or "Product X (6-pack)") — these are size variants
+- Color/finish/scent/flavor variants: the exact same product in different colors, finishes, scents, or flavors
 
-WHAT IS NOT A VARIANT (do NOT group these):
+WHAT IS NOT A VARIANT (do NOT group these — give each its own group):
+- A product and its refill, refill kit, or replacement parts — these are separate products
+- A product with an included applicator/tool vs without (e.g. "with Comfort Wand" vs standard) — different product
+- Concentrate vs ready-to-use versions — different product
 - Products with different active ingredients, formulas, or core functions — even if from the same brand
 - Products targeting different use cases, surfaces, or applications
-- Products that happen to share a size but are fundamentally different items
 
-For each group, pick a clean short name (strip size/color/pack info from the name) and write a brief reason summarizing the variant axis (e.g. "Size variants: 1lb, 3lb, 5lb" or "Multi-pack variants: single, 2-pack, 6-pack" or "Color variants: Black, Brown, Red" or "Base + Refill").
+RULE: Only group items where the SOLE difference is size, weight, volume, count, color, or number of units in a pack. Any other difference = separate group.
+
+For each group, pick a clean short name (strip size/color/pack info) and write a brief reason (e.g. "Size variants: 1lb, 3lb, 5lb" or "Multi-pack variants: single, 2-pack" or "Color variants: Black, Brown, Red").
 
 PRODUCTS:
 ${productLines}
@@ -1811,21 +1815,21 @@ function buildGroupCard(group, displayNum) {
   card.className = 'group-card';
   card.dataset.groupId = group.id;
 
-  const parentAsin = group.items.length > 0 ? group.items[0].asin : '—';
+  const parentId = group.items.length > 0 ? group.items[0].asin : '—';
+  const idLabel = state.retailer === 'Amazon' ? 'ASIN' : 'ID';
 
   const itemsHTML = group.items.map((item, idx) => buildProductItemHTML(item, idx === 0, group.id)).join('');
 
   card.innerHTML = `
     <div class="group-header" onclick="toggleGroup(this)">
-      <div class="group-num">G${displayNum}</div>
+      <div class="group-num">${displayNum}</div>
       <div class="group-name">${group.name}</div>
       <div class="group-parent-asin">
-        <span class="group-parent-label">Parent</span>
-        <span class="group-parent-val">${parentAsin}</span>
+        <span class="group-parent-label">Parent ${idLabel}</span>
+        <span class="group-parent-val">${parentId}</span>
       </div>
       <div class="group-meta">
         <div class="group-count">${group.items.length} item${group.items.length !== 1 ? 's' : ''}</div>
-        ${group.reason ? '<div class="group-reason">' + group.reason + '</div>' : ''}
       </div>
       <div class="icon-btn danger" title="Delete group" onclick="event.stopPropagation(); deleteGroup(${group.id})">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1852,6 +1856,7 @@ function buildProductItemHTML(item, isParent, groupId) {
 
   const hasSize = item.extractedSize && item.extractedSize.trim();
   const hasColor = item.extractedColor && item.extractedColor.trim();
+  const idLabel = state.retailer === 'Amazon' ? 'ASIN' : 'Item ID';
 
   return `
     <div class="product-item ${isParent ? 'is-parent' : ''}" 
@@ -1872,9 +1877,9 @@ function buildProductItemHTML(item, isParent, groupId) {
 
       <!-- MAIN INFO -->
       <div class="product-info">
-        <div class="product-asin">
-          ${item.asin}
-          ${isParent ? '<span class="parent-badge">Parent</span>' : ''}
+        <div class="product-asin" draggable="false" ondragstart="event.stopPropagation()">
+          <span class="asin-id-text" title="Click to select">${item.asin}</span>
+          ${isParent ? '<span class="parent-badge">Parent ' + idLabel + '</span>' : ''}
         </div>
         <div class="product-title">${item.title || 'No title'}</div>
         <div class="product-tags">
