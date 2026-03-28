@@ -1667,29 +1667,38 @@ async function startProcessing() {
     ? `\nADVISORY HINTS (80-89% similarity — group if title differences are only size/color):\n${simHints.join(', ')}\n`
     : '';
 
-  const prompt = `Product grouping task for e-commerce listings.
+  const prompt = `You are grouping e-commerce product listings. Products are the same item sold in different variants and should be grouped together. Products that are fundamentally different items must never be grouped.
 
-GOAL: Group items that are the SAME base product offered in different SIZE or COLOR variants only. Do not group based on any other relationship.
+TWO QUESTIONS TO ASK FOR EACH POTENTIAL GROUP:
+1. Is the base product name the same (ignoring size, color, count, or pack descriptors)?
+2. Does the difference between them reduce to ONLY one or more of: size, weight, volume, count, color, finish, scent, flavor, or number of units in a pack?
 
-WHAT COUNTS AS A VARIANT (group these together):
-- Size/quantity variants: different weights, volumes, counts, dimensions, or coverage areas of the exact same product (e.g. 1 lb vs 3 lb vs 5 lb, 1 gal vs 1.33 gal, 10-count vs 12-count)
-- Multi-packs: a single unit and its bundle/pack versions (e.g. "Product X" and "Product X (2-pack)" or "Product X (6-pack)") — these are size variants
-- Color/finish/scent/flavor variants: the exact same product in different colors, finishes, scents, or flavors
-- Refill variants: a product and its dedicated refill/replacement (same core product, refill is a format variant) — BUT only if content similarity is 90%+
+If YES to both → same group.
+If NO to either → separate groups.
 
-WHAT IS NOT A VARIANT (do NOT group these — give each its own group):
-- A product with an included applicator/tool vs without (e.g. "with Comfort Wand" vs standard) — different product
-- Concentrate vs ready-to-use versions — different product
-- Products with different active ingredients, formulas, or core functions — even if from the same brand
-- Products targeting different use cases, surfaces, or applications
+VARIANT TYPES THAT QUALIFY (apply to any product category):
+- Different sizes or quantities: any numeric measurement differs (weight, volume, dimensions, area, count, pieces, doses, servings, etc.)
+- Different pack counts: single unit vs 2-pack, 3-pack, 6-pack, bulk, etc.
+- Different colors, finishes, patterns, scents, or flavors: purely aesthetic or sensory difference, same underlying product
 
-MANDATORY GROUPING RULE: Any pair listed under "MANDATORY GROUPS" below MUST be placed in the same group. These have been pre-verified as the same product by content analysis. Do not override this.
+NON-VARIANT DIFFERENCES — keep separate regardless of name similarity:
+- One includes an accessory, tool, applicator, or bundled item the other does not
+- One is a refill, replacement, or cartridge for a device (different product, not a size variant)
+- Different formulas, ingredients, active agents, or chemical compositions
+- Different form factors: liquid vs powder vs tablet vs spray vs concentrate vs gel
+- Different intended uses, surfaces, targets, or applications
+- Starter kit vs replacement/refill
+- Any descriptor that changes what you physically receive beyond just more/less of the same thing
 
-TIEBREAKER: For pairs in "ADVISORY HINTS", group them if the only title difference is size, color, or pack count.
+MANDATORY GROUPS — pairs pre-verified by content analysis with 90%+ similarity. Place these in the same group, no exceptions:
+${mustGroupPairs.length > 0 ? mustGroupPairs.join('\n') : '(none)'}
+
+ADVISORY (80-89% similarity) — group only if title differences are purely size, color, or pack count:
+${simHints.length > 0 ? simHints.join(', ') : '(none)'}
 
 PRODUCTS:
 ${productLines}
-${mustGroupLine}${simLine}
+
 Reply ONLY with compact JSON, no markdown, no explanation:
 {"groups":[{"name":"short product name","reason":"brief variant summary","items":[0,2,5]}],"ungrouped":[3,7],"extracted":{"0":{"size":"1 lb","color":""},"2":{"size":"3 lb","color":""}}}`;
 
