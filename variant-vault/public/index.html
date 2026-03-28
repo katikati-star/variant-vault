@@ -1693,7 +1693,8 @@ async function startProcessing() {
         return '[' + p.idx + '] TITLE: ' + p.title + (bullets ? '\n    BULLETS: ' + bullets : '') + (desc ? '\n    DESC: ' + desc : '');
       }).join('\n\n');
 
-      const batchPrompt = 'You are a product catalog specialist. Group products that are SIZE or COLOR variants of the EXACT same product.\n\nTHE ONLY VALID REASONS TO GROUP TWO PRODUCTS TOGETHER:\n- They differ ONLY by size (oz, lb, sq ft coverage, count, tablets, ml, etc.)\n- They differ ONLY by color\n- They differ ONLY by pack quantity (1-pack vs 2-pack vs 3-pack of the exact same item)\n- They are a REFILL of the same product AND their bullets/description describe the same product benefits (if content matches, refill = same group; if content differs, keep separate)\n\nEVERYTHING ELSE = SEPARATE GROUPS. This includes:\n- Different applicator type (e.g. "with Comfort Wand" vs standard = SEPARATE, even if same product)\n- Concentrate vs Ready-to-Use = SEPARATE\n- Different target (Rose vs Tomato vs Orchid vs Palm = SEPARATE)\n- Different formula or NPK ratio = SEPARATE\n- Different product line = SEPARATE\n- Different grass type = SEPARATE\n- Different pest target = SEPARATE\n\nREAD THE BULLETS AND DESCRIPTION carefully — they will tell you if something is a refill, a different applicator, a different format, or a different product. Use content similarity to decide refill groupings.\n\nWhen in doubt, keep items SEPARATE. It is always better to have too many groups than to incorrectly merge different products.\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown:\n{"groups":[{"name":"short name","items":[0,2]}],"ungrouped":[],"uncertain":[5],"extracted":{"0":{"size":"16ct","color":""},"2":{"size":"40ct","color":""}}}';
+      const batchPrompt = 'You are a product variant grouping specialist. Your job is to assign every product to a group.\n\nRULES:\n1. Every product MUST be assigned to exactly one group — no exceptions, no skipping\n2. Products go in the SAME group only if they are the SAME product differing only by SIZE or COLOR\n   - Same product, different size (oz, lb, count, sq ft, ml, gal, etc.) = SAME group\n   - Same product, different color = SAME group\n   - Same product, different pack quantity (1-pack vs 2-pack) = SAME group\n   - Same product + refill version = SAME group ONLY if bullets/description confirm same formula\n3. Products go in DIFFERENT groups if they differ by ANYTHING other than size/color:\n   - Different product name or type = DIFFERENT\n   - Different formula, NPK ratio, or ingredients = DIFFERENT\n   - Different target (rose vs tomato vs palm vs orchid) = DIFFERENT\n   - Different applicator (with Comfort Wand vs standard) = DIFFERENT\n   - Concentrate vs Ready-to-Use = DIFFERENT\n   - Different grass type, pest target, or use case = DIFFERENT\n4. Solo products (no variants present) get their own single-item group\n5. Use title first, then bullets/description to confirm\n\nFor each group, also extract the size and color that distinguishes the variants.\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON — every product index must appear in exactly one group:\n{"groups":[{"items":[0,2],"size_key":"size","color_key":"color","extracted":{"0":{"size":"8 lb","color":""},"2":{"size":"4.5 lb","color":""}}}]}';
+
 
       return fetch('/api/group', {
         method: 'POST',
@@ -1727,21 +1728,18 @@ async function startProcessing() {
         const clean = text.replace(/```json|```/g, '').trim();
         const result = JSON.parse(clean);
 
-        // Merge extracted
-        Object.assign(aiResult.extracted, result.extracted || {});
+        // Merge extracted size/color
+        (result.groups || []).forEach(g => {
+          Object.assign(aiResult.extracted, g.extracted || {});
+        });
 
-        // Merge ungrouped
-        (result.ungrouped || []).forEach(idx => aiResult.ungrouped.push(idx));
-
-        // Merge uncertain
-        (result.uncertain || []).forEach(idx => aiResult.uncertain.push(idx));
-
-        // Merge groups with offset IDs to avoid collisions
+        // No ungrouped — every item must be in a group
+        // Merge groups
         (result.groups || []).forEach(g => {
           aiResult.groups.push({
-            name: g.name,
-            reason: g.reason,
-            items: g.items
+            name: g.name || '',
+            reason: g.reason || '',
+            items: (g.items || []).map(i => typeof i === 'string' ? parseInt(i) : i)
           });
         });
 
@@ -1776,7 +1774,15 @@ async function startProcessing() {
       if (groupProducts.length < 2) return;
       titleMatchAttempts++;
 
-      const aiGroupIdxSet = new Set(groupProducts.map(p => idxToAIGroup[p.idx]).filter(x => x !== undefined));
+      const mappings = groupProducts.map(p => ({ idx: p.idx, gIdx: idxToAIGroup[p.idx], asin: p.asin }));
+      const aiGroupIdxSet = new Set(mappings.map(m => m.gIdx).filter(x => x !== undefined));
+
+      // Debug: log for known problem ASINs
+      const problemAsins = ['B0025QIFDG','B01MZ6WIT5','B0DSGH48Y8','B0DV1CDX2Q'];
+      if (groupProducts.some(p => problemAsins.includes(p.asin))) {
+        addLog('DEBUG split: ' + groupProducts.map(p => p.asin + '(idx=' + p.idx + ',gIdx=' + idxToAIGroup[p.idx] + ')').join(' | '), 'warn');
+      }
+
       if (aiGroupIdxSet.size <= 1) return;
 
       titleMatchFixed++;
@@ -1792,7 +1798,7 @@ async function startProcessing() {
     });
     aiResult.groups = aiResult.groups.filter(g => g.items.length > 0);
     const afterTitleFix = aiResult.groups.length;
-    addLog('Title matcher: checked ' + titleMatchAttempts + ' multi-product sets, fixed ' + titleMatchFixed + ' splits → ' + (beforeTitleFix - afterTitleFix) + ' groups merged', titleMatchFixed > 0 ? 'success' : 'info');
+    addLog('Title matcher: checked ' + titleMatchAttempts + ' sets, fixed ' + titleMatchFixed + ', merged ' + (beforeTitleFix - afterTitleFix) + ' groups', titleMatchFixed > 0 ? 'success' : 'warn');
 
     // DETERMINISTIC SPLIT: break up groups that contain clearly different product types
     // Extract a product type fingerprint from each item's title
@@ -1958,11 +1964,31 @@ async function startProcessing() {
       reason: g.reason,
       items: g.items.map(itemIdx => {
         const p = products[itemIdx];
-        const extr = (aiResult.extracted || {})[itemIdx] || {};
+        const extr = (aiResult.extracted || {})[itemIdx] || (aiResult.extracted || {})[String(itemIdx)] || {};
+
+        // Deterministically extract size and color from title
+        const titleLower = (p.title || '').toLowerCase();
+
+        // Extract size: look for trailing size/count/pack after last comma
+        let detectedSize = extr.size || p.size || '';
+        if (!detectedSize) {
+          const sizeMatch = p.title.match(/,\s*([\d.]+\s*(?:oz|fl\.?\s*oz|lb\.?s?|kg|g|ml|l|gal\.?|qt\.?|pt\.?|cu\.?\s*ft\.?)[\s\S]*?)(?:\s*\(.*\))?\s*$/i)
+            || p.title.match(/,\s*(\d+[\s-]?(?:count|ct|pack|pk|tablets?|capsules?|pieces?)[\s\S]*?)(?:\s*\(.*\))?\s*$/i)
+            || p.title.match(/\((\d+[\s-]?(?:pack|pk|count|ct))\)\s*$/i);
+          if (sizeMatch) detectedSize = sizeMatch[1].trim();
+        }
+
+        // Extract color: look for color field or color words in title
+        let detectedColor = extr.color || p.color || '';
+        if (!detectedColor) {
+          const colorMatch = p.title.match(/\b(black|white|red|blue|green|brown|gray|grey|silver|gold|clear|natural|original|classic black|deep forest brown|sierra red|natural cedar)\b/i);
+          if (colorMatch) detectedColor = colorMatch[1];
+        }
+
         return {
           ...p,
-          extractedSize: extr.size || p.size || '',
-          extractedColor: extr.color || p.color || '',
+          extractedSize: detectedSize,
+          extractedColor: detectedColor,
           groupId: gIdx + 1,
         };
       })
