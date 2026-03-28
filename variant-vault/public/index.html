@@ -689,6 +689,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    user-select: text;
+    cursor: text;
   }
 
   .parent-badge {
@@ -1640,7 +1642,7 @@ async function startProcessing() {
   // Sort by title so variants land in the same batch
   products.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 
-  const BATCH_SIZE = 100;
+  const BATCH_SIZE = 30;
   const batches = [];
   for (let i = 0; i < products.length; i += BATCH_SIZE) {
     batches.push(products.slice(i, i + BATCH_SIZE));
@@ -1655,8 +1657,8 @@ async function startProcessing() {
     // Run all batches in parallel
     const batchPromises = batches.map((batch, batchIdx) => {
       const productLines = batch.map(p => {
-        const bullets = (p.bullets || []).join(' | ');
-        const desc = p.desc ? p.desc.slice(0, 150) : '';
+        const bullets = (p.bullets || []).slice(0, 3).join(' | ');
+        const desc = p.desc ? p.desc.slice(0, 100) : '';
         return '[' + p.idx + '] TITLE: ' + p.title + (bullets ? '\n    BULLETS: ' + bullets : '') + (desc ? '\n    DESC: ' + desc : '');
       }).join('\n\n');
 
@@ -1721,6 +1723,51 @@ async function startProcessing() {
     });
 
     addLog('Identified ' + aiResult.groups.length + ' groups across ' + batches.length + ' batches', 'success');
+
+    // CROSS-BATCH MERGE PASS: if multiple batches, ask AI to merge groups that belong together
+    if (batches.length > 1) {
+      addLog('Running cross-batch merge pass...', 'info');
+      setProgress(70, 'Merging groups across batches');
+
+      const groupSummary = aiResult.groups.map((g, i) => {
+        const firstItem = products[g.items[0]];
+        return '[G' + i + '] ' + (firstItem ? firstItem.title : g.name) + ' (' + g.items.length + ' item' + (g.items.length !== 1 ? 's' : '') + ')';
+      }).join('\n');
+
+      const mergePrompt = 'You are reviewing product groups from multiple batches. Some groups that should be together may have been split across batches.\n\nIdentify any groups below that contain the SAME base product (same name, same flavor/formula) and should be merged. Only merge groups where products differ by size/count/pack only.\n\nDo NOT merge groups with different product types, different formulas, different targets, or different applicator formats.\n\nGROUPS:\n' + groupSummary + '\n\nReply ONLY with compact JSON listing groups to merge (use group indices):\n{"merges":[[0,3],[5,12]]}';
+
+      try {
+        const mergeResponse = await fetch('/api/group', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: mergePrompt }),
+        });
+        const mergeData = await mergeResponse.json();
+        const mergeText = mergeData.content.map(c => c.text || '').join('');
+        const mergeClean = mergeText.replace(/```json|```/g, '').trim();
+        const mergeResult = JSON.parse(mergeClean);
+
+        if (mergeResult.merges && mergeResult.merges.length > 0) {
+          // Apply merges — combine groups
+          const toRemove = new Set();
+          mergeResult.merges.forEach(groupIndices => {
+            const primary = groupIndices[0];
+            groupIndices.slice(1).forEach(secondary => {
+              if (aiResult.groups[primary] && aiResult.groups[secondary]) {
+                aiResult.groups[primary].items.push(...aiResult.groups[secondary].items);
+                toRemove.add(secondary);
+              }
+            });
+          });
+          aiResult.groups = aiResult.groups.filter((_, i) => !toRemove.has(i));
+          addLog('Cross-batch merge: combined ' + toRemove.size + ' duplicate group(s)', 'success');
+        } else {
+          addLog('No cross-batch merges needed', 'info');
+        }
+      } catch (e) {
+        addLog('Cross-batch merge failed: ' + e.message, 'warn');
+      }
+    }
 
     // IMAGE SECOND PASS: for uncertain items, fetch Amazon images and re-check
     const uncertainIndices = [...new Set(aiResult.uncertain || [])];
@@ -1843,21 +1890,25 @@ async function startProcessing() {
   addLog('Calculating content similarity scores...', 'info');
 
   // Build state.groups
-  state.groups = aiResult.groups.map((g, gIdx) => ({
-    id: gIdx + 1,
-    name: g.name,
-    reason: g.reason,
-    items: g.items.map(itemIdx => {
-      const p = products[itemIdx];
-      const extr = (aiResult.extracted || {})[itemIdx] || {};
-      return {
-        ...p,
-        extractedSize: extr.size || p.size || '',
-        extractedColor: extr.color || p.color || '',
-        groupId: gIdx + 1,
-      };
-    })
-  }));
+  state.groups = aiResult.groups.map((g, gIdx) => {
+    const firstProduct = products[g.items[0]];
+    const groupName = firstProduct ? firstProduct.title : (g.name || 'New Group');
+    return {
+      id: gIdx + 1,
+      name: groupName,
+      reason: g.reason,
+      items: g.items.map(itemIdx => {
+        const p = products[itemIdx];
+        const extr = (aiResult.extracted || {})[itemIdx] || {};
+        return {
+          ...p,
+          extractedSize: extr.size || p.size || '',
+          extractedColor: extr.color || p.color || '',
+          groupId: gIdx + 1,
+        };
+      })
+    };
+  });
 
   state.ungrouped = (aiResult.ungrouped || []).map(itemIdx => {
     const p = products[itemIdx];
@@ -1958,7 +2009,7 @@ function buildGroupCard(group, displayNum) {
 
   card.innerHTML = `
     <div class="group-header" onclick="toggleGroup(this)">
-      <div class="group-num">G${displayNum}</div>
+      <div class="group-num">${displayNum}</div>
       <div class="group-name">${group.name}</div>
       <div class="group-parent-asin">
         <span class="group-parent-label">Parent</span>
@@ -2008,7 +2059,11 @@ function buildProductItemHTML(item, isParent, groupId) {
         <div class="check-label">Match</div>
       </div>
 
-      <div class="product-img-placeholder">📦</div>
+      ${item.asin && state.retailer === 'Amazon'
+        ? '<img class="product-img" src="https://images-na.ssl-images-amazon.com/images/P/' + item.asin + '.01.LZZZZZZZ.jpg" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" alt="">' +
+          '<div class="product-img-placeholder" style="display:none;"></div>'
+        : '<div class="product-img-placeholder"></div>'
+      }
 
       <!-- MAIN INFO -->
       <div class="product-info">
