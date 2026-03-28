@@ -671,12 +671,7 @@
     border-radius: 6px;
     background: var(--surface2);
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--border);
     border: 1px solid var(--border);
-    font-size: 1.2rem;
   }
 
   .product-info { flex: 1; min-width: 0; }
@@ -1401,6 +1396,18 @@
   </div>
 </div>
 
+<!-- CONFIRM REMOVE MODAL -->
+<div class="modal-overlay" id="confirm-remove-modal">
+  <div class="modal">
+    <h3>Remove Product?</h3>
+    <p id="confirm-remove-text">Are you sure you want to remove this product from its group? This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeConfirmRemove()">No, keep it</button>
+      <button class="btn btn-sm" style="background:var(--danger);color:#fff;" onclick="confirmRemove()">Yes, remove</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container"></div>
 
@@ -1628,7 +1635,31 @@ async function startProcessing() {
   addLog(`Loaded ${products.length} products`, 'info');
   setProgress(15, 'Sending to AI for analysis');
 
+  // Pre-compute pairwise content similarity to pass to AI as a tiebreaker signal
+  function getWordsSet(text) {
+    return new Set((text || '').toLowerCase().replace(/[^a-z ]/g, '').split(' ').filter(Boolean));
+  }
+  function contentSimilarity(p1, p2) {
+    const t1 = getWordsSet([p1.title, ...p1.bullets, p1.desc].join(' '));
+    const t2 = getWordsSet([p2.title, ...p2.bullets, p2.desc].join(' '));
+    const all = new Set([...t1, ...t2]);
+    if (all.size === 0) return 0;
+    const overlap = [...t1].filter(w => t2.has(w)).length;
+    return Math.round((overlap / all.size) * 100);
+  }
+
+  // Build similarity hints for pairs that are close but not obvious size/color variants
+  const simHints = [];
+  for (let i = 0; i < products.length; i++) {
+    for (let j = i + 1; j < products.length; j++) {
+      const sim = contentSimilarity(products[i], products[j]);
+      if (sim >= 85) simHints.push(`[${i}]+[${j}]=${sim}%`);
+    }
+  }
+
   const productLines = products.map(p => '[' + p.idx + '] ' + p.title).join('\n');
+  const simLine = simHints.length > 0 ? `\nCONTENT SIMILARITY HINTS (pairs with 85%+ matching content):\n${simHints.join(', ')}\n` : '';
+
   const prompt = `Product grouping task for e-commerce listings.
 
 GOAL: Group items that are the SAME base product offered in different SIZE or COLOR variants only. Do not group based on any other relationship.
@@ -1637,21 +1668,23 @@ WHAT COUNTS AS A VARIANT (group these together):
 - Size/quantity variants: different weights, volumes, counts, dimensions, or coverage areas of the exact same product (e.g. 1 lb vs 3 lb vs 5 lb, 1 gal vs 1.33 gal, 10-count vs 12-count)
 - Multi-packs: a single unit and its bundle/pack versions (e.g. "Product X" and "Product X (2-pack)" or "Product X (6-pack)") — these are size variants
 - Color/finish/scent/flavor variants: the exact same product in different colors, finishes, scents, or flavors
+- Refill variants: a product and its dedicated refill/replacement (same core product, refill is a format variant) — BUT only if content similarity is 90%+
 
 WHAT IS NOT A VARIANT (do NOT group these — give each its own group):
-- A product and its refill, refill kit, or replacement parts — these are separate products
 - A product with an included applicator/tool vs without (e.g. "with Comfort Wand" vs standard) — different product
 - Concentrate vs ready-to-use versions — different product
 - Products with different active ingredients, formulas, or core functions — even if from the same brand
 - Products targeting different use cases, surfaces, or applications
 
-RULE: Only group items where the SOLE difference is size, weight, volume, count, color, or number of units in a pack. Any other difference = separate group.
+TIEBREAKER RULE: If you are unsure whether two items are variants of the same product, check the content similarity hints below. If a pair scores 90% or higher, treat them as variants and group them together. If below 90%, keep them separate.
 
-For each group, pick a clean short name (strip size/color/pack info) and write a brief reason (e.g. "Size variants: 1lb, 3lb, 5lb" or "Multi-pack variants: single, 2-pack" or "Color variants: Black, Brown, Red").
+RULE: Only group items where the SOLE difference is size, weight, volume, count, color, number of units in a pack, or refill format (with 90%+ content similarity). Any other meaningful difference = separate group.
+
+For each group, pick a clean short name (strip size/color/pack info) and write a brief reason (e.g. "Size variants: 1lb, 3lb, 5lb" or "Multi-pack variants: single, 2-pack" or "Color variants: Black, Brown, Red" or "Base + Refill").
 
 PRODUCTS:
 ${productLines}
-
+${simLine}
 Reply ONLY with compact JSON, no markdown, no explanation:
 {"groups":[{"name":"short product name","reason":"brief variant summary","items":[0,2,5]}],"ungrouped":[3,7],"extracted":{"0":{"size":"1 lb","color":""},"2":{"size":"3 lb","color":""}}}`;
 
@@ -1873,7 +1906,14 @@ function buildProductItemHTML(item, isParent, groupId) {
         <div class="check-label">Match</div>
       </div>
 
-      <div class="product-img-placeholder">📦</div>
+      <!-- IMAGE -->
+      ${item.asin ? `<img
+        class="product-img"
+        src="https://images-na.ssl-images-amazon.com/images/P/${item.asin}.01.LZZZZZZZ.jpg"
+        alt=""
+        draggable="false"
+        onerror="this.style.visibility='hidden'"
+      />` : '<div class="product-img-placeholder"></div>'}
 
       <!-- MAIN INFO -->
       <div class="product-info">
@@ -1892,7 +1932,7 @@ function buildProductItemHTML(item, isParent, groupId) {
         <div class="icon-btn" title="Move to group" onclick="openMoveModal('${item.asin}', ${groupId})">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="icon-btn danger" title="Remove from group" onclick="removeFromGroup('${item.asin}', ${groupId})">
+        <div class="icon-btn danger" title="Remove from group" onclick="promptRemoveFromGroup('${item.asin}', ${groupId})">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
       </div>
@@ -2120,6 +2160,32 @@ function confirmMove() {
     moveItem(state.movingItem, state.movingFromGroup, parseInt(val));
   }
   closeModal();
+}
+
+let pendingRemoveAsin = null;
+let pendingRemoveGroupId = null;
+
+function promptRemoveFromGroup(asin, groupId) {
+  pendingRemoveAsin = asin;
+  pendingRemoveGroupId = groupId;
+  const group = state.groups.find(g => g.id === groupId);
+  const item = group && group.items.find(i => i.asin === asin);
+  const title = item ? (item.title || asin).slice(0, 60) + (item.title && item.title.length > 60 ? '…' : '') : asin;
+  document.getElementById('confirm-remove-text').textContent = `Remove "${title}" from this group?`;
+  document.getElementById('confirm-remove-modal').classList.add('open');
+}
+
+function closeConfirmRemove() {
+  pendingRemoveAsin = null;
+  pendingRemoveGroupId = null;
+  document.getElementById('confirm-remove-modal').classList.remove('open');
+}
+
+function confirmRemove() {
+  if (pendingRemoveAsin && pendingRemoveGroupId !== null) {
+    removeFromGroup(pendingRemoveAsin, pendingRemoveGroupId);
+  }
+  closeConfirmRemove();
 }
 
 function removeFromGroup(asin, groupId) {
