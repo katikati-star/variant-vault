@@ -1651,6 +1651,16 @@ async function startProcessing() {
         addLog('Batch ' + (batchIdx + 1) + ' of ' + batches.length + ' complete', 'info');
         setProgress(25 + Math.round(((batchIdx + 1) / batches.length) * 45), 'Processing batch ' + (batchIdx + 1) + ' of ' + batches.length);
         return r.json();
+      }).then(data => {
+        // Log raw response for debugging
+        if (data && data.content) {
+          addLog('Batch ' + (batchIdx+1) + ' has content blocks: ' + data.content.length, 'info');
+        } else if (data && data.error) {
+          addLog('Batch ' + (batchIdx+1) + ' API error: ' + JSON.stringify(data.error), 'warn');
+        } else {
+          addLog('Batch ' + (batchIdx+1) + ' unexpected response: ' + JSON.stringify(data).slice(0, 100), 'warn');
+        }
+        return data;
       });
     });
 
@@ -1682,8 +1692,8 @@ async function startProcessing() {
 
         groupIdOffset += (result.groups || []).length;
       } catch (e) {
-        addLog('Batch ' + (batchIdx + 1) + ' parse error — skipping', 'warn');
-        // Add batch items as ungrouped fallback
+        addLog('Batch ' + (batchIdx + 1) + ' parse error: ' + e.message, 'warn');
+        addLog('Raw: ' + (data.content ? data.content.map(c => c.text||'').join('').slice(0,120) : 'no content'), 'warn');
         batches[batchIdx].forEach(p => aiResult.ungrouped.push(p.idx));
       }
     });
