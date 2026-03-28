@@ -1745,26 +1745,28 @@ async function startProcessing() {
     addLog('Identified ' + aiResult.groups.length + ' groups across ' + batches.length + ' batches', 'success');
 
     // DETERMINISTIC POST-FIX: ensure products with identical base titles are in the same group
-    // This fixes splits caused by batch boundaries
     addLog('Applying deterministic title matching...', 'info');
+
+    // Build a map of idx -> AI group index for fast lookup
+    const idxToAIGroup = {};
+    aiResult.groups.forEach((g, gIdx) => {
+      g.items.forEach(idx => { idxToAIGroup[idx] = gIdx; });
+    });
+
     Object.values(preSortedGroups).forEach(groupProducts => {
       if (groupProducts.length < 2) return;
 
-      const aiGroupsForThese = new Set();
-      groupProducts.forEach(p => {
-        aiResult.groups.forEach((g, gIdx) => {
-          if (g.items.includes(p.idx)) aiGroupsForThese.add(gIdx);
-        });
-      });
+      const aiGroupIdxSet = new Set(groupProducts.map(p => idxToAIGroup[p.idx]).filter(x => x !== undefined));
+      if (aiGroupIdxSet.size <= 1) return;
 
-      if (aiGroupsForThese.size <= 1) return;
-
-      const groupIdxArray = [...aiGroupsForThese];
+      const groupIdxArray = [...aiGroupIdxSet];
       const primaryIdx = groupIdxArray[0];
       groupIdxArray.slice(1).forEach(secondaryIdx => {
         if (aiResult.groups[primaryIdx] && aiResult.groups[secondaryIdx]) {
           aiResult.groups[primaryIdx].items.push(...aiResult.groups[secondaryIdx].items);
           aiResult.groups[secondaryIdx].items = [];
+          // Update lookup map
+          aiResult.groups[primaryIdx].items.forEach(idx => { idxToAIGroup[idx] = primaryIdx; });
         }
       });
     });
@@ -1772,27 +1774,34 @@ async function startProcessing() {
     // DETERMINISTIC SPLIT: break up groups that contain clearly different product types
     // Extract a product type fingerprint from each item's title
     function getProductFingerprint(title) {
-      const t = title.toLowerCase();
-      // Extract meaningful product type words — the specific thing the product IS
-      // Order matters — more specific matches first
-      const patterns = [
-        /\b(bermudagrass|buffalograss|tall fescue|fine fescue|kentucky bluegrass|clover seed|sheep fescue|zoysia)\b/,
-        /\b(grass seed|grass food|lawn seed|lawn food|lawn fertilizer)\b/,
-        /\b(potting mix|potting soil|garden soil|raised bed soil)\b/,
-        /\b(plant food|fertilizer|flower food)\b/,
-        /\b(weed (killer|preventer|control)|weed and grass killer)\b/,
-        /\b(fire ant killer|fire ant control|mole killer|slug killer|snail killer|mosquito|bed bug|flea killer|rodent)\b/,
-        /\b(rose (plant food|food|fertilizer)|tomato (plant food|food|fertilizer)|orchid (food|fertilizer)|palm (food|fertilizer))\b/,
-        /\b(blood meal|alfalfa meal|bone meal|feather meal)\b/,
-        /\b(rodent station|bait chunx|tunnel trap|snap trap|glue trap)\b/,
-        /\b(mulch|bark|wood chips)\b/,
-      ];
-      for (const p of patterns) {
-        const m = t.match(p);
-        if (m) return m[0].trim();
+      const t = title.toLowerCase()
+        .replace(/\blbs\.?\b/g, 'lb') // normalize lbs -> lb
+        .replace(/\.+$/, '')            // remove trailing periods
+        .trim();
+
+      // Format variants always get their own group
+      if (/\bwith comfort wand\b/.test(t)) return t + '|wand';
+      if (/\brefill\b/.test(t)) return t.replace(/,[\s\S]*$/, '').trim() + '|refill';
+      if (/\bconcentrate\b/.test(t)) return t.replace(/,[\s\S]*$/, '').trim() + '|conc';
+      if (/\bready.to.spray|readyspray\b/.test(t)) return t.replace(/,[\s\S]*$/, '').trim() + '|rts';
+
+      let core = t;
+
+      // Remove trailing parentheticals like (2-pack), (8 oz)
+      core = core.replace(/\s*\([^)]*\)\s*$/, '').trim();
+
+      // Strip trailing comma-separated variant descriptors (size, count, pack, coverage)
+      const variantPattern = /,\s*(?:pack of \d+|\d+[\s-]?(?:pack|pk)|[\d.]+\s*(?:oz|fl\.?\s*oz|lb\.?s?|kg|g|mg|ml|l|gal\.?|qt\.?|pt\.?|cu\.?\s*ft\.?)|covers?\s+[\d,]+\s*sq\.?\s*ft\.?|\d+\s*(?:ct|count|tablets?|capsules?|caplets?|gummies?|pieces?|tabs?|units?)).*$/i;
+      for (let i = 0; i < 5; i++) {
+        const prev = core;
+        core = core.replace(variantPattern, '').trim();
+        if (core === prev) break;
       }
-      // Fall back to first 4 significant words
-      return t.split(',')[0].split(' ').filter(w => w.length > 3).slice(0, 4).join(' ');
+
+      // Normalize trailing periods
+      core = core.replace(/\.+$/, '').trim();
+
+      return core.slice(0, 120);
     }
 
     const newGroups = [];
