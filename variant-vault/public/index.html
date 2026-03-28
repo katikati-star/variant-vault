@@ -1161,19 +1161,19 @@
 <nav>
   <div class="logo">Variant <span>Vault</span></div>
   <div class="nav-steps">
-    <div class="step-pill active" id="nav-1">
+    <div class="step-pill active" id="nav-1" onclick="navToStep(1)" style="cursor:pointer;">
       <div class="step-num">1</div> Retailer
     </div>
     <div class="step-divider"></div>
-    <div class="step-pill" id="nav-2">
+    <div class="step-pill" id="nav-2" onclick="navToStep(2)" style="cursor:pointer;">
       <div class="step-num">2</div> Upload
     </div>
     <div class="step-divider"></div>
-    <div class="step-pill" id="nav-3">
+    <div class="step-pill" id="nav-3" onclick="navToStep(3)" style="cursor:pointer;">
       <div class="step-num">3</div> Processing
     </div>
     <div class="step-divider"></div>
-    <div class="step-pill" id="nav-4">
+    <div class="step-pill" id="nav-4" onclick="navToStep(4)" style="cursor:pointer;">
       <div class="step-num">4</div> Review
     </div>
   </div>
@@ -1365,6 +1365,7 @@
       </div>
     </div>
     <div class="review-actions">
+      <button class="btn btn-ghost btn-sm" onclick="goToPage('page-upload', 2)">← Back</button>
       <button class="btn btn-ghost btn-sm" id="sort-az-btn" onclick="toggleSortAZ()">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h8M2 8h5M2 12h3M11 6v7M9 11l2 2 2-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Sort by Title
@@ -1435,6 +1436,16 @@ function goToPage(pageId, stepNum) {
   // Show FAB only on review page
   const fab = document.getElementById('fab-new-group');
   if (fab) fab.style.display = pageId === 'page-review' ? 'flex' : 'none';
+}
+
+function navToStep(step) {
+  const pages = ['page-retailer', 'page-upload', 'page-processing', 'page-review'];
+  const maxStep = ['page-retailer','page-upload','page-processing','page-review']
+    .findIndex(p => document.getElementById(p).classList.contains('active')) + 1 ||
+    document.querySelectorAll('.step-pill.done').length + 1;
+  if (step <= maxStep) {
+    goToPage(pages[step - 1], step);
+  }
 }
 
 function selectRetailer(card) {
@@ -1836,7 +1847,6 @@ function buildGroupCard(group, displayNum) {
       </div>
       <div class="group-meta">
         <div class="group-count">${group.items.length} item${group.items.length !== 1 ? 's' : ''}</div>
-        ${group.reason ? '<div class="group-reason">' + group.reason + '</div>' : ''}
       </div>
       <div class="icon-btn danger" title="Delete group" onclick="event.stopPropagation(); deleteGroup(${group.id})">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1889,8 +1899,8 @@ function buildProductItemHTML(item, isParent, groupId) {
         </div>
         <div class="product-title">${item.title || 'No title'}</div>
         <div class="product-tags">
-          ${hasSize ? '<span class="tag tag-size">Size: ' + item.extractedSize + '</span>' : '<span class="tag tag-none">No size detected</span>'}
-          ${hasColor ? '<span class="tag tag-color">Color: ' + item.extractedColor + '</span>' : ''}
+          ${hasSize ? '<span class="tag tag-size">Size: ' + item.extractedSize + '</span>' : '<span class="tag tag-none">No size</span>'}
+          ${hasColor ? '<span class="tag tag-color">Color: ' + item.extractedColor + '</span>' : '<span class="tag tag-none">No color</span>'}
         </div>
       </div>
 
