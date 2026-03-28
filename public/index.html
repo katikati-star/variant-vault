@@ -97,6 +97,16 @@
     border: 1px solid var(--border);
   }
 
+  .step-pill.active.orange {
+    border-color: rgba(249,115,22,0.4);
+    background: rgba(249,115,22,0.08);
+  }
+
+  .step-pill.active.orange .step-num {
+    background: var(--orange);
+    color: #fff;
+  }
+
   .step-pill.done {
     color: var(--accent);
   }
@@ -1075,6 +1085,58 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
+  /* ===================== FINALIZE PAGE ===================== */
+  .finalize-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: #0a0e18;
+    border: 1px solid #1a1f2e;
+    border-radius: 6px;
+    transition: var(--transition);
+  }
+
+  .finalize-item.is-parent {
+    border-left: 2px solid var(--orange);
+    background: rgba(249,115,22,0.03);
+  }
+
+  .finalize-item:hover {
+    border-color: #2a3050;
+    background: #0d1120;
+  }
+
+  .finalize-asin {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: text;
+    cursor: text;
+  }
+
+  .finalize-title {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+    min-width: 0;
+  }
+
+  .finalize-tags {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
   /* ===================== CUSTOM CONFIG PAGE ===================== */
   #page-custom {
     max-width: 560px;
@@ -1253,6 +1315,10 @@
     <div class="step-divider"></div>
     <div class="step-pill" id="nav-4">
       <div class="step-num">4</div> Review
+    </div>
+    <div class="step-divider"></div>
+    <div class="step-pill" id="nav-5">
+      <div class="step-num">5</div> Finalize
     </div>
   </div>
   <div id="nav-retailer-chip" style="display:none"></div>
@@ -1473,19 +1539,52 @@
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h8M2 8h5M2 12h3M11 6v7M9 11l2 2 2-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Sort by Title
       </button>
-      <button class="btn btn-ghost btn-sm" onclick="exportOverride()">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Override File
-      </button>
-      <button class="btn btn-orange" onclick="exportCSV()">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Groupings File
+      <button class="btn btn-orange" onclick="goToFinalize()">
+        Finalize
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
   </div>
 
   <div class="groups-container" id="groups-container"></div>
   <div style="height: 100px;"></div>
+</div>
+
+<!-- ===================== PAGE 5: FINALIZE ===================== -->
+<div id="page-finalize" class="page">
+  <div style="padding: 40px; max-width: 1200px; margin: 0 auto;">
+    <div class="review-header">
+      <div>
+        <div class="page-label" style="color:var(--orange);">Step 05 — Finalize</div>
+        <h1 style="font-family:'DM Serif Display',serif; font-size:2rem; letter-spacing:-0.02em;"><span style="color:var(--orange);">Finalize</span> & Export</h1>
+        <div class="review-stats">
+          <div class="stat">
+            <div class="stat-val" id="final-stat-groups">0</div>
+            <div class="stat-label">Groups</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="final-stat-items">0</div>
+            <div class="stat-label">Items</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-actions">
+        <button class="btn btn-ghost btn-sm" onclick="goToPage('page-review', 4)">
+          ← Back to Review
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="exportOverride()">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Override File
+        </button>
+        <button class="btn btn-orange" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Groupings File
+        </button>
+      </div>
+    </div>
+    <div class="groups-container" id="finalize-groups-container"></div>
+    <div style="height: 80px;"></div>
+  </div>
 </div>
 
 <!-- FLOATING NEW GROUP BUBBLE -->
@@ -1547,9 +1646,12 @@ function goToPage(pageId, stepNum) {
   document.getElementById(pageId).classList.add('active');
 
   document.querySelectorAll('.step-pill').forEach((p, i) => {
-    p.classList.remove('active', 'done');
+    p.classList.remove('active', 'done', 'orange');
     if (i + 1 < stepNum) p.classList.add('done');
-    if (i + 1 === stepNum) p.classList.add('active');
+    if (i + 1 === stepNum) {
+      p.classList.add('active');
+      if (i + 1 === 5) p.classList.add('orange');
+    }
   });
 
   // Show FAB only on review page
@@ -2044,6 +2146,73 @@ function buildReviewPage() {
   });
 
   initDragDrop();
+}
+
+// ============================================================
+// FINALIZE PAGE
+// ============================================================
+function goToFinalize() {
+  buildFinalizePage();
+  goToPage('page-finalize', 5);
+}
+
+function buildFinalizePage() {
+  const container = document.getElementById('finalize-groups-container');
+  container.innerHTML = '';
+
+  const totalItems = state.groups.reduce((s, g) => s + g.items.length, 0);
+  document.getElementById('final-stat-groups').textContent = state.groups.length;
+  document.getElementById('final-stat-items').textContent = totalItems;
+
+  const idLabel = state.retailer === 'Amazon' ? 'ASIN' : 'Item ID';
+
+  state.groups.forEach((group, index) => {
+    const parentId = group.items.length > 0 ? group.items[0].asin : '—';
+    const card = document.createElement('div');
+    card.className = 'group-card';
+
+    const itemsHTML = group.items.map((item, idx) => {
+      const isParent = idx === 0;
+      const hasSize = item.extractedSize && item.extractedSize.trim();
+      const hasColor = item.extractedColor && item.extractedColor.trim();
+
+      return `
+        <div class="finalize-item ${isParent ? 'is-parent' : ''}">
+          <div class="finalize-asin" draggable="false">
+            <span style="user-select:text;">${item.asin}</span>
+            ${isParent ? `<span class="parent-badge">Parent ${idLabel}</span>` : ''}
+          </div>
+          <div class="finalize-title" title="${(item.title || '').replace(/"/g, '&quot;')}">${item.title || 'No title'}</div>
+          <div class="finalize-tags">
+            ${hasSize ? `<span class="tag tag-size">Size: ${item.extractedSize}</span>` : ''}
+            ${hasColor ? `<span class="tag tag-color">Color: ${item.extractedColor}</span>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="group-header" onclick="toggleGroup(this)">
+        <div class="group-num">${index + 1}</div>
+        <div class="group-name">${group.name}</div>
+        <div class="group-parent-asin">
+          <span class="group-parent-label">Parent ${idLabel}</span>
+          <span class="group-parent-val">${parentId}</span>
+        </div>
+        <div class="group-meta">
+          <div class="group-count">${group.items.length} item${group.items.length !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="group-toggle">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="group-items" style="gap:4px;">
+        ${itemsHTML}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
 }
 
 function autoGroupName(items) {
