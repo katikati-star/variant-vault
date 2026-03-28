@@ -1302,8 +1302,10 @@
   position: fixed; inset: 0; z-index: 9999;
   background: #080d1a;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
 ">
-  <div style="width: 100%; max-width: 380px; padding: 0 24px; text-align: center;">
+  <canvas id="ripple-canvas" style="position:absolute; inset:0; pointer-events:none;"></canvas>
+  <div style="width: 100%; max-width: 380px; padding: 0 24px; text-align: center; position: relative; z-index: 1;">
     <div style="font-family: 'DM Serif Display', serif; font-size: 2rem; color: #f0f4ff; margin-bottom: 6px;">
       Variant <span style="color: #f97316;">Vault</span>
     </div>
@@ -1340,6 +1342,56 @@
 </div>
 
 <script>
+// Ripple effect
+(function() {
+  const gate = document.getElementById('password-gate');
+  const canvas = document.getElementById('ripple-canvas');
+  const ctx = canvas.getContext('2d');
+  const ripples = [];
+  let mouseX = 0, mouseY = 0, animFrame;
+
+  function resize() {
+    canvas.width = gate.offsetWidth;
+    canvas.height = gate.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  gate.addEventListener('mousemove', e => {
+    const r = gate.getBoundingClientRect();
+    mouseX = e.clientX - r.left;
+    mouseY = e.clientY - r.top;
+    ripples.push({ x: mouseX, y: mouseY, r: 0, alpha: 0.18, color: Math.random() > 0.5 ? '249,115,22' : '59,130,246' });
+    if (ripples.length > 18) ripples.shift();
+  });
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const rp = ripples[i];
+      rp.r += 2.2;
+      rp.alpha -= 0.004;
+      if (rp.alpha <= 0) { ripples.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${rp.color},${rp.alpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+    animFrame = requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Stop animation once gate is hidden
+  const observer = new MutationObserver(() => {
+    if (gate.style.display === 'none') {
+      cancelAnimationFrame(animFrame);
+      observer.disconnect();
+    }
+  });
+  observer.observe(gate, { attributes: true, attributeFilter: ['style'] });
+})();
+
 async function checkPassword() {
   const input = document.getElementById('password-input').value;
   const err = document.getElementById('password-error');
