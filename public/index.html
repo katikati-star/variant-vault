@@ -1765,12 +1765,15 @@ async function startProcessing() {
     });
 
     const beforeTitleFix = aiResult.groups.filter(g => g.items.length > 0).length;
+    let titleMatchAttempts = 0, titleMatchFixed = 0;
     Object.values(preSortedGroups).forEach(groupProducts => {
       if (groupProducts.length < 2) return;
+      titleMatchAttempts++;
 
       const aiGroupIdxSet = new Set(groupProducts.map(p => idxToAIGroup[p.idx]).filter(x => x !== undefined));
       if (aiGroupIdxSet.size <= 1) return;
 
+      titleMatchFixed++;
       const groupIdxArray = [...aiGroupIdxSet];
       const primaryIdx = groupIdxArray[0];
       groupIdxArray.slice(1).forEach(secondaryIdx => {
@@ -1783,7 +1786,7 @@ async function startProcessing() {
     });
     aiResult.groups = aiResult.groups.filter(g => g.items.length > 0);
     const afterTitleFix = aiResult.groups.length;
-    if (beforeTitleFix - afterTitleFix > 0) addLog('Title matcher merged ' + (beforeTitleFix - afterTitleFix) + ' split group(s)', 'success');
+    addLog('Title matcher: checked ' + titleMatchAttempts + ' multi-product sets, fixed ' + titleMatchFixed + ' splits → ' + (beforeTitleFix - afterTitleFix) + ' groups merged', titleMatchFixed > 0 ? 'success' : 'info');
 
     // DETERMINISTIC SPLIT: break up groups that contain clearly different product types
     // Extract a product type fingerprint from each item's title
