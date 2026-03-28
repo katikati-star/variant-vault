@@ -689,6 +689,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    user-select: text;
+    cursor: text;
   }
 
   .parent-badge {
@@ -1649,13 +1651,18 @@ async function startProcessing() {
   addLog('Calling Claude AI in ' + batches.length + ' batch' + (batches.length > 1 ? 'es' : '') + '...', 'info');
   setProgress(25, 'AI analyzing size and color variants');
 
-  let aiResult = { groups: [], ungrouped: [], extracted: {} };
+  let aiResult = { groups: [], ungrouped: [], uncertain: [], extracted: {} };
 
   try {
     // Run all batches in parallel
     const batchPromises = batches.map((batch, batchIdx) => {
-      const productLines = batch.map(p => '[' + p.idx + '] ' + p.title).join('\n');
-      const batchPrompt = 'You are a product catalog specialist. Group products that are the same base product into one group, regardless of size, count, pack quantity, or bundle differences.\n\nRULES:\n1. SAME group = same base product name + same flavor/formula/scent, even if they differ by count, tablets, oz, pack quantity, or bundle size (e.g. "16ct" vs "40ct" vs "16ct Pack of 6" are ALL the same group)\n2. DIFFERENT groups = different flavors, different scents, different formulas, different product lines, different strengths, or clearly different products\n3. If two titles share the same core product name and flavor/formula, put them in the SAME group\n4. Extract the size/count/pack for each individual item\n\nEXAMPLES OF SAME GROUP:\n- "Vivarin 16 Tablets" + "Vivarin 40 Tablets" + "Vivarin 16 Tablets Pack of 6" = SAME group (same product, different sizes)\n- "BALNEOL 3oz Pack of 2" + "BALNEOL 3oz Pack of 3" + "BALNEOL 3oz" = SAME group\n\nEXAMPLES OF DIFFERENT GROUPS:\n- "Cold-EEZE Cherry" vs "Cold-EEZE Mixed Berry" = DIFFERENT groups (different flavors)\n- "Cold-EEZE Sugar-Free" vs "Cold-EEZE Regular" = DIFFERENT groups\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown:\n{"groups":[{"name":"short name","items":[0,2]}],"ungrouped":[],"extracted":{"0":{"size":"16ct","color":""},"2":{"size":"40ct","color":""}}}';
+      const productLines = batch.map(p => {
+        const bullets = (p.bullets || []).slice(0, 3).join(' | ');
+        const desc = p.desc ? p.desc.slice(0, 100) : '';
+        return '[' + p.idx + '] TITLE: ' + p.title + (bullets ? '\n    BULLETS: ' + bullets : '') + (desc ? '\n    DESC: ' + desc : '');
+      }).join('\n\n');
+
+      const batchPrompt = 'You are a product catalog specialist. Group products that are SIZE or COLOR variants of the EXACT same product.\n\nTHE ONLY VALID REASONS TO GROUP TWO PRODUCTS TOGETHER:\n- They differ ONLY by size (oz, lb, sq ft coverage, count, tablets, ml, etc.)\n- They differ ONLY by color\n- They differ ONLY by pack quantity (1-pack vs 2-pack vs 3-pack of the exact same item)\n- They are a REFILL of the same product AND their bullets/description describe the same product benefits (if content matches, refill = same group; if content differs, keep separate)\n\nEVERYTHING ELSE = SEPARATE GROUPS. This includes:\n- Different applicator type (e.g. "with Comfort Wand" vs standard = SEPARATE, even if same product)\n- Concentrate vs Ready-to-Use = SEPARATE\n- Different target (Rose vs Tomato vs Orchid vs Palm = SEPARATE)\n- Different formula or NPK ratio = SEPARATE\n- Different product line = SEPARATE\n- Different grass type = SEPARATE\n- Different pest target = SEPARATE\n\nREAD THE BULLETS AND DESCRIPTION carefully — they will tell you if something is a refill, a different applicator, a different format, or a different product. Use content similarity to decide refill groupings.\n\nWhen in doubt, keep items SEPARATE. It is always better to have too many groups than to incorrectly merge different products.\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown:\n{"groups":[{"name":"short name","items":[0,2]}],"ungrouped":[],"uncertain":[5],"extracted":{"0":{"size":"16ct","color":""},"2":{"size":"40ct","color":""}}}';
 
       return fetch('/api/group', {
         method: 'POST',
@@ -1695,6 +1702,9 @@ async function startProcessing() {
         // Merge ungrouped
         (result.ungrouped || []).forEach(idx => aiResult.ungrouped.push(idx));
 
+        // Merge uncertain
+        (result.uncertain || []).forEach(idx => aiResult.uncertain.push(idx));
+
         // Merge groups with offset IDs to avoid collisions
         (result.groups || []).forEach(g => {
           aiResult.groups.push({
@@ -1714,44 +1724,75 @@ async function startProcessing() {
 
     addLog('Identified ' + aiResult.groups.length + ' groups across ' + batches.length + ' batches', 'success');
 
-    // SECOND PASS: merge groups whose items share the same base product name
-    // (catches variants split across batch boundaries)
-    if (batches.length > 1) {
-      addLog('Running cross-batch merge...', 'info');
+    // IMAGE SECOND PASS: for uncertain items, fetch Amazon images and re-check
+    const uncertainIndices = [...new Set(aiResult.uncertain || [])];
+    if (uncertainIndices.length > 0) {
+      addLog('Fetching images for ' + uncertainIndices.length + ' uncertain item(s)...', 'info');
+      setProgress(72, 'Checking images for uncertain items');
 
-      function getBaseName(title) {
-        return title
-          .toLowerCase()
-          .replace(/,?\s*(pack of \d+|\d+\s*(oz|fl oz|lb|g|ml|ct|count|tablets?|capsules?|caplets?|gummies?|tablets?|pack|pk|pieces?|count|tabs?)[\w\s]*)/gi, '')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 60);
-      }
+      // Only do image pass for Amazon retailer
+      if (state.retailer === 'Amazon') {
+        const uncertainProducts = uncertainIndices.map(idx => products[idx]).filter(Boolean);
 
-      // Build a map of baseName -> first group index
-      const baseNameToGroup = {};
-      const mergedGroups = [];
+        // Fetch images in parallel
+        const imageResults = await Promise.all(
+          uncertainProducts.map(p =>
+            fetch('/api/fetch-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ asin: p.asin }),
+            }).then(r => r.json()).catch(() => null)
+          )
+        );
 
-      aiResult.groups.forEach(g => {
-        // Use the first item's title as the representative
-        const firstItemIdx = g.items[0];
-        const product = products[firstItemIdx];
-        if (!product) { mergedGroups.push(g); return; }
+        const images = imageResults
+          .filter(r => r && r.imageUrl)
+          .map(r => ({ asin: r.asin, url: r.imageUrl }));
 
-        const base = getBaseName(product.title);
-        if (baseNameToGroup[base] !== undefined) {
-          // Merge into existing group
-          mergedGroups[baseNameToGroup[base]].items.push(...g.items);
+        if (images.length > 0) {
+          addLog('Got ' + images.length + ' images, running visual check...', 'info');
+
+          const uncertainLines = uncertainProducts.map(p => '[' + p.idx + '] ' + p.title).join('\n');
+          const imagePrompt = 'Look at the product images above. These products have ambiguous titles and need visual confirmation for grouping.\n\nFor each product shown, confirm or adjust which group it belongs to. Products that look like the SAME item (same packaging, same product) should be in the same group, even if titles differ slightly.\n\nUNCERTAIN PRODUCTS:\n' + uncertainLines + '\n\nCurrent groupings for these items (group name -> indices):\n' + aiResult.groups.map((g, i) => g.name + ': [' + g.items.filter(idx => uncertainIndices.includes(idx)).join(',') + ']').filter(s => !s.endsWith(': []')).join('\n') + '\n\nReply ONLY with compact JSON — just the corrected group assignments for the uncertain items:\n{"reassign":[{"idx":5,"group_name":"correct group name"},{"idx":8,"group_name":"correct group name"}]}';
+
+          try {
+            const imgResponse = await fetch('/api/group', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: imagePrompt, images }),
+            });
+            const imgData = await imgResponse.json();
+            const imgText = imgData.content.map(c => c.text || '').join('');
+            const imgClean = imgText.replace(/```json|```/g, '').trim();
+            const imgResult = JSON.parse(imgClean);
+
+            // Apply reassignments
+            if (imgResult.reassign && imgResult.reassign.length > 0) {
+              imgResult.reassign.forEach(({ idx, group_name }) => {
+                // Find the target group
+                const targetGroup = aiResult.groups.find(g => g.name.toLowerCase() === group_name.toLowerCase());
+                if (targetGroup) {
+                  // Remove from current group
+                  aiResult.groups.forEach(g => { g.items = g.items.filter(i => i !== idx); });
+                  // Add to target group
+                  targetGroup.items.push(idx);
+                }
+              });
+              // Remove empty groups
+              aiResult.groups = aiResult.groups.filter(g => g.items.length > 0);
+              addLog('Visual check applied ' + imgResult.reassign.length + ' correction(s)', 'success');
+            }
+          } catch (e) {
+            addLog('Image check failed: ' + e.message, 'warn');
+          }
         } else {
-          baseNameToGroup[base] = mergedGroups.length;
-          mergedGroups.push({ ...g, items: [...g.items] });
+          addLog('Could not fetch images — skipping visual check', 'warn');
         }
-      });
-
-      const merged = aiResult.groups.length - mergedGroups.length;
-      if (merged > 0) addLog('Merged ' + merged + ' duplicate group' + (merged !== 1 ? 's' : '') + ' across batches', 'success');
-      aiResult.groups = mergedGroups;
+      } else {
+        addLog('Image check skipped (non-Amazon retailer)', 'info');
+      }
     }
+
 
   } catch (err) {
     addLog('Error: ' + err.message + ' — using fallback grouping', 'warn');
@@ -1766,21 +1807,25 @@ async function startProcessing() {
   addLog('Calculating content similarity scores...', 'info');
 
   // Build state.groups
-  state.groups = aiResult.groups.map((g, gIdx) => ({
-    id: gIdx + 1,
-    name: g.name,
-    reason: g.reason,
-    items: g.items.map(itemIdx => {
-      const p = products[itemIdx];
-      const extr = (aiResult.extracted || {})[itemIdx] || {};
-      return {
-        ...p,
-        extractedSize: extr.size || p.size || '',
-        extractedColor: extr.color || p.color || '',
-        groupId: gIdx + 1,
-      };
-    })
-  }));
+  state.groups = aiResult.groups.map((g, gIdx) => {
+    const firstProduct = products[g.items[0]];
+    const groupName = firstProduct ? firstProduct.title : (g.name || 'New Group');
+    return {
+      id: gIdx + 1,
+      name: groupName,
+      reason: g.reason,
+      items: g.items.map(itemIdx => {
+        const p = products[itemIdx];
+        const extr = (aiResult.extracted || {})[itemIdx] || {};
+        return {
+          ...p,
+          extractedSize: extr.size || p.size || '',
+          extractedColor: extr.color || p.color || '',
+          groupId: gIdx + 1,
+        };
+      })
+    };
+  });
 
   state.ungrouped = (aiResult.ungrouped || []).map(itemIdx => {
     const p = products[itemIdx];
@@ -1881,7 +1926,7 @@ function buildGroupCard(group, displayNum) {
 
   card.innerHTML = `
     <div class="group-header" onclick="toggleGroup(this)">
-      <div class="group-num">G${displayNum}</div>
+      <div class="group-num">${displayNum}</div>
       <div class="group-name">${group.name}</div>
       <div class="group-parent-asin">
         <span class="group-parent-label">Parent</span>
@@ -1931,7 +1976,11 @@ function buildProductItemHTML(item, isParent, groupId) {
         <div class="check-label">Match</div>
       </div>
 
-      <div class="product-img-placeholder">📦</div>
+      ${item.asin && state.retailer === 'Amazon'
+        ? '<img class="product-img" src="https://images-na.ssl-images-amazon.com/images/P/' + item.asin + '.01.LZZZZZZZ.jpg" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" alt="">' +
+          '<div class="product-img-placeholder" style="display:none;"></div>'
+        : '<div class="product-img-placeholder"></div>'
+      }
 
       <!-- MAIN INFO -->
       <div class="product-info">
