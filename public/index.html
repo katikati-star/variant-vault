@@ -1655,7 +1655,7 @@ async function startProcessing() {
     // Run all batches in parallel
     const batchPromises = batches.map((batch, batchIdx) => {
       const productLines = batch.map(p => '[' + p.idx + '] ' + p.title).join('\n');
-      const batchPrompt = 'Product grouping task. From each title, extract size and color, then group items that are the SAME product in different sizes or colors ONLY. Do NOT group different products together.\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown, no explanation:\n{"groups":[{"name":"short name","reason":"Size variants: 4oz,8oz","items":[0,2]}],"ungrouped":[3,7],"extracted":{"0":{"size":"4oz","color":""},"2":{"size":"8oz","color":""}}}';
+      const batchPrompt = 'You are a product catalog specialist. Group these products by size/count/pack variants ONLY.\n\nRULES:\n- SAME group: identical product name + flavor/formula, only differing by size, count, or pack quantity (e.g. "12ct" vs "24ct" vs "48ct", "1-pack" vs "2-pack", "4oz" vs "8oz")\n- DIFFERENT groups: different flavors (Cherry vs Mixed Berry), different formulas (Sugar-Free vs Regular), different product lines (Plus Defense vs Original), different strengths\n- When in doubt, keep items SEPARATE — it is better to have too many groups than to incorrectly merge different products\n- Extract the size/count/pack from the title for each item\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown:\n{"groups":[{"name":"short name","reason":"pack variants","items":[0,2]}],"ungrouped":[3,7],"extracted":{"0":{"size":"12ct","color":""},"2":{"size":"24ct","color":""}}}';
 
       return fetch('/api/group', {
         method: 'POST',
@@ -1713,6 +1713,45 @@ async function startProcessing() {
     });
 
     addLog('Identified ' + aiResult.groups.length + ' groups across ' + batches.length + ' batches', 'success');
+
+    // SECOND PASS: merge groups whose items share the same base product name
+    // (catches variants split across batch boundaries)
+    if (batches.length > 1) {
+      addLog('Running cross-batch merge...', 'info');
+
+      function getBaseName(title) {
+        return title
+          .toLowerCase()
+          .replace(/,?\s*(pack of \d+|\d+\s*(oz|fl oz|lb|g|ml|ct|count|tablets?|capsules?|caplets?|gummies?|tablets?|pack|pk|pieces?|count|tabs?)[\w\s]*)/gi, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 60);
+      }
+
+      // Build a map of baseName -> first group index
+      const baseNameToGroup = {};
+      const mergedGroups = [];
+
+      aiResult.groups.forEach(g => {
+        // Use the first item's title as the representative
+        const firstItemIdx = g.items[0];
+        const product = products[firstItemIdx];
+        if (!product) { mergedGroups.push(g); return; }
+
+        const base = getBaseName(product.title);
+        if (baseNameToGroup[base] !== undefined) {
+          // Merge into existing group
+          mergedGroups[baseNameToGroup[base]].items.push(...g.items);
+        } else {
+          baseNameToGroup[base] = mergedGroups.length;
+          mergedGroups.push({ ...g, items: [...g.items] });
+        }
+      });
+
+      const merged = aiResult.groups.length - mergedGroups.length;
+      if (merged > 0) addLog('Merged ' + merged + ' duplicate group' + (merged !== 1 ? 's' : '') + ' across batches', 'success');
+      aiResult.groups = mergedGroups;
+    }
 
   } catch (err) {
     addLog('Error: ' + err.message + ' — using fallback grouping', 'warn');
