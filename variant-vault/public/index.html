@@ -1649,13 +1649,13 @@ async function startProcessing() {
   addLog('Calling Claude AI in ' + batches.length + ' batch' + (batches.length > 1 ? 'es' : '') + '...', 'info');
   setProgress(25, 'AI analyzing size and color variants');
 
-  let aiResult = { groups: [], ungrouped: [], extracted: {} };
+  let aiResult = { groups: [], ungrouped: [], uncertain: [], extracted: {} };
 
   try {
     // Run all batches in parallel
     const batchPromises = batches.map((batch, batchIdx) => {
-      const productLines = batch.map(p => '[' + p.idx + '] ' + p.title).join('\n');
-      const batchPrompt = 'You are a product catalog specialist. Group products that are the same base product into one group, regardless of size, count, pack quantity, or bundle differences.\n\nRULES:\n1. SAME group = same base product name + same flavor/formula/scent, even if they differ by count, tablets, oz, pack quantity, or bundle size (e.g. "16ct" vs "40ct" vs "16ct Pack of 6" are ALL the same group)\n2. DIFFERENT groups = different flavors, different scents, different formulas, different product lines, different strengths, or clearly different products\n3. If two titles share the same core product name and flavor/formula, put them in the SAME group\n4. Extract the size/count/pack for each individual item\n\nEXAMPLES OF SAME GROUP:\n- "Vivarin 16 Tablets" + "Vivarin 40 Tablets" + "Vivarin 16 Tablets Pack of 6" = SAME group (same product, different sizes)\n- "BALNEOL 3oz Pack of 2" + "BALNEOL 3oz Pack of 3" + "BALNEOL 3oz" = SAME group\n\nEXAMPLES OF DIFFERENT GROUPS:\n- "Cold-EEZE Cherry" vs "Cold-EEZE Mixed Berry" = DIFFERENT groups (different flavors)\n- "Cold-EEZE Sugar-Free" vs "Cold-EEZE Regular" = DIFFERENT groups\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown:\n{"groups":[{"name":"short name","items":[0,2]}],"ungrouped":[],"extracted":{"0":{"size":"16ct","color":""},"2":{"size":"40ct","color":""}}}';
+      const productLines = batch.map(p => '[' + p.idx + '] ' + p.title + (p.bullets && p.bullets.length ? ' | Bullets: ' + p.bullets.slice(0,2).join(' / ') : '')).join('\n');
+      const batchPrompt = 'You are a product catalog specialist. Group products that are the same base product into one group, regardless of size, count, pack quantity, or bundle differences.\n\nRULES:\n1. SAME group = same base product name + same flavor/formula/scent, even if they differ by count, tablets, oz, pack quantity, or bundle size (e.g. "16ct" vs "40ct" vs "16ct Pack of 6" are ALL the same group)\n2. DIFFERENT groups = different flavors, different scents, different formulas, different product lines, different strengths, or clearly different products\n3. If two titles share the same core product name and flavor/formula, put them in the SAME group\n4. Use bullet points as secondary context when titles are ambiguous\n5. Extract the size/count/pack for each individual item\n6. If you are UNCERTAIN whether items belong together, add their indices to the "uncertain" array\n\nEXAMPLES OF SAME GROUP:\n- "Vivarin 16 Tablets" + "Vivarin 40 Tablets" + "Vivarin 16 Tablets Pack of 6" = SAME group\n- "BALNEOL 3oz Pack of 2" + "BALNEOL 3oz Pack of 3" + "BALNEOL 3oz" = SAME group\n\nEXAMPLES OF DIFFERENT GROUPS:\n- "Cold-EEZE Cherry" vs "Cold-EEZE Mixed Berry" = DIFFERENT groups\n- "Cold-EEZE Sugar-Free" vs "Cold-EEZE Regular" = DIFFERENT groups\n\nPRODUCTS:\n' + productLines + '\n\nReply ONLY with compact JSON, no markdown:\n{"groups":[{"name":"short name","items":[0,2]}],"ungrouped":[],"uncertain":[5,8],"extracted":{"0":{"size":"16ct","color":""},"2":{"size":"40ct","color":""}}}';
 
       return fetch('/api/group', {
         method: 'POST',
@@ -1695,6 +1695,9 @@ async function startProcessing() {
         // Merge ungrouped
         (result.ungrouped || []).forEach(idx => aiResult.ungrouped.push(idx));
 
+        // Merge uncertain
+        (result.uncertain || []).forEach(idx => aiResult.uncertain.push(idx));
+
         // Merge groups with offset IDs to avoid collisions
         (result.groups || []).forEach(g => {
           aiResult.groups.push({
@@ -1713,6 +1716,75 @@ async function startProcessing() {
     });
 
     addLog('Identified ' + aiResult.groups.length + ' groups across ' + batches.length + ' batches', 'success');
+
+    // IMAGE SECOND PASS: for uncertain items, fetch Amazon images and re-check
+    const uncertainIndices = [...new Set(aiResult.uncertain || [])];
+    if (uncertainIndices.length > 0) {
+      addLog('Fetching images for ' + uncertainIndices.length + ' uncertain item(s)...', 'info');
+      setProgress(72, 'Checking images for uncertain items');
+
+      // Only do image pass for Amazon retailer
+      if (state.retailer === 'Amazon') {
+        const uncertainProducts = uncertainIndices.map(idx => products[idx]).filter(Boolean);
+
+        // Fetch images in parallel
+        const imageResults = await Promise.all(
+          uncertainProducts.map(p =>
+            fetch('/api/fetch-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ asin: p.asin }),
+            }).then(r => r.json()).catch(() => null)
+          )
+        );
+
+        const images = imageResults
+          .filter(r => r && r.imageUrl)
+          .map(r => ({ asin: r.asin, url: r.imageUrl }));
+
+        if (images.length > 0) {
+          addLog('Got ' + images.length + ' images, running visual check...', 'info');
+
+          const uncertainLines = uncertainProducts.map(p => '[' + p.idx + '] ' + p.title).join('\n');
+          const imagePrompt = 'Look at the product images above. These products have ambiguous titles and need visual confirmation for grouping.\n\nFor each product shown, confirm or adjust which group it belongs to. Products that look like the SAME item (same packaging, same product) should be in the same group, even if titles differ slightly.\n\nUNCERTAIN PRODUCTS:\n' + uncertainLines + '\n\nCurrent groupings for these items (group name -> indices):\n' + aiResult.groups.map((g, i) => g.name + ': [' + g.items.filter(idx => uncertainIndices.includes(idx)).join(',') + ']').filter(s => !s.endsWith(': []')).join('\n') + '\n\nReply ONLY with compact JSON — just the corrected group assignments for the uncertain items:\n{"reassign":[{"idx":5,"group_name":"correct group name"},{"idx":8,"group_name":"correct group name"}]}';
+
+          try {
+            const imgResponse = await fetch('/api/group', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: imagePrompt, images }),
+            });
+            const imgData = await imgResponse.json();
+            const imgText = imgData.content.map(c => c.text || '').join('');
+            const imgClean = imgText.replace(/```json|```/g, '').trim();
+            const imgResult = JSON.parse(imgClean);
+
+            // Apply reassignments
+            if (imgResult.reassign && imgResult.reassign.length > 0) {
+              imgResult.reassign.forEach(({ idx, group_name }) => {
+                // Find the target group
+                const targetGroup = aiResult.groups.find(g => g.name.toLowerCase() === group_name.toLowerCase());
+                if (targetGroup) {
+                  // Remove from current group
+                  aiResult.groups.forEach(g => { g.items = g.items.filter(i => i !== idx); });
+                  // Add to target group
+                  targetGroup.items.push(idx);
+                }
+              });
+              // Remove empty groups
+              aiResult.groups = aiResult.groups.filter(g => g.items.length > 0);
+              addLog('Visual check applied ' + imgResult.reassign.length + ' correction(s)', 'success');
+            }
+          } catch (e) {
+            addLog('Image check failed: ' + e.message, 'warn');
+          }
+        } else {
+          addLog('Could not fetch images — skipping visual check', 'warn');
+        }
+      } else {
+        addLog('Image check skipped (non-Amazon retailer)', 'info');
+      }
+    }
 
     // SECOND PASS: merge groups whose items share the same base product name
     // (catches variants split across batch boundaries)
