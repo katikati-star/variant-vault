@@ -1476,21 +1476,24 @@ async function checkPassword() {
   display: none; align-items: center; justify-content: center;
   flex-direction: column;
 ">
-  <div style="font-family:'DM Serif Display',serif; font-size:2.4rem; color:#f0f4ff; text-align:center; margin-bottom:8px;">
-    The <span style="color:#f97316;">Refinery</span>
+  <div style="font-family:'DM Serif Display',serif; font-size:2.6rem; color:#f0f4ff; text-align:center; margin-bottom:10px; letter-spacing:-0.02em;">
+    The Refinery
   </div>
-  <p style="font-family:'DM Sans',sans-serif; font-size:0.9rem; color:#6b7fa8; margin-bottom:56px; text-align:center;">Choose your tool</p>
+  <div style="font-family:'DM Sans',sans-serif; font-size:0.95rem; color:#6b7fa8; text-align:center; margin-bottom:6px; font-style:italic;">The work before the words.</div>
+  <div style="font-family:'DM Sans',sans-serif; font-size:0.82rem; color:#4a5a7a; text-align:center; margin-bottom:52px; max-width:400px; line-height:1.6;">Refining the inputs that make great content possible.</div>
+
   <div style="display:flex; gap:24px; padding:0 24px; width:100%; max-width:700px;">
 
     <div onclick="enterVariantVault()" style="
       flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
       border-radius:16px; padding:36px 32px; cursor:pointer;
       transition:all 0.2s; position:relative; overflow:hidden;
+      display:flex; flex-direction:column;
     " onmouseover="this.style.borderColor='#f97316';this.style.background='rgba(249,115,22,0.05)'"
        onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
-      <div style="font-size:2rem; margin-bottom:16px;">📦</div>
+      <div style="font-size:2rem; margin-bottom:16px;">🔗</div>
       <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#f0f4ff; margin-bottom:8px;">Variant <span style="color:#f97316;">Vault</span></div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5;">Group product variants by size, color, and pack count. Review, edit, and export ready-to-use grouping files.</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5; flex:1;">Group product variants by size, color, and pack count. Review, edit, and export ready-to-use grouping files.</div>
       <div style="margin-top:24px; font-family:'DM Mono',monospace; font-size:0.72rem; color:#f97316; letter-spacing:0.08em; text-transform:uppercase;">Product Grouping →</div>
     </div>
 
@@ -1498,14 +1501,19 @@ async function checkPassword() {
       flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
       border-radius:16px; padding:36px 32px; cursor:pointer;
       transition:all 0.2s; position:relative; overflow:hidden;
+      display:flex; flex-direction:column;
     " onmouseover="this.style.borderColor='#3b82f6';this.style.background='rgba(59,130,246,0.05)'"
        onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
       <div style="font-size:2rem; margin-bottom:16px;">⚗️</div>
       <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#f0f4ff; margin-bottom:8px;">Prompt <span style="color:#3b82f6;">Vault</span></div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5;">Turn raw briefs, notes, and client input into structured AI instructions. Outputs field-by-field prompts plus a human awareness list.</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5; flex:1;">Turn raw briefs, notes, and client input into structured AI instructions. Outputs field-by-field prompts plus a human awareness list.</div>
       <div style="margin-top:24px; font-family:'DM Mono',monospace; font-size:0.72rem; color:#3b82f6; letter-spacing:0.08em; text-transform:uppercase;">Brief Interpreter →</div>
     </div>
 
+  </div>
+
+  <div style="margin-top:40px; font-family:'DM Sans',sans-serif; font-size:0.75rem; color:#2d3d5a; text-align:center;">
+    By Kati. Slack her for Qs, suggestions, bugs, and everything else!
   </div>
 </div>
 
@@ -3088,11 +3096,12 @@ function exportCSV() {
 
   const rows = [headers];
 
-  state.groups.forEach(group => {
+  state.groups.forEach((group, seqIdx) => {
+    const seqNum = seqIdx + 1;
     const parentAsin = group.items.length > 0 ? group.items[0].asin : '';
     group.items.forEach(item => {
       const row = [
-        group.id,
+        seqNum,
         parentAsin,
         item.asin,
         item.title,
@@ -3746,21 +3755,27 @@ function pvExportAwarenessPDF() {
   doc.line(margin, y, pageW - margin, y);
   y += 24;
 
-  notes.forEach((note, i) => {
+  // Separate Do Not Say / Can Say note from regular notes
+  const tableNoteIdx = notes.findIndex(n => n.match(/^\*\*Do Not Say \/ Can Say:/i));
+  const regularNotes = notes.filter((_, i) => i !== tableNoteIdx);
+  const tableNote = tableNoteIdx >= 0 ? notes[tableNoteIdx] : null;
+
+  // Render regular notes
+  regularNotes.forEach((note, i) => {
     y = pvCheckPage(doc, y, pageH, margin, pageW, 60);
 
-    // Parse bold headline from **Headline:** format
     const boldMatch = note.match(/^\*\*(.+?):\*\*\s*(.*)/s);
     const headline = boldMatch ? boldMatch[1] + ':' : `Note ${i + 1}`;
     const body = boldMatch ? boldMatch[2].trim() : note;
 
-    // Amber number + bold headline
+    // Highlight "verify" and action words in body
+    const verifyWords = /\b(verify|confirm|check|flag|review|ensure|do not|must not)\b/gi;
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(245, 158, 11);
     doc.text(`${i + 1}.`, margin, y);
 
-    // Headline in white bold
     doc.setTextColor(240, 244, 255);
     const headlineLines = doc.splitTextToSize(headline, contentW - 20);
     headlineLines.forEach((line, li) => {
@@ -3769,24 +3784,106 @@ function pvExportAwarenessPDF() {
     });
     y += headlineLines.length * 15 + 4;
 
-    // Body text in muted
-    doc.setFont('helvetica', 'normal');
+    // Body — render with bold for key action words by splitting on them
     doc.setFontSize(10);
     doc.setTextColor(180, 196, 220);
-    const bodyLines = doc.splitTextToSize(body, contentW - 18);
+    const segments = body.split(verifyWords);
+    const matches = body.match(verifyWords) || [];
+    let fullBody = '';
+    segments.forEach((seg, si) => {
+      fullBody += seg;
+      if (matches[si]) fullBody += matches[si].toUpperCase();
+    });
+    const bodyLines = doc.splitTextToSize(fullBody, contentW - 18);
     bodyLines.forEach(line => {
       y = pvCheckPage(doc, y, pageH, margin, pageW, 15);
-      doc.text(line, margin + 18, y);
+      // Bold the verify keywords inline
+      const parts = line.split(/\b(VERIFY|CONFIRM|CHECK|FLAG|REVIEW|ENSURE|DO NOT|MUST NOT)\b/g);
+      let xPos = margin + 18;
+      parts.forEach(part => {
+        const isKeyword = /^(VERIFY|CONFIRM|CHECK|FLAG|REVIEW|ENSURE|DO NOT|MUST NOT)$/.test(part);
+        doc.setFont('helvetica', isKeyword ? 'bold' : 'normal');
+        doc.setTextColor(isKeyword ? 240 : 180, isKeyword ? 244 : 196, isKeyword ? 255 : 220);
+        doc.text(part, xPos, y);
+        xPos += doc.getTextWidth(part);
+      });
       y += 15;
     });
     y += 16;
 
-    // Light divider between notes
-    if (i < notes.length - 1) {
+    if (i < regularNotes.length - 1) {
       doc.setDrawColor(20, 32, 58);
       doc.line(margin, y - 8, pageW - margin, y - 8);
     }
   });
+
+  // Render Do Not Say / Can Say as two-column table
+  if (tableNote) {
+    doc.addPage();
+    doc.setFillColor(8, 13, 26);
+    doc.rect(0, 0, pageW, pageH, 'F');
+    y = margin;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(245, 158, 11);
+    doc.text('Do Not Say / Can Say', margin, y);
+    y += 20;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(107, 127, 168);
+    doc.text('Quick-reference guide for reviewers', margin, y);
+    y += 20;
+    doc.setDrawColor(30, 45, 77);
+    doc.line(margin, y, pageW - margin, y);
+    y += 16;
+
+    // Parse table rows from markdown table
+    const tableMatch = tableNote.match(/\|(.+)\|/g);
+    if (tableMatch) {
+      const colW = contentW / 2;
+      const col2X = margin + colW + 8;
+
+      // Header row
+      doc.setFillColor(15, 25, 45);
+      doc.rect(margin, y - 10, contentW, 18, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(245, 158, 11);
+      doc.text('DO NOT SAY', margin + 6, y + 2);
+      doc.setTextColor(100, 180, 255);
+      doc.text('CAN SAY', col2X, y + 2);
+      y += 16;
+
+      let rowCount = 0;
+      tableMatch.forEach(row => {
+        const cells = row.split('|').map(c => c.trim()).filter(Boolean);
+        if (cells.length < 2) return;
+        if (cells[0].match(/^-+$/) || cells[0].toLowerCase() === 'do not say') return;
+
+        y = pvCheckPage(doc, y, pageH, margin, pageW, 18);
+
+        // Alternating row background
+        if (rowCount % 2 === 0) {
+          doc.setFillColor(10, 18, 32);
+          doc.rect(margin, y - 10, contentW, 18, 'F');
+        }
+        rowCount++;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(240, 100, 100);
+        const leftText = doc.splitTextToSize(cells[0], colW - 10);
+        doc.text(leftText[0], margin + 6, y);
+
+        doc.setTextColor(100, 220, 160);
+        const rightText = doc.splitTextToSize(cells[1], colW - 10);
+        doc.text(rightText[0], col2X, y);
+
+        y += 16;
+      });
+    }
+  }
 
   doc.save(`awareness-notes-${Date.now()}.pdf`);
   showToast('Awareness Notes PDF exported!', 'success');
