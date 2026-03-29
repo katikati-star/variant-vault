@@ -1253,6 +1253,35 @@
     border: 1px solid rgba(251,191,36,0.25);
     padding: 2px 7px;
     border-radius: 4px;
+    cursor: default;
+  }
+
+  .retailer-beta::after {
+    content: 'Grouping works fully — product images and page links won\'t be available for this retailer.';
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 220px;
+    background: #111d35;
+    color: #c4cfe8;
+    font-size: 0.72rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.5;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #1e2d4d;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 50;
+    white-space: normal;
+  }
+
+  .retailer-beta:hover::after {
+    opacity: 1;
   }
 
   .retailer-group-label {
@@ -1322,8 +1351,8 @@
 ">
   <canvas id="ripple-canvas" style="position:absolute; inset:0; pointer-events:none;"></canvas>
   <div style="width: 100%; max-width: 380px; padding: 0 24px; text-align: center; position: relative; z-index: 1;">
-    <div style="font-family: 'DM Serif Display', serif; font-size: 2rem; color: #f0f4ff; margin-bottom: 6px;">
-      Variant <span style="color: #f97316;">Vault</span>
+    <div style="font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: #f0f4ff; margin-bottom: 6px;">
+      The <span style="color: #f97316;">Refinery</span>
     </div>
     <p style="font-size: 0.85rem; color: #6b7fa8; margin-bottom: 32px; font-family: 'DM Sans', sans-serif;">Enter your password to continue</p>
     <div style="position: relative; margin-bottom: 12px;">
@@ -1416,6 +1445,7 @@ async function checkPassword() {
   const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
   if (hex === 'b88c041653c4a346695fe5083a5e6d87954f2ad7bf1389ac2f5f54073865380e') {
     document.getElementById('password-gate').style.display = 'none';
+    document.getElementById('mode-selector').style.display = 'flex';
     err.textContent = '';
   } else {
     err.textContent = 'Incorrect password. Try again.';
@@ -1425,9 +1455,49 @@ async function checkPassword() {
 }
 </script>
 
+<!-- MODE SELECTOR -->
+<div id="mode-selector" style="
+  position: fixed; inset: 0; z-index: 9998;
+  background: #080d1a;
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column;
+">
+  <div style="font-family:'DM Serif Display',serif; font-size:2.4rem; color:#f0f4ff; text-align:center; margin-bottom:8px;">
+    The <span style="color:#f97316;">Refinery</span>
+  </div>
+  <p style="font-family:'DM Sans',sans-serif; font-size:0.9rem; color:#6b7fa8; margin-bottom:56px; text-align:center;">Choose your tool</p>
+  <div style="display:flex; gap:24px; padding:0 24px; width:100%; max-width:700px;">
+
+    <div onclick="enterVariantVault()" style="
+      flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:36px 32px; cursor:pointer;
+      transition:all 0.2s; position:relative; overflow:hidden;
+    " onmouseover="this.style.borderColor='#f97316';this.style.background='rgba(249,115,22,0.05)'"
+       onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
+      <div style="font-size:2rem; margin-bottom:16px;">📦</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#f0f4ff; margin-bottom:8px;">Variant <span style="color:#f97316;">Vault</span></div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5;">Group product variants by size, color, and pack count. Review, edit, and export ready-to-use grouping files.</div>
+      <div style="margin-top:24px; font-family:'DM Mono',monospace; font-size:0.72rem; color:#f97316; letter-spacing:0.08em; text-transform:uppercase;">Product Grouping →</div>
+    </div>
+
+    <div onclick="enterPromptVault()" style="
+      flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:36px 32px; cursor:pointer;
+      transition:all 0.2s; position:relative; overflow:hidden;
+    " onmouseover="this.style.borderColor='#3b82f6';this.style.background='rgba(59,130,246,0.05)'"
+       onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
+      <div style="font-size:2rem; margin-bottom:16px;">⚗️</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#f0f4ff; margin-bottom:8px;">Prompt <span style="color:#3b82f6;">Vault</span></div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5;">Turn raw briefs, notes, and client input into structured AI instructions. Outputs field-by-field prompts plus a human awareness list.</div>
+      <div style="margin-top:24px; font-family:'DM Mono',monospace; font-size:0.72rem; color:#3b82f6; letter-spacing:0.08em; text-transform:uppercase;">Brief Interpreter →</div>
+    </div>
+
+  </div>
+</div>
+
 <!-- NAV -->
 <nav>
-  <div class="logo" onclick="goToPage('page-retailer', 1)" style="cursor:pointer;">Variant <span>Vault</span></div>
+  <div class="logo" onclick="returnToModeSelector()" style="cursor:pointer;">The <span>Refinery</span></div>
   <div class="nav-steps">
     <div class="step-pill active" id="nav-1">
       <div class="step-num">1</div> Retailer
@@ -1753,8 +1823,111 @@ async function checkPassword() {
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container"></div>
 
+<!-- ===================== PROMPT VAULT PAGE ===================== -->
+<div id="page-prompt-vault" style="display:none; min-height:100vh; background:var(--bg);">
+  <div style="max-width:860px; margin:0 auto; padding:48px 40px;">
+
+    <div style="margin-bottom:40px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#3b82f6; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:12px;">Prompt Vault</div>
+      <h1 style="font-family:'DM Serif Display',serif; font-size:2.4rem; color:var(--text); letter-spacing:-0.02em; margin-bottom:12px;">Turn briefs into <em style="color:#3b82f6;">AI instructions</em></h1>
+      <p style="font-size:0.95rem; color:var(--muted); line-height:1.6; max-width:540px;">Upload a file or paste raw notes. Prompt Vault will extract structured instructions for each content field and flag anything that needs a human eye.</p>
+    </div>
+
+    <!-- INPUT SECTION -->
+    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:32px;">
+
+      <!-- File upload -->
+      <div id="pv-upload-zone" style="
+        border:2px dashed var(--border); border-radius:var(--radius);
+        padding:40px; text-align:center; cursor:pointer;
+        background:var(--surface); transition:var(--transition); position:relative;
+      " onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='var(--border)'">
+        <input type="file" id="pv-file-input" accept=".txt,.csv,.xlsx,.xls,.docx,.pdf,.pptx" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="pvHandleFile(event)">
+        <div style="font-size:1.6rem; margin-bottom:10px;">📎</div>
+        <div style="font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:6px;">Drop a file or click to browse</div>
+        <div style="font-size:0.78rem; color:var(--muted);">.txt, .csv, .xlsx, .docx, .pdf, .pptx supported</div>
+      </div>
+      <div id="pv-file-status" style="display:none; padding:12px 16px; background:var(--surface2); border-radius:8px; border:1px solid var(--border); font-size:0.85rem; color:var(--text); display:none; align-items:center; gap:10px; justify-content:space-between;">
+        <span id="pv-file-name" style="font-weight:500;"></span>
+        <span onclick="pvRemoveFile()" style="cursor:pointer;color:var(--muted);font-size:0.8rem;">✕ Remove</span>
+      </div>
+
+      <!-- Divider -->
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span style="font-size:0.75rem; color:var(--muted); font-family:'DM Mono',monospace;">AND / OR</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <!-- Text input -->
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); display:block; margin-bottom:8px;">Raw notes / brief text</label>
+        <textarea id="pv-text-input" placeholder="Paste client brief, brand guidelines, notes, or any raw input here…" style="
+          width:100%; min-height:160px; padding:14px 16px;
+          background:var(--surface); border:1.5px solid var(--border);
+          border-radius:var(--radius); color:var(--text);
+          font-family:'DM Sans',sans-serif; font-size:0.9rem;
+          line-height:1.6; outline:none; resize:vertical;
+          box-sizing:border-box; transition:border-color 0.2s;
+        " onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+
+      <button onclick="pvRunInterpreter()" id="pv-run-btn" style="
+        align-self:flex-start; padding:14px 28px;
+        background:#3b82f6; border:none; border-radius:8px;
+        color:#fff; font-family:'DM Sans',sans-serif;
+        font-size:0.9rem; font-weight:600; cursor:pointer;
+        transition:all 0.2s; display:flex; align-items:center; gap:8px;
+      " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Interpret Brief
+      </button>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div id="pv-loading" style="display:none; text-align:center; padding:60px 0;">
+      <div style="width:48px; height:48px; margin:0 auto 20px; position:relative;">
+        <div style="position:absolute;inset:0;border-radius:50%;border:3px solid var(--border);border-top-color:#3b82f6;animation:spin 1s linear infinite;"></div>
+        <div style="position:absolute;inset:8px;border-radius:50%;border:3px solid var(--border);border-top-color:#f97316;animation:spin 0.7s linear infinite reverse;"></div>
+      </div>
+      <div style="font-size:0.9rem; color:var(--muted);">Interpreting brief…</div>
+    </div>
+
+    <!-- OUTPUT SECTION -->
+    <div id="pv-output" style="display:none;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border);">
+        <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; color:var(--text);">Instructions</div>
+        <button onclick="pvExportPDF()" style="
+          display:flex; align-items:center; gap:7px; padding:10px 20px;
+          background:#3b82f6; border:none; border-radius:8px;
+          color:#fff; font-family:'DM Sans',sans-serif; font-size:0.85rem;
+          font-weight:600; cursor:pointer; transition:background 0.2s;
+        " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Export PDF
+        </button>
+      </div>
+
+      <div id="pv-fields-output" style="display:flex; flex-direction:column; gap:16px;"></div>
+
+      <!-- Awareness Notes -->
+      <div id="pv-awareness-section" style="margin-top:32px; display:none;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; color:var(--text);">Awareness Notes</div>
+          <div style="font-size:0.72rem; font-family:'DM Mono',monospace; background:rgba(245,158,11,0.12); color:#f59e0b; border:1px solid rgba(245,158,11,0.25); padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:0.08em;">Human Review</div>
+        </div>
+        <div style="font-size:0.82rem; color:var(--muted); margin-bottom:14px;">Things flagged from the brief that AI may handle inconsistently or that require human judgment.</div>
+        <div id="pv-awareness-output" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 // ============================================================
@@ -2907,6 +3080,341 @@ function showToast(msg, type = '') {
   `;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
+}
+
+// ============================================================
+// MODE NAVIGATION
+// ============================================================
+function enterVariantVault() {
+  document.getElementById('mode-selector').style.display = 'none';
+  document.querySelector('nav').style.display = 'flex';
+  document.getElementById('page-prompt-vault').style.display = 'none';
+  goToPage('page-retailer', 1);
+}
+
+function enterPromptVault() {
+  document.getElementById('mode-selector').style.display = 'none';
+  document.querySelector('nav').style.display = 'flex';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-prompt-vault').style.display = 'block';
+  // Update nav to show Prompt Vault context
+  document.querySelectorAll('.step-pill').forEach(p => p.classList.remove('active','done','orange'));
+  document.getElementById('nav-retailer-chip').style.display = 'none';
+  document.getElementById('nav-retailer-chip').innerHTML = '<span class="chip retailer" style="background:rgba(59,130,246,0.08);color:#3b82f6;border-color:rgba(59,130,246,0.3);">⚗️ Prompt Vault</span>';
+  document.getElementById('nav-retailer-chip').style.display = 'block';
+}
+
+function returnToModeSelector() {
+  document.querySelector('nav').style.display = 'none';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-prompt-vault').style.display = 'none';
+  document.getElementById('mode-selector').style.display = 'flex';
+}
+
+// Hide nav initially
+document.querySelector('nav').style.display = 'none';
+
+// ============================================================
+// PROMPT VAULT — FILE HANDLING
+// ============================================================
+let pvFileText = '';
+
+async function pvHandleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const statusEl = document.getElementById('pv-file-status');
+  document.getElementById('pv-file-name').textContent = file.name;
+  statusEl.style.display = 'flex';
+
+  try {
+    if (ext === 'txt' || ext === 'csv') {
+      pvFileText = await file.text();
+    } else if (ext === 'xlsx' || ext === 'xls') {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: 'array' });
+      pvFileText = wb.SheetNames.map(n => {
+        const ws = wb.Sheets[n];
+        return `Sheet: ${n}\n` + XLSX.utils.sheet_to_csv(ws);
+      }).join('\n\n');
+    } else if (ext === 'docx') {
+      const buf = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: buf });
+      pvFileText = result.value;
+    } else if (ext === 'pdf') {
+      pvFileText = '[PDF uploaded — text will be extracted by AI]';
+      // Store as base64 for sending to API
+      const reader = new FileReader();
+      reader.onload = e => { pvFileText = e.target.result; };
+      reader.readAsDataURL(file);
+    } else if (ext === 'pptx') {
+      pvFileText = '[Presentation uploaded — please also paste key text in the text box below]';
+    }
+    showToast(`${file.name} loaded`, 'success');
+  } catch(err) {
+    pvFileText = '';
+    showToast('Could not read file — try pasting content instead', 'error');
+  }
+}
+
+function pvRemoveFile() {
+  pvFileText = '';
+  document.getElementById('pv-file-input').value = '';
+  document.getElementById('pv-file-status').style.display = 'none';
+}
+
+// ============================================================
+// PROMPT VAULT — INTERPRETER
+// ============================================================
+const PV_FIELDS = [
+  { key: 'all_content', label: 'All Content Instructions' },
+  { key: 'title', label: 'Title Instructions' },
+  { key: 'all_bullets', label: 'All Bullets Instructions' },
+  { key: 'bullet_1', label: 'Bullet 1 Instructions' },
+  { key: 'bullet_2', label: 'Bullet 2 Instructions' },
+  { key: 'bullet_3', label: 'Bullet 3 Instructions' },
+  { key: 'bullet_4', label: 'Bullet 4 Instructions' },
+  { key: 'bullet_5', label: 'Bullet 5 Instructions' },
+  { key: 'description', label: 'Description Instructions' },
+  { key: 'hidden', label: 'Hidden Instructions' },
+  { key: 'keyword_selection', label: 'Keyword Selection Instructions' },
+];
+
+async function pvRunInterpreter() {
+  const textInput = document.getElementById('pv-text-input').value.trim();
+  if (!pvFileText && !textInput) {
+    showToast('Please upload a file or enter some text', 'error');
+    return;
+  }
+
+  const combinedInput = [pvFileText, textInput].filter(Boolean).join('\n\n');
+
+  document.getElementById('pv-loading').style.display = 'block';
+  document.getElementById('pv-output').style.display = 'none';
+  document.getElementById('pv-run-btn').disabled = true;
+
+  const systemPrompt = `You are an expert at interpreting creative briefs and brand guidelines for e-commerce content writing. Your job is to extract clear, structured instructions that an AI content writer can follow.
+
+RULES:
+- Be conservative — only extract instructions explicitly stated or clearly implied in the input. Do not infer, invent, or fill gaps with best practices.
+- Write each instruction as a direct, actionable directive. Not "the brand prefers X" but "Use X."
+- If nothing was stated for a field, return null for that field.
+- For individual bullet instructions (bullet_1 through bullet_5): only populate these if the brief gives specific guidance for a particular bullet position. Default bullet count is 5. If guidance mentions more than 5 bullets, add up to bullet_10 as needed.
+- The "awareness_notes" field is for: ambiguous conditionals ("you can say X if Y"), subjective calls, legal/claim sensitivities, brand-specific nuances, or anything an AI might execute inconsistently and a human reviewer should watch for. Be specific about what to watch for and why.
+
+Reply ONLY with valid JSON, no markdown, no explanation:
+{
+  "all_content": "instruction text or null",
+  "title": "instruction text or null",
+  "all_bullets": "instruction text or null",
+  "bullet_1": "instruction text or null",
+  "bullet_2": "instruction text or null",
+  "bullet_3": "instruction text or null",
+  "bullet_4": "instruction text or null",
+  "bullet_5": "instruction text or null",
+  "description": "instruction text or null",
+  "hidden": "instruction text or null",
+  "keyword_selection": "instruction text or null",
+  "awareness_notes": ["note 1", "note 2"]
+}`;
+
+  try {
+    const response = await fetch('/api/group', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: combinedInput,
+        system: systemPrompt,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'API error');
+
+    const text = data.content.map(c => c.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+
+    pvRenderOutput(result);
+  } catch(err) {
+    showToast('Error interpreting brief: ' + err.message, 'error');
+  } finally {
+    document.getElementById('pv-loading').style.display = 'none';
+    document.getElementById('pv-run-btn').disabled = false;
+  }
+}
+
+function pvRenderOutput(result) {
+  const fieldsContainer = document.getElementById('pv-fields-output');
+  fieldsContainer.innerHTML = '';
+
+  // Determine which bullet fields to show (only populated ones beyond 5)
+  const extraBullets = ['bullet_6','bullet_7','bullet_8','bullet_9','bullet_10']
+    .filter(k => result[k] && result[k] !== 'null');
+
+  const fieldsToShow = [...PV_FIELDS];
+  extraBullets.forEach(k => {
+    const num = k.split('_')[1];
+    fieldsToShow.push({ key: k, label: `Bullet ${num} Instructions` });
+  });
+
+  let hasContent = false;
+  fieldsToShow.forEach(field => {
+    const val = result[field.key];
+    if (!val || val === 'null') return;
+    hasContent = true;
+
+    const el = document.createElement('div');
+    el.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;';
+    el.innerHTML = `
+      <div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-family:'DM Mono',monospace;">${field.label}</div>
+      <div style="padding:14px 16px;font-size:0.88rem;color:var(--text);line-height:1.6;">${val}</div>
+    `;
+    fieldsContainer.appendChild(el);
+  });
+
+  if (!hasContent) {
+    fieldsContainer.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.88rem;">No specific instructions could be extracted from the input. Try adding more detail to the brief.</div>';
+  }
+
+  // Awareness notes
+  const awarenessSection = document.getElementById('pv-awareness-section');
+  const awarenessContainer = document.getElementById('pv-awareness-output');
+  awarenessContainer.innerHTML = '';
+
+  const notes = Array.isArray(result.awareness_notes) ? result.awareness_notes.filter(Boolean) : [];
+  if (notes.length > 0) {
+    awarenessSection.style.display = 'block';
+    notes.forEach(note => {
+      const el = document.createElement('div');
+      el.style.cssText = 'display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;';
+      el.innerHTML = `
+        <div style="width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0;margin-top:6px;"></div>
+        <div style="font-size:0.85rem;color:var(--text);line-height:1.5;">${note}</div>
+      `;
+      awarenessContainer.appendChild(el);
+    });
+  } else {
+    awarenessSection.style.display = 'none';
+  }
+
+  // Store for PDF export
+  window.pvLastResult = result;
+  window.pvLastFieldsToShow = fieldsToShow;
+
+  document.getElementById('pv-output').style.display = 'block';
+  document.getElementById('pv-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+// PROMPT VAULT — PDF EXPORT
+// ============================================================
+function pvExportPDF() {
+  const result = window.pvLastResult;
+  const fields = window.pvLastFieldsToShow;
+  if (!result) return;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 48;
+  const contentW = pageW - margin * 2;
+  let y = margin;
+
+  function checkPage(needed = 40) {
+    if (y + needed > pageH - margin) {
+      doc.addPage();
+      y = margin;
+    }
+  }
+
+  // Header
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(240, 244, 255);
+  doc.setFillColor(8, 13, 26);
+  doc.rect(0, 0, pageW, pageH, 'F');
+  doc.setTextColor(249, 115, 22);
+  doc.text('Prompt Vault', margin, y);
+  y += 24;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.setTextColor(107, 127, 168);
+  doc.text('AI Content Instructions — ' + new Date().toLocaleDateString(), margin, y);
+  y += 36;
+
+  // Divider
+  doc.setDrawColor(30, 45, 77);
+  doc.line(margin, y, pageW - margin, y);
+  y += 24;
+
+  // Fields
+  fields.forEach(field => {
+    const val = result[field.key];
+    if (!val || val === 'null') return;
+
+    checkPage(60);
+
+    // Field label
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(107, 127, 168);
+    doc.text(field.label.toUpperCase(), margin, y);
+    y += 14;
+
+    // Field value
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(220, 228, 255);
+    const lines = doc.splitTextToSize(val, contentW);
+    lines.forEach(line => {
+      checkPage(16);
+      doc.text(line, margin, y);
+      y += 15;
+    });
+    y += 16;
+  });
+
+  // Awareness notes
+  const notes = Array.isArray(result.awareness_notes) ? result.awareness_notes.filter(Boolean) : [];
+  if (notes.length > 0) {
+    checkPage(60);
+    doc.setDrawColor(30, 45, 77);
+    doc.line(margin, y, pageW - margin, y);
+    y += 24;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(245, 158, 11);
+    doc.text('Awareness Notes', margin, y);
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(107, 127, 168);
+    doc.text('Items requiring human review or judgment', margin, y);
+    y += 22;
+
+    notes.forEach((note, i) => {
+      checkPage(40);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(245, 158, 11);
+      doc.text(`${i + 1}.`, margin, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(220, 228, 255);
+      const lines = doc.splitTextToSize(note, contentW - 16);
+      lines.forEach((line, li) => {
+        checkPage(16);
+        doc.text(line, margin + 16, y + (li * 15));
+      });
+      y += lines.length * 15 + 12;
+    });
+  }
+
+  doc.save(`prompt-vault-instructions-${Date.now()}.pdf`);
+  showToast('PDF exported!', 'success');
 }
 </script>
 </body>
