@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Variant Vault — Product Grouping Tool</title>
+<title>The Refinery</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23f5f0eb'/><rect x='7' y='7' width='9' height='9' rx='2' fill='%23e0d8cf'/><rect x='20' y='7' width='9' height='9' rx='2' fill='%23d1c4b0'/><rect x='33' y='7' width='9' height='9' rx='2' fill='%23c4b49e'/><rect x='7' y='20' width='9' height='9' rx='2' fill='%23d1c4b0'/><rect x='20' y='20' width='9' height='9' rx='2' fill='%23c4b49e'/><rect x='33' y='20' width='9' height='9' rx='2' fill='%23f97316' opacity='.6'/><rect x='7' y='33' width='9' height='9' rx='2' fill='%23c4b49e'/><rect x='20' y='33' width='9' height='9' rx='2' fill='%23f97316' opacity='.6'/><rect x='33' y='33' width='9' height='9' rx='2' fill='%23f97316'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1965,24 +1966,36 @@ async function checkPassword() {
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border);">
         <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; color:var(--text);">Instructions</div>
         <div style="display:flex; gap:10px;">
-          <button onclick="pvExportAwarenessPDF()" style="
-            display:flex; align-items:center; gap:7px; padding:10px 20px;
-            background:#f97316; border:none; border-radius:8px;
-            color:#fff; font-family:'DM Sans',sans-serif; font-size:0.85rem;
-            font-weight:600; cursor:pointer; transition:background 0.2s; min-width:160px; justify-content:center;
-          " onmouseover="this.style.background='#ea6c0a'" onmouseout="this.style.background='#f97316'">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Awareness Notes
-          </button>
-          <button onclick="pvExportInstructionsPDF()" style="
-            display:flex; align-items:center; gap:7px; padding:10px 20px;
-            background:#f97316; border:none; border-radius:8px;
-            color:#fff; font-family:'DM Sans',sans-serif; font-size:0.85rem;
-            font-weight:600; cursor:pointer; transition:background 0.2s; min-width:160px; justify-content:center;
-          " onmouseover="this.style.background='#ea6c0a'" onmouseout="this.style.background='#f97316'">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Export Instructions
-          </button>
+          <div style="display:flex; flex-direction:column; gap:5px; align-items:center;">
+            <button onclick="pvExportAwarenessPDF()" style="
+              display:flex; align-items:center; gap:7px; padding:10px 20px;
+              background:#f97316; border:none; border-radius:8px;
+              color:#fff; font-family:'DM Sans',sans-serif; font-size:0.85rem;
+              font-weight:600; cursor:pointer; transition:background 0.2s; min-width:160px; justify-content:center;
+            " onmouseover="this.style.background='#ea6c0a'" onmouseout="this.style.background='#f97316'">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Awareness Notes
+            </button>
+            <div style="display:flex; gap:8px;">
+              <button onclick="pvExportAwarenessDocx()" style="font-size:0.7rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↓ .docx</button>
+              <button onclick="pvExportAwarenessTxt()" style="font-size:0.7rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↓ .txt</button>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px; align-items:center;">
+            <button onclick="pvExportInstructionsPDF()" style="
+              display:flex; align-items:center; gap:7px; padding:10px 20px;
+              background:#f97316; border:none; border-radius:8px;
+              color:#fff; font-family:'DM Sans',sans-serif; font-size:0.85rem;
+              font-weight:600; cursor:pointer; transition:background 0.2s; min-width:160px; justify-content:center;
+            " onmouseover="this.style.background='#ea6c0a'" onmouseout="this.style.background='#f97316'">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export Instructions
+            </button>
+            <div style="display:flex; gap:8px;">
+              <button onclick="pvExportInstructionsDocx()" style="font-size:0.7rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↓ .docx</button>
+              <button onclick="pvExportInstructionsTxt()" style="font-size:0.7rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↓ .txt</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2451,17 +2464,27 @@ IMPORTANT for the "extracted" field:
 
     const sizeKeywords = /\b(oz|fl|lb|lbs|g|kg|ml|l|ct|count|pack|pcs?|piece|pieces|tablet|tabs?|caps?|capsule|gal|gallon|ft|cu|sq|pt|qt|mg|mcg|iu|serving|dose|inch|in|cm|mm|xl|xxl|xxxl|xs|small|medium|large|x-large|xx-large|bundle|set|pair|roll|sheet|bag|box|can|jar|bottle|tube|bar|stick|wipe|pad|pod|strip|patch|spray|pump|sachet|pouch)\b/i;
 
+    // Strip marketing prefixes — anything before an actual unit/number
+    const marketingPrefix = /^(#\d+\s+[\w\s]+|made in\s+[\w\s]+|award[\w\s]+|doctor[\w\s]+|best[\w\s]+|new[\w\s]+|original[\w\s]+|value[\w\s]+),?\s*/i;
+
     function isVariant(seg) {
-      const words = seg.split(/\s+/).length;
-      return words <= 8 && (/\d/.test(seg) || sizeKeywords.test(seg) || /^\(?(XS|S|M|L|XL|XXL|XXXL|One Size)\)?$/i.test(seg));
+      const cleaned = seg.replace(marketingPrefix, '').trim();
+      const words = cleaned.split(/\s+/).length;
+      return words <= 8 && (/\d/.test(cleaned) || sizeKeywords.test(cleaned) || /^\(?(XS|S|M|L|XL|XXL|XXXL|One Size)\)?$/i.test(cleaned));
+    }
+
+    function cleanSeg(seg) {
+      return seg.replace(marketingPrefix, '').trim();
     }
 
     const trailing = [];
     for (let i = segments.length - 1; i >= 1; i--) {
-      if (isVariant(segments[i])) trailing.unshift(segments[i]);
+      if (isVariant(segments[i])) trailing.unshift(cleanSeg(segments[i]));
       else break;
     }
-    return trailing.length > 0 ? trailing.join(', ') : (fallback || '');
+    // Final pass: strip any remaining marketing prefix from the full result
+    const raw = trailing.length > 0 ? trailing.join(', ') : (fallback || '');
+    return raw.replace(marketingPrefix, '').trim();
   }
 
   // Build state.groups
@@ -3391,14 +3414,15 @@ async function pvRunInterpreter() {
 
 RULES FOR INSTRUCTIONS:
 1. Conservative — only extract what is explicitly stated. Do not infer or fill gaps.
-2. Every instruction is an unconditional directive. Never use "if", "unless", "when applicable", or any conditional. Instructions are absolute rules.
-3. Do not include any explanation of why a rule exists. No "because Amazon...", no "since the label...", no client reasoning. Just the rule.
+2. Every instruction is an unconditional directive. Never use "if", "unless", "when applicable", "unless verified", or any conditional phrasing. Instructions are absolute rules with no exceptions stated.
+3. Do not include any explanation of why a rule exists. No "because Amazon...", no "since the label...", no reasoning. Just the directive.
 4. Any rule requiring label verification, product-type checking, or human judgment goes to awareness_notes only — never in instructions.
-5. Any GEO user descriptor rules (like which user terms are allowed) go to awareness_notes only — the correct term depends on the product.
-6. Fertilizer-related keyword placement rules go to awareness_notes only — whether a product contains fertilizer requires product verification.
-7. Self-contained instructions only — no cross-references between fields.
+5. GEO user descriptor rules go to awareness_notes only.
+6. Fertilizer keyword placement rules go to awareness_notes only.
+7. Self-contained instructions — no cross-references between fields.
 8. For nuanced language rules, include concrete examples: "Do not use [X, Y, Z]. Use [A, B] instead."
-9. Bullet fields (bullet_1–5): only populate if the brief gives explicit positional guidance. Add bullet_6–10 only if explicitly mentioned.
+9. Bullet fields (bullet_1–5): only populate if the brief gives explicit positional guidance for THAT specific bullet. Add bullet_6–10 only if explicitly mentioned.
+10. CRITICAL — No duplication across fields: if a rule belongs in bullet_1 or bullet_5, do NOT also put it in all_bullets. The all_bullets field is only for rules that apply to every bullet equally. Product name placement in specific bullets goes ONLY in the individual bullet field, not all_bullets.
 
 AWARENESS NOTES RULES:
 - Start each note with **Bold Headline:** in 3–5 words capturing the core issue.
@@ -3406,9 +3430,9 @@ AWARENESS NOTES RULES:
 - Cover: label-dependent claims, product-type distinctions, nuanced terminology traps, conditionally acceptable phrases, anything the AI might get wrong.
 
 DO NOT SAY / CAN SAY TABLE:
-At the end of awareness_notes, include one entry formatted as a table using this exact structure:
-"**Do Not Say / Can Say:** | Do Not Say | Can Say |\\n|---|---|\\n| [prohibited] | [acceptable] |\\n| [prohibited] | [acceptable] |"
-Extract all clear prohibited/acceptable pairs from the input for this table.
+At the end of awareness_notes, include one entry formatted as a markdown table:
+"**Do Not Say / Can Say:** | Do Not Say | Can Say |\\n|---|---|\\n| [prohibited] | [acceptable] |"
+Extract all clear prohibited/acceptable pairs. Each pair must appear only once — do not duplicate rows.`;
 
 Reply ONLY with valid JSON, no markdown, no explanation:
 {
@@ -3538,21 +3562,60 @@ function pvRenderOutput(result) {
   const notes = Array.isArray(result.awareness_notes) ? result.awareness_notes.filter(Boolean) : [];
   if (notes.length > 0) {
     awarenessSection.style.display = 'block';
-    notes.forEach(note => {
+    notes.forEach((note, noteIdx) => {
+      const isTable = /^\*\*Do Not Say \/ Can Say:/i.test(note);
       const boldMatch = note.match(/^\*\*(.+?):\*\*\s*(.*)/s);
       const headline = boldMatch ? boldMatch[1] + ':' : null;
       const body = boldMatch ? boldMatch[2].trim() : note;
 
       const el = document.createElement('div');
       el.style.cssText = 'padding:12px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;';
-      el.innerHTML = `
-        <div style="display:flex;gap:10px;align-items:flex-start;">
-          <div style="width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0;margin-top:6px;"></div>
-          <div style="font-size:0.85rem;color:var(--text);line-height:1.55;">
-            ${headline ? `<span style="font-weight:600;color:#f59e0b;">${headline}</span> ` : ''}${body}
-          </div>
-        </div>
-      `;
+      el.dataset.noteIdx = noteIdx;
+
+      if (isTable) {
+        // Parse markdown table and render as two-column HTML table
+        const rows = body.match(/\|(.+)\|/g) || [];
+        const dataRows = rows.filter(r => {
+          const cells = r.split('|').map(c => c.trim()).filter(Boolean);
+          return cells.length >= 2 && !cells[0].match(/^-+$/) && cells[0].toLowerCase() !== 'do not say';
+        });
+        // Deduplicate by Do Not Say value
+        const seen = new Set();
+        const uniqueRows = dataRows.filter(r => {
+          const cells = r.split('|').map(c => c.trim()).filter(Boolean);
+          const key = cells[0].toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        let tableHtml = `
+          <div style="font-weight:600;color:#f59e0b;font-size:0.85rem;margin-bottom:10px;">Do Not Say / Can Say:</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+            <tr>
+              <th style="text-align:left;padding:6px 8px;color:#f87171;border-bottom:1px solid rgba(245,158,11,0.2);width:50%;">Do Not Say</th>
+              <th style="text-align:left;padding:6px 8px;color:#4ade80;border-bottom:1px solid rgba(245,158,11,0.2);width:50%;">Can Say</th>
+            </tr>`;
+        uniqueRows.forEach((r, i) => {
+          const cells = r.split('|').map(c => c.trim()).filter(Boolean);
+          const bg = i % 2 === 0 ? 'rgba(0,0,0,0.1)' : 'transparent';
+          tableHtml += `<tr style="background:${bg}">
+            <td style="padding:5px 8px;color:#fca5a5;vertical-align:top;">${cells[0] || ''}</td>
+            <td style="padding:5px 8px;color:#86efac;vertical-align:top;">${cells[1] || ''}</td>
+          </tr>`;
+        });
+        tableHtml += '</table>';
+        el.innerHTML = tableHtml;
+      } else {
+        el.innerHTML = `
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0;margin-top:6px;"></div>
+            <div contenteditable="true" data-note-idx="${noteIdx}"
+              style="font-size:0.85rem;color:var(--text);line-height:1.55;outline:none;flex:1;cursor:text;"
+              onfocus="this.style.background='rgba(59,130,246,0.04)'"
+              onblur="this.style.background='transparent';pvSyncNote(this)"
+            >${headline ? `<span style="font-weight:600;color:#f59e0b;">${headline}</span> ` : ''}${body}</div>
+          </div>`;
+      }
       awarenessContainer.appendChild(el);
     });
   } else {
@@ -3572,6 +3635,99 @@ function pvSyncField(el) {
   if (key && window.pvLastResult) {
     window.pvLastResult[key] = el.innerText.trim();
   }
+}
+
+function pvSyncNote(el) {
+  const idx = parseInt(el.dataset.noteIdx);
+  if (!isNaN(idx) && window.pvLastResult && Array.isArray(window.pvLastResult.awareness_notes)) {
+    window.pvLastResult.awareness_notes[idx] = el.innerText.trim();
+  }
+}
+
+function pvDownloadBlob(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function pvExportInstructionsTxt() {
+  const result = window.pvLastResult;
+  const fields = window.pvLastFieldsToShow;
+  if (!result) return;
+  let txt = 'PROMPT VAULT — AI CONTENT INSTRUCTIONS\n' + new Date().toLocaleDateString() + '\n\n';
+  fields.forEach(f => {
+    const val = result[f.key];
+    if (!val || val === 'null') return;
+    txt += f.label.toUpperCase() + '\n' + val + '\n\n';
+  });
+  pvDownloadBlob(txt, `instructions-${Date.now()}.txt`, 'text/plain');
+  showToast('TXT downloaded!', 'success');
+}
+
+function pvExportAwarenessTxt() {
+  const result = window.pvLastResult;
+  if (!result) return;
+  const notes = Array.isArray(result.awareness_notes) ? result.awareness_notes.filter(Boolean) : [];
+  let txt = 'AWARENESS NOTES — HUMAN REVIEW\n' + new Date().toLocaleDateString() + '\n\n';
+  notes.forEach((note, i) => {
+    const cleaned = note.replace(/\*\*/g, '');
+    txt += `${i + 1}. ${cleaned}\n\n`;
+  });
+  pvDownloadBlob(txt, `awareness-notes-${Date.now()}.txt`, 'text/plain');
+  showToast('TXT downloaded!', 'success');
+}
+
+function pvExportInstructionsDocx() {
+  const result = window.pvLastResult;
+  const fields = window.pvLastFieldsToShow;
+  if (!result) return;
+
+  let body = '';
+  fields.forEach(f => {
+    const val = result[f.key];
+    if (!val || val === 'null') return;
+    body += `
+      <w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:t>${f.label}</w:t></w:r></w:p>
+      <w:p><w:r><w:t xml:space="preserve">${val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</w:t></w:r></w:p>
+      <w:p></w:p>`;
+  });
+
+  const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>
+<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>Prompt Vault — AI Content Instructions</w:t></w:r></w:p>
+<w:p><w:r><w:t>${new Date().toLocaleDateString()}</w:t></w:r></w:p>
+<w:p></w:p>
+${body}
+</w:body></w:document>`;
+
+  pvDownloadBlob(xml, `instructions-${Date.now()}.docx`, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+  showToast('DOCX downloaded!', 'success');
+}
+
+function pvExportAwarenessDocx() {
+  const result = window.pvLastResult;
+  if (!result) return;
+  const notes = Array.isArray(result.awareness_notes) ? result.awareness_notes.filter(Boolean) : [];
+
+  let body = notes.map((note, i) => {
+    const cleaned = note.replace(/\*\*/g, '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<w:p><w:r><w:t xml:space="preserve">${i + 1}. ${cleaned}</w:t></w:r></w:p><w:p></w:p>`;
+  }).join('');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>
+<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>Awareness Notes — Human Review</w:t></w:r></w:p>
+<w:p><w:r><w:t>${new Date().toLocaleDateString()}</w:t></w:r></w:p>
+<w:p></w:p>
+${body}
+</w:body></w:document>`;
+
+  pvDownloadBlob(xml, `awareness-notes-${Date.now()}.docx`, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+  showToast('DOCX downloaded!', 'success');
 }
 
 async function pvRunAddendum() {
@@ -3793,26 +3949,32 @@ function pvExportAwarenessPDF() {
     });
     y += headlineLines.length * 15 + 4;
 
-    // Body — render with bold for key action words
-    doc.setFont('helvetica', 'normal');
+    // Body — detect action sentences and render them bold orange
     doc.setFontSize(10);
-    const bodyLines = doc.splitTextToSize(body, contentW - 18);
-    bodyLines.forEach(line => {
-      y = pvCheckPage(doc, y, pageH, margin, pageW, 15);
-      // Split line on action keywords to render them bold
-      const keywordRe = /\b(verify|confirm|check|flag|do not|must not|ensure|review)\b/gi;
-      const parts = line.split(keywordRe);
-      let xPos = margin + 18;
-      parts.forEach(part => {
-        if (!part) return;
-        const isKeyword = keywordRe.test(part);
-        keywordRe.lastIndex = 0; // reset regex
-        doc.setFont('helvetica', isKeyword ? 'bold' : 'normal');
-        doc.setTextColor(isKeyword ? 240 : 180, isKeyword ? 244 : 196, isKeyword ? 255 : 220);
-        doc.text(part, xPos, y);
-        xPos += doc.getTextWidth(part);
+    const sentences = body.split(/(?<=[.!?])\s+/);
+    const actionRe = /\b(verify|confirm|check|flag|do not|must not|ensure|review|do not use|do not include|do not apply|do not write|do not describe|do not refer)\b/i;
+
+    let bodyText = '';
+    const sentenceData = sentences.map(s => ({
+      text: s,
+      isAction: actionRe.test(s)
+    }));
+
+    sentenceData.forEach(({ text, isAction }) => {
+      const chunk = bodyText ? bodyText + ' ' + text : text;
+      const lines = doc.splitTextToSize(text.trim(), contentW - 18);
+      lines.forEach(line => {
+        y = pvCheckPage(doc, y, pageH, margin, pageW, 15);
+        if (isAction) {
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(249, 115, 22);
+        } else {
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(180, 196, 220);
+        }
+        doc.text(line, margin + 18, y);
+        y += 15;
       });
-      y += 15;
     });
     y += 16;
 
