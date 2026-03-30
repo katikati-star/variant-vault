@@ -2433,40 +2433,207 @@ IMPORTANT for the "extracted" field:
   setProgress(25, 'Sending to AI for analysis');
   setStep('step-ai');
 
+  const CHUNK_SIZE = 60;
   let aiResult = null;
 
-  try {
-    addLog('Sending request...', 'info');
+  async function processChunk(chunkProducts, chunkOffset, chunkIdx, totalChunks) {
+    const chunkMustGroupPairs = [];
+    const chunkSimHints = [];
+    for (let i = 0; i < chunkProducts.length; i++) {
+      for (let j = i + 1; j < chunkProducts.length; j++) {
+        const sim = contentSimilarity(chunkProducts[i], chunkProducts[j]);
+        const ci = chunkProducts[i].idx;
+        const cj = chunkProducts[j].idx;
+        if (sim >= 90) chunkMustGroupPairs.push(`[${ci}]+[${cj}] (${sim}% match)`);
+        else if (sim >= 80) chunkSimHints.push(`[${ci}]+[${cj}]=${sim}%`);
+      }
+    }
+
+    const chunkLines = chunkProducts.map(p => '[' + p.idx + '] ' + p.title).join('\n');
+    const chunkPrompt = `You are grouping e-commerce product listings. Products are the same item sold in different variants and should be grouped together. Products that are fundamentally different items must never be grouped.
+
+TWO QUESTIONS TO ASK FOR EACH POTENTIAL GROUP:
+1. Is the base product name the same (ignoring size, count, or pack descriptors)?
+2. Are ALL non-size attributes — flavor, color, scent, finish, formula, form factor — identical between them?
+
+If YES to both → same group.
+If NO to either → separate groups.
+
+WHAT CAN DIFFER WITHIN A GROUP (size/quantity only):
+- Any numeric measurement: weight, volume, dimensions, area, count, pieces, doses, servings, etc.
+- Pack count: single unit vs multi-pack
+
+WHAT MUST BE IDENTICAL WITHIN A GROUP (everything else):
+- Flavor, color, scent, finish, pattern — if any of these differ, they are separate groups, no exceptions
+- Formula, ingredients, active agents, composition
+- Form factor (liquid, powder, tablet, spray, gel, etc.)
+- Intended use, application, or target
+- What is physically included in the box
+
+NON-VARIANT DIFFERENCES — always separate groups regardless of name similarity:
+- One includes an accessory, tool, applicator, or bundled item the other does not
+- One is a refill, replacement, or cartridge for a device
+- Different form factors
+- Different intended uses or applications
+- Any descriptor that changes what you physically receive beyond just more/less of the exact same thing
+
+MANDATORY GROUPS — pairs pre-verified by content analysis with 90%+ similarity. Place these in the same group, no exceptions:
+${chunkMustGroupPairs.length > 0 ? chunkMustGroupPairs.join('\n') : '(none)'}
+
+ADVISORY (80-89% similarity) — group only if title differences are purely size or pack count, and all other attributes are identical:
+${chunkSimHints.length > 0 ? chunkSimHints.join(', ') : '(none)'}
+
+PRODUCTS:
+${chunkLines}
+
+Reply ONLY with compact JSON, no markdown, no explanation:
+{"groups":[{"name":"short product name","reason":"brief variant summary","items":[0,2,5]}],"ungrouped":[3,7],"extracted":{"0":{"size":"25 ct, Pack of 2","color":""},"2":{"size":"25 ct","color":""}}}
+
+IMPORTANT for the "extracted" field:
+- "size" must contain ONLY physical product size, weight, volume, count, or pack multiplier. Examples: "25 ct", "5 lb.", "32 fl. oz.", "Pack of 2". Do NOT include coverage areas, duration claims, feature descriptions, or rankings.
+- "color" should be the full color, flavor, or scent descriptor if present, otherwise leave empty.
+- Every product index must appear in either a group or ungrouped, and must have an entry in extracted.`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const timeout = setTimeout(() => controller.abort(), 55000);
 
     const response = await fetch('/api/group', {
       method: 'POST',
       signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: chunkPrompt }),
     });
-
     clearTimeout(timeout);
-    addLog(`Response status: ${response.status}`, response.ok ? 'info' : 'warn');
 
     const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'API error');
 
-    if (!response.ok) {
-      addLog(`API error: ${JSON.stringify(data.error || data)}`, 'warn');
-      throw new Error(data.error?.message || 'API error');
-    }
-
-    setProgress(70, 'Groupings identified');
     const text = data.content.map(c => c.text || '').join('');
-    addLog('AI response received', 'success');
-
     const clean = text.replace(/```json|```/g, '').trim();
-    aiResult = JSON.parse(clean);
-    addLog(`Identified ${aiResult.groups.length} groups`, 'success');
+    return JSON.parse(clean);
+  }
+
+  try {
+    if (products.length <= CHUNK_SIZE) {
+      // Single pass
+      addLog('Sending request...', 'info');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 55000);
+      const response = await fetch('/api/group', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      clearTimeout(timeout);
+      addLog(`Response status: ${response.status}`, response.ok ? 'info' : 'warn');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error?.message || 'API error');
+      const text = data.content.map(c => c.text || '').join('');
+      aiResult = JSON.parse(text.replace(/```json|```/g, '').trim());
+      addLog(`Identified ${aiResult.groups.length} groups`, 'success');
+    } else {
+      // Chunked pass
+      const chunks = [];
+      for (let i = 0; i < products.length; i += CHUNK_SIZE) {
+        chunks.push(products.slice(i, i + CHUNK_SIZE));
+      }
+      addLog(`Large batch detected — splitting into ${chunks.length} chunks of ~${CHUNK_SIZE}`, 'info');
+
+      const mergedGroups = [];
+      const mergedUngrouped = [];
+      const mergedExtracted = {};
+
+      for (let ci = 0; ci < chunks.length; ci++) {
+        const pct = 25 + Math.round((ci / chunks.length) * 45);
+        setProgress(pct, `Processing batch ${ci + 1} of ${chunks.length}…`);
+        addLog(`Batch ${ci + 1}/${chunks.length}: ${chunks[ci].length} products`, 'info');
+
+        const chunkResult = await processChunk(chunks[ci], ci * CHUNK_SIZE, ci, chunks.length);
+
+        // Remap group item indices — they're already global (product.idx) so no remapping needed
+        mergedGroups.push(...chunkResult.groups);
+        mergedUngrouped.push(...(chunkResult.ungrouped || []));
+        Object.assign(mergedExtracted, chunkResult.extracted || {});
+
+        addLog(`Batch ${ci + 1} done: ${chunkResult.groups.length} groups`, 'success');
+      }
+
+      setProgress(72, 'Cross-batch merge pass…');
+      addLog('Running cross-batch merge to catch split groups…', 'info');
+
+      // Cross-chunk merge: find groups from different chunks that should be combined
+      // Use content similarity to identify candidates, then confirm via a lightweight AI pass
+      const groupSummaries = mergedGroups.map((g, i) => {
+        const parentIdx = g.items[0];
+        const parentTitle = (products[parentIdx] || {}).title || g.name;
+        return `[G${i}] ${parentTitle.slice(0, 80)} (${g.items.length} item${g.items.length > 1 ? 's' : ''})`;
+      });
+
+      // Find cross-chunk mandatory pairs
+      const crossMust = [];
+      for (let i = 0; i < mergedGroups.length; i++) {
+        for (let j = i + 1; j < mergedGroups.length; j++) {
+          const pi = products[mergedGroups[i].items[0]];
+          const pj = products[mergedGroups[j].items[0]];
+          if (!pi || !pj) continue;
+          const sim = contentSimilarity(pi, pj);
+          if (sim >= 85) crossMust.push({ i, j, sim });
+        }
+      }
+
+      if (crossMust.length > 0) {
+        addLog(`${crossMust.length} potential cross-batch merges found — verifying…`, 'info');
+
+        const mergePrompt = `You have groups of e-commerce products from separate processing batches. Some groups may belong together as the same product variant family. For each pair listed below, decide: should these groups be MERGED into one, or kept SEPARATE?
+
+Apply the same rule: merge only if they share the same base product name AND differ only in size, count, or pack. Keep separate if flavor, color, scent, form factor, or included contents differ.
+
+GROUPS:
+${crossMust.map(({i, j, sim}) => `Pair (${i},${j}) ${sim}% sim:\n  A: ${groupSummaries[i]}\n  B: ${groupSummaries[j]}`).join('\n\n')}
+
+Reply ONLY with compact JSON array of pairs to merge (empty array if none):
+[{"a":0,"b":1},{"a":2,"b":5}]`;
+
+        try {
+          const mergeController = new AbortController();
+          const mergeTimeout = setTimeout(() => mergeController.abort(), 30000);
+          const mergeResponse = await fetch('/api/group', {
+            method: 'POST',
+            signal: mergeController.signal,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: mergePrompt }),
+          });
+          clearTimeout(mergeTimeout);
+          const mergeData = await mergeResponse.json();
+          if (mergeResponse.ok) {
+            const mergeText = mergeData.content.map(c => c.text || '').join('');
+            const mergePairs = JSON.parse(mergeText.replace(/```json|```/g, '').trim());
+
+            // Apply merges — combine group b into group a, mark b for removal
+            const toRemove = new Set();
+            mergePairs.forEach(({ a, b }) => {
+              if (toRemove.has(a) || toRemove.has(b)) return;
+              mergedGroups[a].items.push(...mergedGroups[b].items);
+              toRemove.add(b);
+              addLog(`Merged group ${b} into group ${a}`, 'success');
+            });
+            // Filter out merged groups
+            const finalGroups = mergedGroups.filter((_, i) => !toRemove.has(i));
+            aiResult = { groups: finalGroups, ungrouped: mergedUngrouped, extracted: mergedExtracted };
+          } else {
+            aiResult = { groups: mergedGroups, ungrouped: mergedUngrouped, extracted: mergedExtracted };
+          }
+        } catch(mergeErr) {
+          addLog('Cross-batch merge skipped: ' + mergeErr.message, 'warn');
+          aiResult = { groups: mergedGroups, ungrouped: mergedUngrouped, extracted: mergedExtracted };
+        }
+      } else {
+        aiResult = { groups: mergedGroups, ungrouped: mergedUngrouped, extracted: mergedExtracted };
+      }
+
+      addLog(`Final: ${aiResult.groups.length} groups across ${products.length} products`, 'success');
+    }
   } catch (err) {
     addLog(`Error: ${err.message} — using fallback grouping`, 'warn');
     aiResult = {
