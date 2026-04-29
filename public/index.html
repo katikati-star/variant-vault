@@ -4572,10 +4572,20 @@ async function clStartGeneration() {
 }
 
 function clParseBullets(raw) {
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  return lines
-    .map(l => l.replace(/^\d+[\.\)]\s*/, '').trim())
-    .filter(l => l.length > 0);
+  return raw
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
+    // Strip lines that are just labels/headers/separators
+    .filter(l => !/^[-–—*#]{1,4}$/.test(l))
+    .filter(l => !/^\*{1,2}[A-Za-z\s]+:\*{1,2}\s*$/.test(l))
+    .filter(l => !/^(here (is|are)|the (adapted|rewritten|following)|title:|bullets:|description:|adapted (copy|content|title|bullets|description)):?$/i.test(l))
+    .filter(l => !/^---+$/.test(l))
+    // Strip numbering and leading punctuation
+    .map(l => l.replace(/^\d+[\.\)]\s*/, '').replace(/^\*+\s*/, '').trim())
+    // Strip trailing periods
+    .map(l => l.replace(/\.$/, '').trim())
+    .filter(l => l.length > 2);
 }
 
 function clShowReview() {
@@ -5935,14 +5945,18 @@ function pvExportAwarenessPDF() {
 </div>
 
 <!-- Page AL-3: Review -->
-<div id="page-al-review" style="display:none; max-width:900px; margin:0 auto; padding:40px;">
+<div id="page-al-review" style="display:none; max-width:1200px; margin:0 auto; padding:40px;">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:20px;">
     <div>
       <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Adapt Lab — Review</div>
       <h1 style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--text);letter-spacing:-0.02em;">Review & Refine</h1>
       <div style="font-size:0.82rem;color:var(--muted);margin-top:6px;" id="al-review-retailer-label"></div>
     </div>
-    <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;">
+    <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted);">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(239,68,68,0.25);border:1px solid rgba(239,68,68,0.5);"></span> Removed
+        <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);margin-left:8px;"></span> Added
+      </div>
       <button class="btn btn-ghost btn-sm" onclick="alBackToSetup()">← Edit Brief</button>
       <button class="btn btn-ghost btn-sm" onclick="alExportCSV()">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -5956,13 +5970,20 @@ function pvExportAwarenessPDF() {
   </div>
 
   <!-- Title -->
-  <div class="cl-review-card">
+  <div class="cl-review-card" style="margin-bottom:20px;">
     <div class="cl-review-card-header">
       <div class="cl-review-card-label">Title</div>
       <div class="cl-char-counter" id="al-title-counter">0 / 0 chars</div>
     </div>
-    <div class="cl-review-content">
-      <textarea class="cl-editable" id="al-out-title" rows="2" oninput="alUpdateCounter('title')"></textarea>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);">
+      <div style="padding:14px 16px;border-right:1px solid var(--border);">
+        <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Base</div>
+        <div id="al-diff-title-base" style="font-size:0.9rem;line-height:1.6;color:var(--muted);"></div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Adapted</div>
+        <textarea class="cl-editable" id="al-out-title" rows="2" oninput="alUpdateCounter('title');alRefreshTitleDiff()" style="width:100%;"></textarea>
+      </div>
     </div>
     <div class="cl-rerun-bar">
       <div class="cl-spin" id="al-spin-title"></div>
@@ -5975,7 +5996,7 @@ function pvExportAwarenessPDF() {
   </div>
 
   <!-- Bullets -->
-  <div class="cl-review-card">
+  <div class="cl-review-card" style="margin-bottom:20px;">
     <div class="cl-review-card-header">
       <div class="cl-review-card-label">Bullet Points</div>
       <div style="display:flex;align-items:center;gap:12px;">
@@ -5987,7 +6008,12 @@ function pvExportAwarenessPDF() {
         </button>
       </div>
     </div>
-    <div class="cl-review-content" id="al-bullets-container"></div>
+    <!-- Column headers -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div style="padding:8px 16px;border-right:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Base</div>
+      <div style="padding:8px 16px;font-family:'DM Mono',monospace;font-size:0.65rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.08em;">Adapted</div>
+    </div>
+    <div id="al-bullets-container"></div>
     <div class="cl-rerun-bar">
       <input type="text" class="cl-rerun-input" id="al-rerun-bullets-input" placeholder="Instruction for re-run… e.g. swap bullet 2 to focus on SPF">
     </div>
@@ -6002,8 +6028,15 @@ function pvExportAwarenessPDF() {
         <div class="cl-char-counter" id="al-desc-counter">0 / 0 chars</div>
       </div>
     </div>
-    <div class="cl-review-content">
-      <textarea class="cl-editable" id="al-out-desc" rows="6" oninput="alUpdateCounter('desc')"></textarea>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);">
+      <div style="padding:14px 16px;border-right:1px solid var(--border);">
+        <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Base</div>
+        <div id="al-diff-desc-base" style="font-size:0.88rem;line-height:1.7;color:var(--muted);"></div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Adapted</div>
+        <textarea class="cl-editable" id="al-out-desc" rows="8" oninput="alUpdateCounter('desc');alRefreshDescDiff()" style="width:100%;"></textarea>
+      </div>
     </div>
     <div class="cl-rerun-bar">
       <div class="cl-spin" id="al-spin-desc"></div>
@@ -6240,11 +6273,12 @@ function alBuildSystemPrompt(inputs, limits, rerunInstruction) {
 YOUR JOB: Adapt the provided base copy for a new product. Keep the same structure, tone, flow, and style as the base. Only change what the new product details require.
 
 CORE RULES:
-1. STAY CLOSE TO THE BASE: The adapted copy should feel nearly identical to the base — same sentence structures, same rhythm, same voice. Swap in the new product's specifics, nothing more.
-2. CLAIM INTEGRITY: Only state what is explicitly provided. Do not invent benefits or extend claims beyond what's given.
-3. USE ALL NEW DETAILS: Every piece of new product information provided must appear somewhere in the adapted copy.
+1. STAY CLOSE TO THE BASE: Same sentence structures, same rhythm, same voice. Swap in the new product's specifics only.
+2. CLAIM INTEGRITY: Only state what is explicitly provided. Do not invent benefits or extend claims.
+3. USE ALL NEW DETAILS: Every piece of new product information must appear somewhere in the output.
 4. NO EM DASHES: Never use em dashes (—). Use commas or colons instead.
 5. BULLETS NEVER END IN A PERIOD: No terminal punctuation on bullet points.
+6. CLEAN OUTPUT ONLY: Never include labels, section headers, intro sentences, explanations, or markdown formatting in your response. Output only the requested content.
 
 CHARACTER LIMITS:
 - Title: max ${limits.titleLimit} characters
@@ -6260,46 +6294,48 @@ function alBuildPrompt(inputs, limits, field, rerunInstruction) {
     ? inputs.baseBullets.map((b, i) => `${i+1}. ${b}`).filter(b => b.trim().length > 3).join('\n')
     : inputs.baseBullets || '(not provided)';
 
-  const context = `
-BASE COPY (approved — use as the template):
+  const context = `BASE COPY (your template — adapt this):
 Title: ${inputs.baseTitle || '(not provided)'}
 Bullets:
 ${baseBulletsText}
 Description:
 ${inputs.baseDesc || '(not provided)'}
 
-NEW PRODUCT DETAILS (what's different):
+NEW PRODUCT DETAILS (swap these in):
 ${inputs.newTitle ? `New product name/title: ${inputs.newTitle}` : ''}
-${inputs.newDetails ? `New specifics:\n${inputs.newDetails}` : ''}
+${inputs.newDetails ? `${inputs.newDetails}` : ''}
 
-OVERALL PDP NOTES (apply across all sections as appropriate):
-${inputs.overallNotes || '(none)'}`;
+OVERALL NOTES: ${inputs.overallNotes || 'none'}`;
 
   if (field === 'title') {
     return `${context}
 
-TITLE ADAPTATION NOTES: ${inputs.titleFocus || 'none — adapt naturally'}
+TITLE NOTES: ${inputs.titleFocus || 'adapt naturally'}
 Max ${limits.titleLimit} characters.
 
-Write ONLY the adapted title. No label, no explanation.`;
+CRITICAL: Output ONLY the title text. No labels, no explanation, no quotes, no markdown. Start your response with the first word of the title.`;
   }
   if (field === 'bullets') {
     return `${context}
 
-BULLET ADAPTATION NOTES: ${inputs.bulletsFocus || 'none — adapt naturally'}
-Write ${limits.bulletMin}–${limits.bulletMax} bullets, each max ${limits.bulletCharLimit} characters.
-Do NOT end any bullet with a period. Do NOT use em dashes.
+BULLET NOTES: ${inputs.bulletsFocus || 'adapt naturally'}
+Write exactly ${limits.bulletMin}–${limits.bulletMax} bullets, each max ${limits.bulletCharLimit} characters.
+Do NOT end any bullet with a period. Do NOT use em dashes (—).
 
-Write ONLY the bullets as a numbered list (1. 2. 3. etc.), one per line.`;
+CRITICAL: Output ONLY a numbered list. Nothing else — no intro sentence, no labels, no "Here are the bullets", no markdown headers, no separators.
+Format exactly:
+1. First bullet text
+2. Second bullet text
+3. Third bullet text`;
   }
   if (field === 'desc') {
     return `${context}
 
-DESCRIPTION ADAPTATION NOTES: ${inputs.descFocus || 'none — adapt naturally'}
-Max ${limits.descLimit || 'no hard limit'} characters. Write in flowing prose.
-Do NOT use em dashes.
+DESCRIPTION NOTES: ${inputs.descFocus || 'adapt naturally'}
+Max ${limits.descLimit || 'no hard limit'} characters. Flowing prose.
+Do NOT use em dashes (—).
 
-Write ONLY the adapted description. No label, no explanation.`;
+CRITICAL: Output ONLY the description text. No labels, no explanation, no "Here is the description". Start your response with the first word of the description.`;
   }
   return '';
 }
@@ -6374,15 +6410,28 @@ function alShowReview() {
   alSetNavStep(3);
 
   const { title, bullets, desc } = alState.generatedContent;
+  const inputs = alState.lastInputs;
   const limits = alState.limits;
   document.getElementById('al-review-retailer-label').textContent =
     alState.retailerName ? `Retailer: ${alState.retailerName} · Title ≤${limits.titleLimit} chars · Bullets ${limits.bulletMin}–${limits.bulletMax} × ≤${limits.bulletCharLimit} chars · Desc ≤${limits.descLimit || '∞'} chars` : '';
 
+  // Store base copy for diffing
+  alState.baseTitle = inputs.baseTitle || '';
+  alState.baseDesc = inputs.baseDesc || '';
+  alState.baseBullets = Array.isArray(inputs.baseBullets) ? inputs.baseBullets : [];
+
+  // Title
   document.getElementById('al-out-title').value = title;
   alUpdateCounter('title');
+  alRefreshTitleDiff();
+
+  // Bullets
   alRenderBullets(bullets);
+
+  // Desc
   document.getElementById('al-out-desc').value = desc;
   alUpdateCounter('desc');
+  alRefreshDescDiff();
 
   ['title','bullets','desc'].forEach(f => {
     const el = document.getElementById(`al-rerun-${f}-input`);
@@ -6390,25 +6439,97 @@ function alShowReview() {
   });
 }
 
+// ---- Word-level diff engine ----
+function alWordDiff(oldText, newText) {
+  const oldWords = oldText.split(/(\s+)/);
+  const newWords = newText.split(/(\s+)/);
+
+  // LCS-based diff
+  const m = oldWords.length, n = newWords.length;
+  const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+  for (let i = m-1; i >= 0; i--) {
+    for (let j = n-1; j >= 0; j--) {
+      if (oldWords[i] === newWords[j]) dp[i][j] = dp[i+1][j+1] + 1;
+      else dp[i][j] = Math.max(dp[i+1][j], dp[i][j+1]);
+    }
+  }
+
+  const oldHtml = [], newHtml = [];
+  let i = 0, j = 0;
+  while (i < m || j < n) {
+    if (i < m && j < n && oldWords[i] === newWords[j]) {
+      const word = escHtml(oldWords[i]);
+      oldHtml.push(word);
+      newHtml.push(word);
+      i++; j++;
+    } else if (j < n && (i >= m || dp[i][j+1] >= dp[i+1][j])) {
+      const word = oldWords[j] && /^\s+$/.test(newWords[j]) ? newWords[j] : newWords[j];
+      if (!/^\s+$/.test(newWords[j])) {
+        newHtml.push(`<mark style="background:rgba(34,197,94,0.2);color:#4ade80;border-radius:2px;padding:0 2px;">${escHtml(newWords[j])}</mark>`);
+      } else {
+        newHtml.push(escHtml(newWords[j]));
+      }
+      j++;
+    } else {
+      if (!/^\s+$/.test(oldWords[i])) {
+        oldHtml.push(`<mark style="background:rgba(239,68,68,0.15);color:#f87171;text-decoration:line-through;border-radius:2px;padding:0 2px;">${escHtml(oldWords[i])}</mark>`);
+      } else {
+        oldHtml.push(escHtml(oldWords[i]));
+      }
+      i++;
+    }
+  }
+  return { oldHtml: oldHtml.join(''), newHtml: newHtml.join('') };
+}
+
+function escHtml(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function alRefreshTitleDiff() {
+  const base = alState.baseTitle || '';
+  const adapted = document.getElementById('al-out-title')?.value || '';
+  const { oldHtml } = alWordDiff(base, adapted);
+  const el = document.getElementById('al-diff-title-base');
+  if (el) el.innerHTML = oldHtml || `<span style="color:var(--border);font-style:italic;">No base title</span>`;
+}
+
+function alRefreshDescDiff() {
+  const base = alState.baseDesc || '';
+  const adapted = document.getElementById('al-out-desc')?.value || '';
+  const { oldHtml } = alWordDiff(base, adapted);
+  const el = document.getElementById('al-diff-desc-base');
+  if (el) el.innerHTML = oldHtml || `<span style="color:var(--border);font-style:italic;">No base description</span>`;
+}
+
 function alRenderBullets(bullets) {
   const container = document.getElementById('al-bullets-container');
   container.innerHTML = '';
   const limit = alState.limits.bulletCharLimit || 250;
-  bullets.forEach((b, i) => {
-    const over = b.length > limit;
+  const baseBullets = alState.baseBullets || [];
+  const maxRows = Math.max(bullets.length, baseBullets.length);
+
+  for (let i = 0; i < maxRows; i++) {
+    const adapted = bullets[i] || '';
+    const base = baseBullets[i] || '';
+    const over = adapted.length > limit;
+    const { oldHtml } = alWordDiff(base, adapted);
+
     const row = document.createElement('div');
-    row.className = 'cl-bullet-edit-row';
-    row.style.cssText = 'display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);';
-    row.innerHTML = `
-      <div class="cl-bullet-num" style="padding-top:6px;">${i+1}.</div>
-      <textarea class="cl-editable" style="flex:1;min-height:36px;" oninput="alUpdateBulletChar(this,${i})">${b}</textarea>
-      <div class="cl-bullet-char ${over ? 'over' : ''}" id="al-bchar-${i}" style="padding-top:6px;">${b.length}/${limit}</div>
-      <button class="cl-rerun-btn" style="padding:5px 10px;flex-shrink:0;margin-top:2px;border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);" onclick="alRerunSingleBullet(${i})" id="al-rerun-b${i}-btn" title="Re-run this bullet">
-        <div class="cl-spin" id="al-spin-b${i}" style="width:10px;height:10px;border-width:1.5px;"></div>
-        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>`;
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,0.04);';
+
+    const baseCol = document.createElement('div');
+    baseCol.style.cssText = 'padding:10px 16px;border-right:1px solid var(--border);';
+    baseCol.innerHTML = `<div style="display:flex;align-items:flex-start;gap:8px;"><span style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--muted);flex-shrink:0;padding-top:2px;">${i+1}.</span><div style="font-size:0.85rem;line-height:1.55;color:var(--muted);">${oldHtml || '<span style=\'color:var(--border);font-style:italic;\'>—</span>'}</div></div>`;
+
+    const adaptedCol = document.createElement('div');
+    adaptedCol.style.cssText = 'padding:10px 16px;';
+    adaptedCol.innerHTML = `<div style="display:flex;align-items:flex-start;gap:8px;"><span style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--orange);flex-shrink:0;padding-top:6px;">${i+1}.</span><div style="flex:1;display:flex;align-items:flex-start;gap:8px;"><textarea class="cl-editable" style="flex:1;min-height:36px;" oninput="alUpdateBulletChar(this,${i})">${adapted.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><div class="cl-bullet-char ${over ? 'over' : ''}" id="al-bchar-${i}" style="white-space:nowrap;">${adapted.length}/${limit}</div><button class="cl-rerun-btn" style="padding:4px 8px;border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);" onclick="alRerunSingleBullet(${i})" id="al-rerun-b${i}-btn" title="Re-run this bullet"><div class="cl-spin" id="al-spin-b${i}" style="width:10px;height:10px;border-width:1.5px;"></div><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div></div>`;
+
+    row.appendChild(baseCol);
+    row.appendChild(adaptedCol);
     container.appendChild(row);
-  });
+  }
   document.getElementById('al-bullets-counter').textContent = `${bullets.length} bullet${bullets.length !== 1 ? 's' : ''}`;
 }
 
@@ -6420,7 +6541,7 @@ function alUpdateBulletChar(el, idx) {
 }
 
 function alGetCurrentBullets() {
-  return Array.from(document.querySelectorAll('#al-bullets-container .cl-bullet-edit-row textarea')).map(r => r.value);
+  return Array.from(document.querySelectorAll('#al-bullets-container textarea')).map(r => r.value);
 }
 
 function alUpdateCounter(field) {
