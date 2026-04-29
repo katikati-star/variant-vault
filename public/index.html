@@ -1288,8 +1288,290 @@
     padding-left: 2px;
   }
 
-  /* RESPONSIVE */
-  @media (max-width: 640px) {
+  /* ===================== COPY LAB ===================== */
+  #page-cl-setup {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+  .cl-section {
+    margin-bottom: 36px;
+  }
+  .cl-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #22c55e;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cl-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .cl-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .cl-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cl-field.full { grid-column: 1 / -1; }
+  .cl-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cl-optional {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--border);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .cl-input, .cl-textarea, .cl-select {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .cl-input:focus, .cl-textarea:focus, .cl-select:focus {
+    border-color: #22c55e;
+  }
+  .cl-input::placeholder, .cl-textarea::placeholder { color: var(--muted); }
+  .cl-textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
+  .cl-select { cursor: pointer; }
+  .cl-select option { background: var(--surface); }
+  .cl-char-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--border);
+    margin-top: 2px;
+  }
+  .cl-bullets-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cl-bullet-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  .cl-bullet-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--orange);
+    padding-top: 10px;
+  }
+  .cl-retailer-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 16px;
+    background: rgba(34,197,94,0.04);
+    border: 1px solid rgba(34,197,94,0.15);
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .cl-retailer-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .cl-retailer-stat-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .cl-retailer-stat-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.88rem;
+    color: #22c55e;
+    font-weight: 500;
+  }
+  .cl-num-input {
+    width: 80px;
+    text-align: center;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
+  }
+  .cl-num-input:focus { border-color: #22c55e; }
+
+  /* Review page */
+  #page-cl-review {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+  .cl-review-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .cl-review-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .cl-review-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .cl-char-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .cl-char-counter.over { color: var(--danger); font-weight: 600; }
+  .cl-char-counter.good { color: var(--success); }
+  .cl-review-content {
+    padding: 16px 18px;
+  }
+  .cl-editable {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    width: 100%;
+    resize: none;
+    min-height: 40px;
+  }
+  .cl-bullet-edit-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .cl-bullet-edit-row:last-child { border-bottom: none; }
+  .cl-bullet-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--orange);
+    width: 20px;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .cl-bullet-char {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    width: 48px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 4px;
+    transition: color 0.2s;
+  }
+  .cl-bullet-char.over { color: var(--danger); }
+  .cl-rerun-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid var(--border);
+  }
+  .cl-rerun-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    transition: var(--transition);
+  }
+  .cl-rerun-input:focus { border-color: #22c55e; }
+  .cl-rerun-input::placeholder { color: var(--muted); }
+  .cl-rerun-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 6px;
+    color: #22c55e;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .cl-rerun-btn:hover { background: rgba(34,197,94,0.2); }
+  .cl-rerun-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .cl-spin {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(34,197,94,0.3);
+    border-top-color: #22c55e;
+    animation: spin 0.7s linear infinite;
+    display: none;
+    flex-shrink: 0;
+  }
+
+  /* Save/load bar */
+  .cl-save-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 28px;
+  }
+  .cl-save-bar-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    flex: 1;
+  }
+
     nav { padding: 16px 20px; }
     .nav-steps { display: none; }
     #page-retailer, #page-upload, #page-review { padding: 40px 20px; }
@@ -1520,6 +1802,21 @@ async function checkPassword() {
 
   </div>
 
+    <div onclick="enterCopyLab()" style="
+      flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:36px 32px; cursor:pointer;
+      transition:all 0.2s; position:relative; overflow:hidden;
+      display:flex; flex-direction:column;
+    " onmouseover="this.style.borderColor='#22c55e';this.style.background='rgba(34,197,94,0.05)'"
+       onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
+      <div style="font-size:2rem; margin-bottom:16px;">✍️</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#f0f4ff; margin-bottom:8px;">Copy <span style="color:#22c55e;">Lab</span></div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:0.85rem; color:#6b7fa8; line-height:1.5; flex:1;">Generate retailer-ready product content — titles, bullets, descriptions, and keywords — guided by your brand rules and content guidelines.</div>
+      <div style="margin-top:24px; font-family:'DM Mono',monospace; font-size:0.72rem; color:#22c55e; letter-spacing:0.08em; text-transform:uppercase;">Content Generator →</div>
+    </div>
+
+  </div>
+
   <div style="margin-top:40px; font-family:'DM Sans',sans-serif; font-size:0.75rem; color:#2d3d5a; text-align:center;">
     By Kati. Slack her for Qs, suggestions, bugs, and everything else!
   </div>
@@ -1549,6 +1846,14 @@ async function checkPassword() {
     <div class="step-pill" id="nav-5">
       <div class="step-num">5</div> Finalize
     </div>
+  </div>
+  <!-- Copy Lab steps -->
+  <div class="nav-steps" id="nav-steps-cl" style="display:none;">
+    <div class="step-pill" id="cl-nav-1"><div class="step-num">1</div> Setup</div>
+    <div class="step-divider"></div>
+    <div class="step-pill" id="cl-nav-2"><div class="step-num">2</div> Generating</div>
+    <div class="step-divider"></div>
+    <div class="step-pill" id="cl-nav-3"><div class="step-num">3</div> Review</div>
   </div>
   <!-- Prompt Vault steps -->
   <div class="nav-steps" id="nav-steps-pv" style="display:none;">
@@ -2084,6 +2389,341 @@ async function checkPassword() {
     </div>
 
   </div>
+</div>
+
+<!-- ===================== COPY LAB PAGES ===================== -->
+
+<!-- Page CL-1: Setup Form -->
+<div id="page-cl-setup" style="display:none;">
+  <div style="margin-bottom:40px;">
+    <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:#22c55e;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Copy Lab</div>
+    <h1 style="font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--text);letter-spacing:-0.02em;margin-bottom:10px;">Build your <em style="color:#22c55e;">content brief</em></h1>
+    <p style="font-size:0.92rem;color:var(--muted);line-height:1.6;max-width:520px;">Fill in your product details and content guidelines. The AI will write retailer-ready copy — without inventing claims you haven't provided.</p>
+  </div>
+
+  <!-- Save/load bar -->
+  <div class="cl-save-bar">
+    <span class="cl-save-bar-label">💾 Save your inputs or restore a previous session</span>
+    <button class="btn btn-ghost btn-sm" onclick="clSaveInputs()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Download inputs
+    </button>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 13V6M5 9l3-3 3 3M3 3h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Load inputs
+      <input type="file" id="cl-load-input" accept=".json" style="display:none;" onchange="clLoadInputs(event)">
+    </label>
+  </div>
+
+  <!-- RETAILER -->
+  <div class="cl-section">
+    <div class="cl-section-title">Retailer</div>
+    <div class="cl-field" style="margin-bottom:16px;">
+      <label class="cl-label">Retailer</label>
+      <select class="cl-select" id="cl-retailer" onchange="clRetailerChanged()">
+        <option value="">— Select retailer —</option>
+        <option value="Amazon">Amazon</option>
+        <option value="Walmart">Walmart</option>
+        <option value="Home Depot">Home Depot</option>
+        <option value="Costco">Costco</option>
+        <option value="Best Buy">Best Buy</option>
+        <option value="Wayfair">Wayfair</option>
+        <option value="Lowes">Lowe's</option>
+        <option value="Sams Club">Sam's Club</option>
+        <option value="Target">Target</option>
+        <option value="Mercado Livre">Mercado Livre Brazil</option>
+        <option value="Build.com">Build.com</option>
+        <option value="MediaMarkt">MediaMarkt</option>
+        <option value="Currys">Currys</option>
+        <option value="Kroger">Kroger</option>
+        <option value="Ulta">Ulta</option>
+        <option value="DTC">DTC</option>
+        <option value="Custom">Custom</option>
+      </select>
+    </div>
+    <div class="cl-retailer-strip" id="cl-retailer-strip" style="display:none;">
+      <div class="cl-retailer-stat">
+        <div class="cl-retailer-stat-label">Title limit</div>
+        <div class="cl-retailer-stat-val" id="cl-rs-title">—</div>
+      </div>
+      <div class="cl-retailer-stat">
+        <div class="cl-retailer-stat-label">Bullets</div>
+        <div class="cl-retailer-stat-val" id="cl-rs-bullets">—</div>
+      </div>
+      <div class="cl-retailer-stat">
+        <div class="cl-retailer-stat-label">Bullet length</div>
+        <div class="cl-retailer-stat-val" id="cl-rs-bulletchar">—</div>
+      </div>
+      <div class="cl-retailer-stat">
+        <div class="cl-retailer-stat-label">Description</div>
+        <div class="cl-retailer-stat-val" id="cl-rs-desc">—</div>
+      </div>
+    </div>
+    <div class="cl-grid" id="cl-retailer-overrides" style="display:none;">
+      <div class="cl-field">
+        <label class="cl-label">Title char limit <span class="cl-optional">editable</span></label>
+        <input type="number" class="cl-num-input" id="cl-title-limit" style="width:100%;" min="1">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Bullet char limit <span class="cl-optional">editable</span></label>
+        <input type="number" class="cl-num-input" id="cl-bullet-char-limit" style="width:100%;" min="1">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Min bullets <span class="cl-optional">editable</span></label>
+        <input type="number" class="cl-num-input" id="cl-bullet-min" style="width:100%;" min="1">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Max bullets <span class="cl-optional">editable</span></label>
+        <input type="number" class="cl-num-input" id="cl-bullet-max" style="width:100%;" min="1">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Description char limit <span class="cl-optional">editable</span></label>
+        <input type="number" class="cl-num-input" id="cl-desc-limit" style="width:100%;" min="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT INFO -->
+  <div class="cl-section">
+    <div class="cl-section-title">Product Info</div>
+    <div class="cl-grid">
+      <div class="cl-field full">
+        <label class="cl-label">Product Title <span class="cl-optional">paste existing — AI will adapt it — or leave blank to write from scratch</span></label>
+        <input type="text" class="cl-input" id="cl-product-title" placeholder="e.g. ChapStick Classic Original Lip Balm, 0.15 oz, Pack of 3">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Brand <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-brand" placeholder="e.g. ChapStick">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Item ID / ASIN <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-item-id" placeholder="e.g. B001ETQ9WQ">
+      </div>
+      <div class="cl-field full">
+        <label class="cl-label">Product Category / Type <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-category" placeholder="e.g. Lip Balm — Classics, or Medicated, or Squeeze Tubes">
+      </div>
+    </div>
+  </div>
+
+  <!-- TITLE GUIDELINES -->
+  <div class="cl-section">
+    <div class="cl-section-title">Title Guidelines</div>
+    <div class="cl-grid">
+      <div class="cl-field">
+        <label class="cl-label">Capitalization</label>
+        <input type="text" class="cl-input" id="cl-title-caps" placeholder="e.g. Title Case, sentence case">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Structure / order <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-title-structure" placeholder="e.g. Brand → Type → Feature → Size">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Words to always include <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-title-include" placeholder="e.g. model number, Pack of 3">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Words to avoid <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-title-avoid" placeholder='e.g. "for men", "for kids"'>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULLET GUIDELINES -->
+  <div class="cl-section">
+    <div class="cl-section-title">Bullet Point Guidelines</div>
+    <div class="cl-grid" style="margin-bottom:16px;">
+      <div class="cl-field">
+        <label class="cl-label">Header style <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-bullet-header" placeholder="e.g. ALL CAPS, Title Case, no header">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Words to avoid <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-bullet-avoid" placeholder="e.g. amazing, best-in-class">
+      </div>
+    </div>
+    <div class="cl-bullets-grid" id="cl-bullet-focuses">
+      <!-- dynamically populated based on bullet count -->
+    </div>
+  </div>
+
+  <!-- DESCRIPTION GUIDELINES -->
+  <div class="cl-section">
+    <div class="cl-section-title">Description Guidelines</div>
+    <div class="cl-grid">
+      <div class="cl-field">
+        <label class="cl-label">Structure / order <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-desc-structure" placeholder="e.g. hook → features → who it's for">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Always mention <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-desc-always" placeholder="e.g. warranty, certifications, bundle contents">
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKEND KEYWORDS -->
+  <div class="cl-section">
+    <div class="cl-section-title">Backend / Search Keywords <span style="font-size:0.65rem;font-weight:400;color:var(--border);text-transform:none;letter-spacing:0;">optional</span></div>
+    <div class="cl-grid">
+      <div class="cl-field">
+        <label class="cl-label">Words to always include <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-kw-include" placeholder="e.g. lip balm, chapped lips, SPF">
+      </div>
+      <div class="cl-field">
+        <label class="cl-label">Words to exclude <span class="cl-optional">optional</span></label>
+        <input type="text" class="cl-input" id="cl-kw-exclude" placeholder="e.g. competitor brand names">
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERAL / BRAND VOICE -->
+  <div class="cl-section">
+    <div class="cl-section-title">Brand Voice & General Instructions</div>
+    <div class="cl-field" style="margin-bottom:14px;">
+      <label class="cl-label">Tone of voice</label>
+      <input type="text" class="cl-input" id="cl-tone" placeholder="e.g. Direct, confident, upbeat, cheeky — or paste brand tagline">
+    </div>
+    <div class="cl-field" style="margin-bottom:14px;">
+      <label class="cl-label">Things to never do <span class="cl-optional">optional</span></label>
+      <input type="text" class="cl-input" id="cl-never-do" placeholder="e.g. no exclamation marks, no passive voice">
+    </div>
+    <div class="cl-field">
+      <label class="cl-label">Additional AI instructions / brand guidelines <span class="cl-optional">optional — paste anything: brand voice doc, claims list, messaging rules</span></label>
+      <textarea class="cl-textarea" id="cl-extra-instructions" style="min-height:120px;" placeholder="Paste brand voice callouts, approved claims, messaging pillars, or any other rules for the AI to follow…"></textarea>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="display:flex;gap:12px;align-items:center;padding-top:8px;padding-bottom:60px;">
+    <button class="btn btn-ghost" onclick="returnToModeSelector()">← Back</button>
+    <button class="btn" id="cl-generate-btn" onclick="clStartGeneration()" style="background:#22c55e;color:#fff;font-weight:600;padding:14px 32px;font-size:0.95rem;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Generate Content
+    </button>
+  </div>
+</div>
+
+<!-- Page CL-2: Generating -->
+<div id="page-cl-generating" style="display:none;">
+  <div style="max-width:600px;margin:0 auto;padding:120px 40px;text-align:center;">
+    <div style="width:80px;height:80px;margin:0 auto 40px;position:relative;">
+      <div style="position:absolute;inset:0;border-radius:50%;border:3px solid var(--border);border-top-color:#22c55e;animation:spin 1s linear infinite;"></div>
+      <div style="position:absolute;inset:10px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--orange);animation:spin 0.7s linear infinite reverse;"></div>
+    </div>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--text);margin-bottom:12px;">Writing content…</h2>
+    <p style="font-size:0.9rem;color:var(--muted);margin-bottom:32px;" id="cl-gen-status">Getting ready</p>
+    <div class="progress-bar-wrap" style="margin-bottom:28px;">
+      <div class="progress-bar-fill" id="cl-progress-bar" style="background:#22c55e;"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;text-align:left;">
+      <div class="proc-step" id="cl-step-1"><span class="proc-dot"></span><span>Building your content brief</span></div>
+      <div class="proc-step" id="cl-step-2"><span class="proc-dot"></span><span>AI writing title</span></div>
+      <div class="proc-step" id="cl-step-3"><span class="proc-dot"></span><span>AI writing bullets</span></div>
+      <div class="proc-step" id="cl-step-4"><span class="proc-dot"></span><span>AI writing description</span></div>
+      <div class="proc-step" id="cl-step-5"><span class="proc-dot"></span><span>AI writing keywords</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Page CL-3: Review -->
+<div id="page-cl-review" style="display:none;">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:20px;">
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:#22c55e;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Copy Lab — Review</div>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--text);letter-spacing:-0.02em;">Review & Refine</h1>
+      <div style="font-size:0.82rem;color:var(--muted);margin-top:6px;" id="cl-review-retailer-label"></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;">
+      <button class="btn btn-ghost btn-sm" onclick="clBackToSetup()">← Edit Brief</button>
+      <button class="btn btn-ghost btn-sm" onclick="clExportCSV()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export CSV
+      </button>
+      <button class="btn btn-sm" onclick="clExportPDF()" style="background:#22c55e;color:#fff;font-weight:600;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Title card -->
+  <div class="cl-review-card" id="cl-card-title">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Title</div>
+      <div class="cl-char-counter" id="cl-title-counter">0 / 0 chars</div>
+    </div>
+    <div class="cl-review-content">
+      <textarea class="cl-editable" id="cl-out-title" rows="2" oninput="clUpdateCounter('title')"></textarea>
+    </div>
+    <div class="cl-rerun-bar">
+      <div class="cl-spin" id="cl-spin-title"></div>
+      <input type="text" class="cl-rerun-input" id="cl-rerun-title-input" placeholder="Optional instruction… e.g. do not say 'premium', focus more on the pack size">
+      <button class="cl-rerun-btn" id="cl-rerun-title-btn" onclick="clRerun('title')">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Re-run
+      </button>
+    </div>
+  </div>
+
+  <!-- Bullets card -->
+  <div class="cl-review-card" id="cl-card-bullets">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Bullet Points</div>
+      <div class="cl-char-counter" id="cl-bullets-counter">0 bullets</div>
+    </div>
+    <div class="cl-review-content" id="cl-bullets-container">
+      <!-- populated dynamically -->
+    </div>
+    <div class="cl-rerun-bar">
+      <div class="cl-spin" id="cl-spin-bullets"></div>
+      <input type="text" class="cl-rerun-input" id="cl-rerun-bullets-input" placeholder="Optional instruction… e.g. make bullet 1 focus on SPF, trim all bullets">
+      <button class="cl-rerun-btn" id="cl-rerun-bullets-btn" onclick="clRerun('bullets')">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Re-run
+      </button>
+    </div>
+  </div>
+
+  <!-- Description card -->
+  <div class="cl-review-card" id="cl-card-desc">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Description</div>
+      <div class="cl-char-counter" id="cl-desc-counter">0 / 0 chars</div>
+    </div>
+    <div class="cl-review-content">
+      <textarea class="cl-editable" id="cl-out-desc" rows="6" oninput="clUpdateCounter('desc')"></textarea>
+    </div>
+    <div class="cl-rerun-bar">
+      <div class="cl-spin" id="cl-spin-desc"></div>
+      <input type="text" class="cl-rerun-input" id="cl-rerun-desc-input" placeholder="Optional instruction… e.g. open with the heritage angle, shorter sentences">
+      <button class="cl-rerun-btn" id="cl-rerun-desc-btn" onclick="clRerun('desc')">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Re-run
+      </button>
+    </div>
+  </div>
+
+  <!-- Keywords card -->
+  <div class="cl-review-card" id="cl-card-kw">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Backend / Search Keywords</div>
+      <div class="cl-char-counter" id="cl-kw-counter">0 chars</div>
+    </div>
+    <div class="cl-review-content">
+      <textarea class="cl-editable" id="cl-out-kw" rows="3" oninput="clUpdateCounter('kw')"></textarea>
+    </div>
+    <div class="cl-rerun-bar">
+      <div class="cl-spin" id="cl-spin-kw"></div>
+      <input type="text" class="cl-rerun-input" id="cl-rerun-kw-input" placeholder="Optional instruction… e.g. add more seasonal terms">
+      <button class="cl-rerun-btn" id="cl-rerun-kw-btn" onclick="clRerun('kw')">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Re-run
+      </button>
+    </div>
+  </div>
+
+  <div style="height:60px;"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -3539,8 +4179,649 @@ function showToast(msg, type = '') {
 }
 
 // ============================================================
-// MODE NAVIGATION
+// COPY LAB
 // ============================================================
+
+const CL_RETAILERS = {
+  'Amazon':         { titleLimit: 200, bulletCharLimit: 250, bulletMin: 1,  bulletMax: 10, descLimit: 2000 },
+  'Walmart':        { titleLimit: 150, bulletCharLimit: 80,  bulletMin: 1,  bulletMax: 10, descLimit: 4000 },
+  'Home Depot':     { titleLimit: 100, bulletCharLimit: 250, bulletMin: 4,  bulletMax: 10, descLimit: 1500 },
+  'Costco':         { titleLimit: 100, bulletCharLimit: 300, bulletMin: 5,  bulletMax: 7,  descLimit: null },
+  'Best Buy':       { titleLimit: 100, bulletCharLimit: 200, bulletMin: 1,  bulletMax: 5,  descLimit: 4000 },
+  'Wayfair':        { titleLimit: 255, bulletCharLimit: 250, bulletMin: 1,  bulletMax: 5,  descLimit: 4000 },
+  'Lowes':          { titleLimit: 254, bulletCharLimit: 254, bulletMin: 1,  bulletMax: 5,  descLimit: 4000 },
+  'Sams Club':      { titleLimit: 100, bulletCharLimit: 250, bulletMin: 3,  bulletMax: 5,  descLimit: 4000 },
+  'Target':         { titleLimit: 150, bulletCharLimit: 250, bulletMin: 3,  bulletMax: 8,  descLimit: 4000 },
+  'Mercado Livre':  { titleLimit: 60,  bulletCharLimit: 250, bulletMin: 1,  bulletMax: 10, descLimit: 10000 },
+  'Build.com':      { titleLimit: 100, bulletCharLimit: 250, bulletMin: 1,  bulletMax: 10, descLimit: 4000 },
+  'MediaMarkt':     { titleLimit: 200, bulletCharLimit: 250, bulletMin: 1,  bulletMax: 5,  descLimit: 10000 },
+  'Currys':         { titleLimit: 200, bulletCharLimit: 200, bulletMin: 5,  bulletMax: 10, descLimit: 4000 },
+  'Kroger':         { titleLimit: 100, bulletCharLimit: 300, bulletMin: 1,  bulletMax: 7,  descLimit: 400 },
+  'Ulta':           { titleLimit: 150, bulletCharLimit: 200, bulletMin: 1,  bulletMax: 5,  descLimit: 2000 },
+  'DTC':            { titleLimit: 150, bulletCharLimit: 250, bulletMin: 1,  bulletMax: 10, descLimit: 5000 },
+};
+
+let clState = {
+  retailer: '',
+  limits: {},
+  generatedContent: { title: '', bullets: [], desc: '', kw: '' },
+  rerunInstructions: { title: '', bullets: '', desc: '', kw: '' },
+};
+
+function enterCopyLab() {
+  document.getElementById('mode-selector').style.display = 'none';
+  document.querySelector('nav').style.display = 'flex';
+  document.getElementById('nav-steps-vv').style.display = 'none';
+  document.getElementById('nav-steps-pv').style.display = 'none';
+  document.getElementById('nav-steps-cl').style.display = 'flex';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-prompt-vault').style.display = 'none';
+  document.getElementById('page-cl-setup').style.display = 'block';
+  document.getElementById('page-cl-generating').style.display = 'none';
+  document.getElementById('page-cl-review').style.display = 'none';
+  document.getElementById('nav-retailer-chip').style.display = 'none';
+  clSetNavStep(1);
+  clBuildBulletFocuses(5);
+}
+
+function clSetNavStep(n) {
+  ['cl-nav-1','cl-nav-2','cl-nav-3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('active','done');
+    if (i + 1 < n) el.classList.add('done');
+    if (i + 1 === n) el.classList.add('active');
+  });
+}
+
+function clRetailerChanged() {
+  const val = document.getElementById('cl-retailer').value;
+  const strip = document.getElementById('cl-retailer-strip');
+  const overrides = document.getElementById('cl-retailer-overrides');
+
+  if (!val) {
+    strip.style.display = 'none';
+    overrides.style.display = 'none';
+    clBuildBulletFocuses(5);
+    return;
+  }
+
+  const specs = val === 'Custom' ? { titleLimit: 200, bulletCharLimit: 250, bulletMin: 1, bulletMax: 5, descLimit: 2000 } : (CL_RETAILERS[val] || {});
+  clState.retailer = val;
+  clState.limits = { ...specs };
+
+  // Update strip
+  document.getElementById('cl-rs-title').textContent = specs.titleLimit ? specs.titleLimit + ' chars' : '—';
+  document.getElementById('cl-rs-bullets').textContent = specs.bulletMin === specs.bulletMax
+    ? specs.bulletMax
+    : (specs.bulletMin || '1') + '–' + (specs.bulletMax || '?');
+  document.getElementById('cl-rs-bulletchar').textContent = specs.bulletCharLimit ? specs.bulletCharLimit + ' chars' : '—';
+  document.getElementById('cl-rs-desc').textContent = specs.descLimit ? specs.descLimit + ' chars' : '—';
+  strip.style.display = 'grid';
+  overrides.style.display = 'grid';
+
+  // Fill number inputs
+  document.getElementById('cl-title-limit').value = specs.titleLimit || '';
+  document.getElementById('cl-bullet-char-limit').value = specs.bulletCharLimit || '';
+  document.getElementById('cl-bullet-min').value = specs.bulletMin || '';
+  document.getElementById('cl-bullet-max').value = specs.bulletMax || '';
+  document.getElementById('cl-desc-limit').value = specs.descLimit || '';
+
+  clBuildBulletFocuses(specs.bulletMax || 5);
+}
+
+function clReadLimits() {
+  return {
+    titleLimit: parseInt(document.getElementById('cl-title-limit').value) || clState.limits.titleLimit || 200,
+    bulletCharLimit: parseInt(document.getElementById('cl-bullet-char-limit').value) || clState.limits.bulletCharLimit || 250,
+    bulletMin: parseInt(document.getElementById('cl-bullet-min').value) || clState.limits.bulletMin || 1,
+    bulletMax: parseInt(document.getElementById('cl-bullet-max').value) || clState.limits.bulletMax || 5,
+    descLimit: parseInt(document.getElementById('cl-desc-limit').value) || clState.limits.descLimit || 2000,
+  };
+}
+
+function clBuildBulletFocuses(count) {
+  const container = document.getElementById('cl-bullet-focuses');
+  const existing = [];
+  container.querySelectorAll('textarea').forEach(t => existing.push(t.value));
+  container.innerHTML = '';
+  for (let i = 1; i <= Math.min(count, 10); i++) {
+    const row = document.createElement('div');
+    row.className = 'cl-bullet-row';
+    row.innerHTML = `
+      <div class="cl-bullet-label">B${i}</div>
+      <textarea class="cl-textarea" id="cl-bullet-focus-${i}" style="min-height:52px;" placeholder="Bullet ${i} focus — e.g. hero benefit, key claim, ingredients…">${existing[i-1] || ''}</textarea>
+    `;
+    container.appendChild(row);
+  }
+}
+
+// ---- Save / Load ----
+function clCollectInputs() {
+  const limits = clReadLimits();
+  const bulletFocuses = [];
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById(`cl-bullet-focus-${i}`);
+    if (el) bulletFocuses.push(el.value);
+  }
+  return {
+    retailer: document.getElementById('cl-retailer').value,
+    limits,
+    productTitle: document.getElementById('cl-product-title').value,
+    brand: document.getElementById('cl-brand').value,
+    itemId: document.getElementById('cl-item-id').value,
+    category: document.getElementById('cl-category').value,
+    titleCaps: document.getElementById('cl-title-caps').value,
+    titleStructure: document.getElementById('cl-title-structure').value,
+    titleInclude: document.getElementById('cl-title-include').value,
+    titleAvoid: document.getElementById('cl-title-avoid').value,
+    bulletHeader: document.getElementById('cl-bullet-header').value,
+    bulletAvoid: document.getElementById('cl-bullet-avoid').value,
+    bulletFocuses,
+    descStructure: document.getElementById('cl-desc-structure').value,
+    descAlways: document.getElementById('cl-desc-always').value,
+    kwInclude: document.getElementById('cl-kw-include').value,
+    kwExclude: document.getElementById('cl-kw-exclude').value,
+    tone: document.getElementById('cl-tone').value,
+    neverDo: document.getElementById('cl-never-do').value,
+    extraInstructions: document.getElementById('cl-extra-instructions').value,
+  };
+}
+
+function clSaveInputs() {
+  const data = clCollectInputs();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `copy-lab-inputs-${Date.now()}.json`;
+  a.click();
+  showToast('Inputs saved!', 'success');
+}
+
+function clLoadInputs(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (d.retailer) {
+        document.getElementById('cl-retailer').value = d.retailer;
+        clRetailerChanged();
+      }
+      if (d.limits) {
+        if (d.limits.titleLimit) document.getElementById('cl-title-limit').value = d.limits.titleLimit;
+        if (d.limits.bulletCharLimit) document.getElementById('cl-bullet-char-limit').value = d.limits.bulletCharLimit;
+        if (d.limits.bulletMin) document.getElementById('cl-bullet-min').value = d.limits.bulletMin;
+        if (d.limits.bulletMax) {
+          document.getElementById('cl-bullet-max').value = d.limits.bulletMax;
+          clBuildBulletFocuses(d.limits.bulletMax);
+        }
+        if (d.limits.descLimit) document.getElementById('cl-desc-limit').value = d.limits.descLimit;
+      }
+      const fields = ['productTitle','brand','itemId','category','titleCaps','titleStructure','titleInclude','titleAvoid','bulletHeader','bulletAvoid','descStructure','descAlways','kwInclude','kwExclude','tone','neverDo','extraInstructions'];
+      const idMap = { productTitle:'cl-product-title', brand:'cl-brand', itemId:'cl-item-id', category:'cl-category', titleCaps:'cl-title-caps', titleStructure:'cl-title-structure', titleInclude:'cl-title-include', titleAvoid:'cl-title-avoid', bulletHeader:'cl-bullet-header', bulletAvoid:'cl-bullet-avoid', descStructure:'cl-desc-structure', descAlways:'cl-desc-always', kwInclude:'cl-kw-include', kwExclude:'cl-kw-exclude', tone:'cl-tone', neverDo:'cl-never-do', extraInstructions:'cl-extra-instructions' };
+      fields.forEach(f => { if (d[f] !== undefined) { const el = document.getElementById(idMap[f]); if (el) el.value = d[f]; }});
+      if (Array.isArray(d.bulletFocuses)) {
+        d.bulletFocuses.forEach((val, i) => {
+          const el = document.getElementById(`cl-bullet-focus-${i+1}`);
+          if (el) el.value = val;
+        });
+      }
+      showToast('Inputs restored!', 'success');
+    } catch(err) { showToast('Could not read file', 'error'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ---- Build the AI system prompt ----
+function clBuildSystemPrompt(inputs, limits, rerunField, rerunInstruction) {
+  const retailerName = inputs.retailer || 'the retailer';
+  const base = `You are an expert e-commerce product content writer for ${retailerName}.
+
+CORE RULES — follow these without exception:
+1. CLAIM INTEGRITY: Only state what is explicitly provided in the inputs. Do NOT extend, infer, or elaborate on claims. If the input says "moisturizing", you may say "moisturizing" — not "deeply moisturizing", "moisturizing for sensitive skin", or anything beyond what was given. Safe general category associations are acceptable (e.g. "great for homeowners" on a shovel) but specific benefit claims must come from the inputs verbatim.
+2. DO NOT PAD: Write excellent PDP copy with the information given. Hitting the character limit is NOT the goal. Stop when the content is complete and honest. Never add filler words or invented claims to reach a limit.
+3. BRAND VOICE: ${inputs.tone || 'Professional, clear, and benefit-focused.'}.
+4. NEVER DO: ${inputs.neverDo || 'Nothing specific — use good judgment.'}.
+${inputs.extraInstructions ? `5. ADDITIONAL BRAND RULES:\n${inputs.extraInstructions}` : ''}
+
+CHARACTER LIMITS — respect these strictly:
+- Title: ≤${limits.titleLimit} characters
+- Each bullet: ≤${limits.bulletCharLimit} characters
+- Bullets: ${limits.bulletMin}–${limits.bulletMax} bullets total
+- Description: ≤${limits.descLimit || 'no limit'} characters${limits.descLimit ? '' : ' (write as much as is genuinely useful)'}
+
+${rerunField && rerunInstruction ? `ADDITIONAL INSTRUCTION FOR THIS RE-RUN: ${rerunInstruction}` : ''}`;
+  return base;
+}
+
+function clBuildPrompt(inputs, limits, field) {
+  const bulletFocusLines = inputs.bulletFocuses
+    .map((f, i) => f ? `  Bullet ${i+1}: ${f}` : null)
+    .filter(Boolean)
+    .join('\n');
+
+  const productContext = `
+PRODUCT INFO:
+- Title input: ${inputs.productTitle || '(none — write from scratch based on brand/category)'}
+- Brand: ${inputs.brand || '(not specified)'}
+- Item ID: ${inputs.itemId || '(not specified)'}
+- Category: ${inputs.category || '(not specified)'}`;
+
+  const titleRules = `
+TITLE RULES:
+- Capitalization: ${inputs.titleCaps || 'follow retailer conventions'}
+- Structure/order: ${inputs.titleStructure || 'natural'}
+- Always include: ${inputs.titleInclude || 'nothing specific'}
+- Avoid: ${inputs.titleAvoid || 'nothing specific'}
+- ${inputs.productTitle ? 'Adapt the provided title to fit the character limit and retailer style.' : 'Write the title from scratch using the product info above.'}`;
+
+  const bulletRules = `
+BULLET RULES:
+- Header style: ${inputs.bulletHeader || 'no header'}
+- Words to avoid: ${inputs.bulletAvoid || 'nothing specific'}
+- Bullet focuses (write bullets in this order if provided):
+${bulletFocusLines || '  (no specific bullet focuses — write naturally)'}`;
+
+  const descRules = `
+DESCRIPTION RULES:
+- Structure: ${inputs.descStructure || 'natural flow — hook, features, call to action'}
+- Always mention: ${inputs.descAlways || 'nothing specific'}`;
+
+  const kwRules = `
+KEYWORD RULES:
+- Always include: ${inputs.kwInclude || 'nothing specific'}
+- Exclude: ${inputs.kwExclude || 'nothing specific'}
+- Write as a space-separated string of keywords, no punctuation`;
+
+  const fieldPrompts = {
+    title: `${productContext}\n${titleRules}\n\nWrite ONLY the product title. No explanation, no label, just the title text.`,
+    bullets: `${productContext}\n${bulletRules}\n\nWrite ONLY the bullet points as a numbered list (1. 2. 3. etc.), one per line. No explanation, no extra text.`,
+    desc: `${productContext}\n${descRules}\n\nWrite ONLY the product description. No explanation, no label, just the description text.`,
+    kw: `${productContext}\n${kwRules}\n\nWrite ONLY the keyword string. No explanation, no label, just the keywords.`,
+    all: `${productContext}\n${titleRules}\n${bulletRules}\n${descRules}\n${kwRules}\n\nReturn ONLY valid JSON, no markdown:\n{"title":"...","bullets":["...","..."],"desc":"...","kw":"..."}`
+  };
+
+  return fieldPrompts[field] || fieldPrompts.all;
+}
+
+// ---- Main generation ----
+async function clStartGeneration() {
+  const inputs = clCollectInputs();
+  if (!inputs.retailer) { showToast('Please select a retailer first', 'error'); return; }
+  const limits = clReadLimits();
+  clState.limits = limits;
+  clState.retailerName = inputs.retailer;
+
+  // Switch to generating page
+  document.getElementById('page-cl-setup').style.display = 'none';
+  document.getElementById('page-cl-generating').style.display = 'block';
+  clSetNavStep(2);
+
+  const setStep = (id) => {
+    ['cl-step-1','cl-step-2','cl-step-3','cl-step-4','cl-step-5'].forEach(s => {
+      const el = document.getElementById(s);
+      if (!el) return;
+      if (s === id) { el.classList.remove('done'); el.classList.add('active'); }
+      else if (el.classList.contains('active')) { el.classList.remove('active'); el.classList.add('done'); }
+    });
+  };
+  const setProgress = (pct, msg) => {
+    document.getElementById('cl-progress-bar').style.width = pct + '%';
+    document.getElementById('cl-gen-status').textContent = msg;
+  };
+
+  setStep('cl-step-1');
+  setProgress(10, 'Building your content brief…');
+  const system = clBuildSystemPrompt(inputs, limits, null, null);
+
+  try {
+    setStep('cl-step-2');
+    setProgress(20, 'Writing title…');
+    const titlePrompt = clBuildPrompt(inputs, limits, 'title');
+    const titleData = await callClaude(titlePrompt, system);
+    const title = titleData.content.map(c => c.text||'').join('').trim();
+
+    setStep('cl-step-3');
+    setProgress(45, 'Writing bullets…');
+    const bulletsPrompt = clBuildPrompt(inputs, limits, 'bullets');
+    const bulletsData = await callClaude(bulletsPrompt, system);
+    const bulletsRaw = bulletsData.content.map(c => c.text||'').join('').trim();
+    const bullets = clParseBullets(bulletsRaw);
+
+    setStep('cl-step-4');
+    setProgress(68, 'Writing description…');
+    const descPrompt = clBuildPrompt(inputs, limits, 'desc');
+    const descData = await callClaude(descPrompt, system);
+    const desc = descData.content.map(c => c.text||'').join('').trim();
+
+    setStep('cl-step-5');
+    setProgress(88, 'Writing keywords…');
+    const kwPrompt = clBuildPrompt(inputs, limits, 'kw');
+    const kwData = await callClaude(kwPrompt, system);
+    const kw = kwData.content.map(c => c.text||'').join('').trim();
+
+    setProgress(100, 'Done!');
+    document.getElementById('cl-step-5').classList.remove('active');
+    document.getElementById('cl-step-5').classList.add('done');
+
+    clState.generatedContent = { title, bullets, desc, kw };
+    clState.lastInputs = inputs;
+
+    setTimeout(() => clShowReview(), 600);
+
+  } catch(err) {
+    showToast('Generation error: ' + err.message, 'error');
+    document.getElementById('page-cl-generating').style.display = 'none';
+    document.getElementById('page-cl-setup').style.display = 'block';
+    clSetNavStep(1);
+  }
+}
+
+function clParseBullets(raw) {
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  return lines
+    .map(l => l.replace(/^\d+[\.\)]\s*/, '').trim())
+    .filter(l => l.length > 0);
+}
+
+function clShowReview() {
+  document.getElementById('page-cl-generating').style.display = 'none';
+  document.getElementById('page-cl-review').style.display = 'block';
+  clSetNavStep(3);
+
+  const { title, bullets, desc, kw } = clState.generatedContent;
+  const limits = clState.limits;
+  const retailerName = clState.retailerName || clState.retailer || '';
+
+  document.getElementById('cl-review-retailer-label').textContent =
+    retailerName ? `Retailer: ${retailerName} · Title ≤${limits.titleLimit} chars · Bullets ${limits.bulletMin}–${limits.bulletMax} × ≤${limits.bulletCharLimit} chars · Desc ≤${limits.descLimit || '∞'} chars` : '';
+
+  // Title
+  document.getElementById('cl-out-title').value = title;
+  clUpdateCounter('title');
+
+  // Bullets
+  clRenderBullets(bullets);
+
+  // Desc
+  document.getElementById('cl-out-desc').value = desc;
+  clUpdateCounter('desc');
+
+  // KW
+  document.getElementById('cl-out-kw').value = kw;
+  clUpdateCounter('kw');
+
+  // Restore last rerun instructions
+  ['title','bullets','desc','kw'].forEach(f => {
+    const el = document.getElementById(`cl-rerun-${f}-input`);
+    if (el && clState.rerunInstructions[f]) el.value = clState.rerunInstructions[f];
+  });
+}
+
+function clRenderBullets(bullets) {
+  const container = document.getElementById('cl-bullets-container');
+  container.innerHTML = '';
+  const limit = clState.limits.bulletCharLimit || 250;
+  bullets.forEach((b, i) => {
+    const row = document.createElement('div');
+    row.className = 'cl-bullet-edit-row';
+    const charCount = b.length;
+    const over = charCount > limit;
+    row.innerHTML = `
+      <div class="cl-bullet-num">${i+1}.</div>
+      <textarea class="cl-editable" style="flex:1;min-height:36px;" oninput="clUpdateBulletChar(this,${i})">${b}</textarea>
+      <div class="cl-bullet-char ${over ? 'over' : ''}" id="cl-bchar-${i}">${charCount}/${limit}</div>
+    `;
+    container.appendChild(row);
+  });
+  document.getElementById('cl-bullets-counter').textContent = `${bullets.length} bullet${bullets.length !== 1 ? 's' : ''}`;
+}
+
+function clUpdateBulletChar(el, idx) {
+  const limit = clState.limits.bulletCharLimit || 250;
+  const count = el.value.length;
+  const counter = document.getElementById(`cl-bchar-${idx}`);
+  if (counter) {
+    counter.textContent = `${count}/${limit}`;
+    counter.classList.toggle('over', count > limit);
+  }
+  // sync to state
+  const bullets = clGetCurrentBullets();
+  clState.generatedContent.bullets = bullets;
+}
+
+function clGetCurrentBullets() {
+  const rows = document.querySelectorAll('#cl-bullets-container .cl-bullet-edit-row textarea');
+  return Array.from(rows).map(r => r.value);
+}
+
+function clUpdateCounter(field) {
+  if (field === 'title') {
+    const val = document.getElementById('cl-out-title').value;
+    const limit = clState.limits.titleLimit || 200;
+    const counter = document.getElementById('cl-title-counter');
+    counter.textContent = `${val.length} / ${limit} chars`;
+    counter.className = 'cl-char-counter' + (val.length > limit ? ' over' : val.length > 0 ? ' good' : '');
+    clState.generatedContent.title = val;
+  } else if (field === 'desc') {
+    const val = document.getElementById('cl-out-desc').value;
+    const limit = clState.limits.descLimit;
+    const counter = document.getElementById('cl-desc-counter');
+    if (limit) {
+      counter.textContent = `${val.length} / ${limit} chars`;
+      counter.className = 'cl-char-counter' + (val.length > limit ? ' over' : val.length > 0 ? ' good' : '');
+    } else {
+      counter.textContent = `${val.length} chars`;
+    }
+    clState.generatedContent.desc = val;
+  } else if (field === 'kw') {
+    const val = document.getElementById('cl-out-kw').value;
+    document.getElementById('cl-kw-counter').textContent = `${val.length} chars`;
+    clState.generatedContent.kw = val;
+  }
+}
+
+// ---- Re-run individual fields ----
+async function clRerun(field) {
+  const instructionEl = document.getElementById(`cl-rerun-${field}-input`);
+  const instruction = instructionEl ? instructionEl.value.trim() : '';
+  clState.rerunInstructions[field] = instruction;
+
+  const btn = document.getElementById(`cl-rerun-${field}-btn`);
+  const spin = document.getElementById(`cl-spin-${field}`);
+  btn.disabled = true;
+  spin.style.display = 'block';
+
+  const inputs = clState.lastInputs || clCollectInputs();
+  const limits = clState.limits;
+  const system = clBuildSystemPrompt(inputs, limits, field, instruction);
+
+  // Enrich prompt with current content as context
+  const currentTitle = document.getElementById('cl-out-title')?.value || '';
+  const currentBullets = clGetCurrentBullets();
+  const currentDesc = document.getElementById('cl-out-desc')?.value || '';
+
+  const contextNote = `\nCURRENT CONTENT (for context — use this as the base to refine):\nTitle: ${currentTitle}\nBullets:\n${currentBullets.map((b,i)=>`${i+1}. ${b}`).join('\n')}\nDescription: ${currentDesc}\n`;
+
+  const fieldPrompt = clBuildPrompt(inputs, limits, field) + contextNote + (instruction ? `\nSPECIFIC INSTRUCTION FOR THIS RE-RUN: ${instruction}` : '');
+
+  try {
+    const data = await callClaude(fieldPrompt, system);
+    const text = data.content.map(c => c.text||'').join('').trim();
+
+    if (field === 'title') {
+      document.getElementById('cl-out-title').value = text;
+      clUpdateCounter('title');
+    } else if (field === 'bullets') {
+      const newBullets = clParseBullets(text);
+      clRenderBullets(newBullets);
+      clState.generatedContent.bullets = newBullets;
+    } else if (field === 'desc') {
+      document.getElementById('cl-out-desc').value = text;
+      clUpdateCounter('desc');
+    } else if (field === 'kw') {
+      document.getElementById('cl-out-kw').value = text;
+      clUpdateCounter('kw');
+    }
+    showToast('Content updated!', 'success');
+  } catch(err) {
+    showToast('Re-run failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    spin.style.display = 'none';
+  }
+}
+
+function clBackToSetup() {
+  document.getElementById('page-cl-review').style.display = 'none';
+  document.getElementById('page-cl-setup').style.display = 'block';
+  clSetNavStep(1);
+}
+
+// ---- Export ----
+function clExportCSV() {
+  const retailer = clState.retailerName || clState.retailer || 'content';
+  const bullets = clGetCurrentBullets();
+  const title = document.getElementById('cl-out-title')?.value || '';
+  const desc = document.getElementById('cl-out-desc')?.value || '';
+  const kw = document.getElementById('cl-out-kw')?.value || '';
+
+  const maxBullets = Math.max(bullets.length, 5);
+  const headers = ['item_id', 'title'];
+  for (let i = 1; i <= maxBullets; i++) headers.push(`bullet_${i}`);
+  headers.push('description', 'keywords');
+
+  const row = [
+    clState.lastInputs?.itemId || '',
+    title,
+    ...bullets,
+    ...Array(Math.max(0, maxBullets - bullets.length)).fill(''),
+    desc,
+    kw,
+  ];
+
+  const csv = [
+    headers.map(h => `"${h}"`).join(','),
+    row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  ].join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `copy-lab-${retailer.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}.csv`;
+  a.click();
+  showToast('CSV exported!', 'success');
+}
+
+function clExportPDF() {
+  const { jsPDF } = window.jspdf;
+  if (!jsPDF) { showToast('PDF library not loaded', 'error'); return; }
+
+  const retailer = clState.retailerName || clState.retailer || 'Content';
+  const bullets = clGetCurrentBullets();
+  const title = document.getElementById('cl-out-title')?.value || '';
+  const desc = document.getElementById('cl-out-desc')?.value || '';
+  const kw = document.getElementById('cl-out-kw')?.value || '';
+  const limits = clState.limits;
+
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 48;
+  const contentW = pageW - margin * 2;
+
+  doc.setFillColor(8, 13, 26);
+  doc.rect(0, 0, pageW, pageH, 'F');
+
+  let y = margin;
+
+  const checkPage = (needed = 30) => {
+    if (y + needed > pageH - margin) {
+      doc.addPage();
+      doc.setFillColor(8, 13, 26);
+      doc.rect(0, 0, pageW, pageH, 'F');
+      y = margin;
+    }
+  };
+
+  const writeSection = (label, content, limit) => {
+    checkPage(50);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(107, 127, 168);
+    doc.text(label.toUpperCase(), margin, y);
+    if (limit) {
+      const charStr = `${content.length} / ${limit} chars`;
+      doc.setTextColor(content.length > limit ? 239 : 107, content.length > limit ? 68 : 127, content.length > limit ? 68 : 168);
+      doc.text(charStr, pageW - margin, y, { align: 'right' });
+    }
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(220, 228, 255);
+    const lines = doc.splitTextToSize(content, contentW);
+    lines.forEach(line => { checkPage(16); doc.text(line, margin, y); y += 15; });
+    y += 14;
+    doc.setDrawColor(30, 45, 77);
+    doc.line(margin, y - 7, pageW - margin, y - 7);
+    y += 8;
+  };
+
+  // Header
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(34, 197, 94);
+  doc.text('Copy Lab', margin, y);
+  y += 22;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(107, 127, 168);
+  doc.text(`${retailer} · Generated ${new Date().toLocaleDateString()}`, margin, y);
+  y += 24;
+  doc.setDrawColor(30, 45, 77);
+  doc.line(margin, y, pageW - margin, y);
+  y += 20;
+
+  writeSection('Title', title, limits.titleLimit);
+
+  // Bullets
+  checkPage(50);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(107, 127, 168);
+  doc.text('BULLET POINTS', margin, y);
+  y += 14;
+  bullets.forEach((b, i) => {
+    checkPage(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(249, 115, 22);
+    doc.text(`${i+1}.`, margin, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(220, 228, 255);
+    const bLines = doc.splitTextToSize(b, contentW - 20);
+    bLines.forEach((line, li) => { checkPage(16); doc.text(line, margin + 18, y + li * 15); });
+    const charStr = `${b.length}/${limits.bulletCharLimit}`;
+    doc.setFontSize(8);
+    doc.setTextColor(b.length > limits.bulletCharLimit ? 239 : 107, b.length > limits.bulletCharLimit ? 68 : 127, b.length > limits.bulletCharLimit ? 68 : 168);
+    doc.text(charStr, pageW - margin, y, { align: 'right' });
+    y += bLines.length * 15 + 6;
+  });
+  y += 8;
+
+  writeSection('Description', desc, limits.descLimit);
+  writeSection('Backend / Search Keywords', kw, null);
+
+  doc.save(`copy-lab-${retailer.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}.pdf`);
+  showToast('PDF exported!', 'success');
+}
+
 function enterVariantVault() {
   document.getElementById('mode-selector').style.display = 'none';
   document.querySelector('nav').style.display = 'flex';
@@ -3576,6 +4857,10 @@ function returnToModeSelector() {
   document.querySelector('nav').style.display = 'none';
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-prompt-vault').style.display = 'none';
+  document.getElementById('page-cl-setup').style.display = 'none';
+  document.getElementById('page-cl-generating').style.display = 'none';
+  document.getElementById('page-cl-review').style.display = 'none';
+  document.getElementById('nav-steps-cl').style.display = 'none';
   document.getElementById('mode-selector').style.display = 'flex';
 }
 
