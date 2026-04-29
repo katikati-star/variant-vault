@@ -1080,8 +1080,12 @@
     box-shadow: 0 0 6px rgba(249,115,22,0.5);
   }
 
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  /* Auto-resize textareas in Adapt Lab review */
+  #page-al-review textarea.cl-editable {
+    overflow: hidden;
+    resize: none;
+    min-height: 36px;
+  }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
@@ -5982,7 +5986,7 @@ function pvExportAwarenessPDF() {
       </div>
       <div style="padding:14px 16px;">
         <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Adapted</div>
-        <textarea class="cl-editable" id="al-out-title" rows="2" oninput="alUpdateCounter('title');alRefreshTitleDiff()" style="width:100%;"></textarea>
+        <textarea class="cl-editable" id="al-out-title" rows="2" oninput="alUpdateCounter('title');alRefreshTitleDiff();alAutoResize(this)" style="width:100%;overflow:hidden;resize:none;"></textarea>
       </div>
     </div>
     <div class="cl-rerun-bar">
@@ -6035,7 +6039,7 @@ function pvExportAwarenessPDF() {
       </div>
       <div style="padding:14px 16px;">
         <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Adapted</div>
-        <textarea class="cl-editable" id="al-out-desc" rows="8" oninput="alUpdateCounter('desc');alRefreshDescDiff()" style="width:100%;"></textarea>
+        <textarea class="cl-editable" id="al-out-desc" rows="8" oninput="alUpdateCounter('desc');alRefreshDescDiff();alAutoResize(this)" style="width:100%;overflow:hidden;resize:none;"></textarea>
       </div>
     </div>
     <div class="cl-rerun-bar">
@@ -6432,6 +6436,7 @@ function alShowReview() {
   document.getElementById('al-out-title').value = title;
   alUpdateCounter('title');
   alRefreshTitleDiff();
+  alAutoResize(document.getElementById('al-out-title'));
 
   // Bullets
   alRenderBullets(bullets);
@@ -6440,6 +6445,7 @@ function alShowReview() {
   document.getElementById('al-out-desc').value = desc;
   alUpdateCounter('desc');
   alRefreshDescDiff();
+  alAutoResize(document.getElementById('al-out-desc'));
 
   ['title','bullets','desc'].forEach(f => {
     const el = document.getElementById(`al-rerun-${f}-input`);
@@ -6532,13 +6538,17 @@ function alRenderBullets(bullets) {
 
     const adaptedCol = document.createElement('div');
     adaptedCol.style.cssText = 'padding:10px 16px;';
-    adaptedCol.innerHTML = `<div style="display:flex;align-items:flex-start;gap:8px;"><span style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--orange);flex-shrink:0;padding-top:6px;">${i+1}.</span><div style="flex:1;display:flex;align-items:flex-start;gap:8px;"><textarea class="cl-editable" style="flex:1;min-height:36px;" oninput="alUpdateBulletChar(this,${i})">${adapted.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><div class="cl-bullet-char ${over ? 'over' : ''}" id="al-bchar-${i}" style="white-space:nowrap;">${adapted.length}/${limit}</div><button class="cl-rerun-btn" style="padding:4px 8px;border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);" onclick="alRerunSingleBullet(${i})" id="al-rerun-b${i}-btn" title="Re-run this bullet"><div class="cl-spin" id="al-spin-b${i}" style="width:10px;height:10px;border-width:1.5px;"></div><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div></div>`;
+    adaptedCol.innerHTML = `<div style="display:flex;align-items:flex-start;gap:8px;"><span style="font-family:DM Mono,monospace;font-size:0.7rem;color:var(--orange);flex-shrink:0;padding-top:6px;">${i+1}.</span><div style="flex:1;display:flex;align-items:flex-start;gap:8px;"><textarea class="cl-editable" style="flex:1;min-height:36px;overflow:hidden;resize:none;" oninput="alUpdateBulletChar(this,${i});alAutoResize(this)">${adapted.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><div class="cl-bullet-char ${over ? 'over' : ''}" id="al-bchar-${i}" style="white-space:nowrap;">${adapted.length}/${limit}</div><button class="cl-rerun-btn" style="padding:4px 8px;border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);" onclick="alRerunSingleBullet(${i})" id="al-rerun-b${i}-btn" title="Re-run this bullet"><div class="cl-spin" id="al-spin-b${i}" style="width:10px;height:10px;border-width:1.5px;"></div><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div></div>`;
 
     row.appendChild(baseCol);
     row.appendChild(adaptedCol);
     container.appendChild(row);
   }
   document.getElementById('al-bullets-counter').textContent = `${bullets.length} bullet${bullets.length !== 1 ? 's' : ''}`;
+  // Auto-resize all bullet textareas after render
+  setTimeout(() => {
+    container.querySelectorAll('textarea').forEach(ta => alAutoResize(ta));
+  }, 0);
 }
 
 function alUpdateBulletChar(el, idx) {
@@ -6602,14 +6612,18 @@ Return ONLY the bullet text — no number, no label.`;
     const newBullet = data.content.map(c => c.text||'').join('').trim()
       .replace(/^\d+[\.\)]\s*/, '').replace(/\.$/, '').split('\n')[0].trim();
     const rows = document.querySelectorAll('#al-bullets-container textarea');
-    if (rows[idx]) { rows[idx].value = newBullet; alUpdateBulletChar(rows[idx], idx); }
+    if (rows[idx]) { rows[idx].value = newBullet; alUpdateBulletChar(rows[idx], idx); alAutoResize(rows[idx]); }
     alState.generatedContent.bullets = alGetCurrentBullets();
     showToast(`Bullet ${idx+1} updated`, 'success');
   } catch(err) { showToast('Re-run failed: ' + err.message, 'error'); }
   finally { btn.disabled = false; spin.style.display = 'none'; }
 }
 
-// ---- Output cleaners ----
+function alAutoResize(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
 function alCleanTitle(raw) {
   // Strip any label prefix like "Title:" or "Here is the title:"
   return raw
@@ -6659,6 +6673,7 @@ async function alRerun(field) {
       document.getElementById('al-out-title').value = clean;
       alUpdateCounter('title');
       alRefreshTitleDiff();
+      alAutoResize(document.getElementById('al-out-title'));
     } else if (field === 'bullets') {
       const b = clParseBullets(raw);
       alRenderBullets(b);
@@ -6668,6 +6683,7 @@ async function alRerun(field) {
       document.getElementById('al-out-desc').value = clean;
       alUpdateCounter('desc');
       alRefreshDescDiff();
+      alAutoResize(document.getElementById('al-out-desc'));
     }
     showToast('Content updated!', 'success');
   } catch(err) { showToast('Re-run failed: ' + err.message, 'error'); }
