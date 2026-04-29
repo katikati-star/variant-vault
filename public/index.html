@@ -1765,59 +1765,64 @@ async function checkPassword() {
   <div style="font-family:'DM Sans',sans-serif; font-size:0.95rem; color:#6b7fa8; text-align:center; margin-bottom:6px; font-style:italic;">The work before the words.</div>
   <div style="font-family:'DM Sans',sans-serif; font-size:0.82rem; color:#4a5a7a; text-align:center; margin-bottom:52px; max-width:400px; line-height:1.6;">Refining the inputs that make great content possible.</div>
 
-  <div style="display:flex; gap:20px; padding:0 24px; width:100%; max-width:1060px;">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; padding:0 24px; width:100%; max-width:820px;">
 
     <div onclick="enterVariantVault()" style="
-      flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
-      border-radius:16px; padding:32px 28px; cursor:pointer;
+      background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:28px 24px; cursor:pointer;
       transition:all 0.2s; position:relative; overflow:hidden;
       display:flex; flex-direction:column;
     " onmouseover="this.style.borderColor='#f97316';this.style.background='rgba(249,115,22,0.05)'"
        onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
-      <div style="font-size:1.8rem; margin-bottom:14px;">🔗</div>
-      <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; color:#f0f4ff; margin-bottom:8px;">Variant <span style="color:#f97316;">Vault</span></div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:0.82rem; color:#6b7fa8; line-height:1.5; flex:1;">Group product variants by size, color, and pack count. Review, edit, and export ready-to-use grouping files.</div>
-      <div style="margin-top:20px; font-family:'DM Mono',monospace; font-size:0.7rem; color:#f97316; letter-spacing:0.08em; text-transform:uppercase;">Product Grouping →</div>
+      <div style="font-size:1.6rem; margin-bottom:12px;">🔗</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:1.3rem; color:#f0f4ff; margin-bottom:6px;">Variant <span style="color:#f97316;">Vault</span></div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:0.8rem; color:#6b7fa8; line-height:1.5; flex:1;">Group product variants by size, color, and pack count. Review, edit, and export ready-to-use grouping files.</div>
+      <div style="margin-top:16px; font-family:'DM Mono',monospace; font-size:0.68rem; color:#f97316; letter-spacing:0.08em; text-transform:uppercase;">Product Grouping →</div>
     </div>
 
     <div onclick="enterPromptVault()" style="
-      flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
-      border-radius:16px; padding:32px 28px; cursor:pointer;
+      background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:28px 24px; cursor:pointer;
       transition:all 0.2s; position:relative; overflow:hidden;
       display:flex; flex-direction:column;
     " onmouseover="this.style.borderColor='#3b82f6';this.style.background='rgba(59,130,246,0.05)'"
        onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
-      <!-- BETA watermark pattern -->
-      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;">
-        <div style="position:absolute;inset:-20px;display:flex;flex-wrap:wrap;gap:18px;transform:rotate(-20deg);transform-origin:center;opacity:0.07;">
-          <span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span>
-        </div>
-      </div>
+      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;"><div style="position:absolute;inset:-20px;display:flex;flex-wrap:wrap;gap:18px;transform:rotate(-20deg);transform-origin:center;opacity:0.07;"><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span></div></div>
       <div style="position:absolute;top:12px;right:12px;font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;background:rgba(251,191,36,0.12);color:#f59e0b;border:1px solid rgba(251,191,36,0.25);padding:2px 7px;border-radius:4px;z-index:1;">Beta</div>
-      <div style="position:relative;z-index:1;font-size:1.8rem; margin-bottom:14px;">⚗️</div>
-      <div style="position:relative;z-index:1;font-family:'DM Serif Display',serif; font-size:1.4rem; color:#f0f4ff; margin-bottom:8px;">Prompt <span style="color:#3b82f6;">Vault</span></div>
-      <div style="position:relative;z-index:1;font-family:'DM Sans',sans-serif; font-size:0.82rem; color:#6b7fa8; line-height:1.5; flex:1;">Turn raw briefs, notes, and client input into structured AI instructions. Outputs field-by-field prompts plus a human awareness list.</div>
-      <div style="position:relative;z-index:1;margin-top:20px; font-family:'DM Mono',monospace; font-size:0.7rem; color:#3b82f6; letter-spacing:0.08em; text-transform:uppercase;">Brief Interpreter →</div>
+      <div style="position:relative;z-index:1;font-size:1.6rem; margin-bottom:12px;">⚗️</div>
+      <div style="position:relative;z-index:1;font-family:'DM Serif Display',serif; font-size:1.3rem; color:#f0f4ff; margin-bottom:6px;">Prompt <span style="color:#3b82f6;">Vault</span></div>
+      <div style="position:relative;z-index:1;font-family:'DM Sans',sans-serif; font-size:0.8rem; color:#6b7fa8; line-height:1.5; flex:1;">Turn raw briefs, notes, and client input into structured AI instructions. Outputs field-by-field prompts plus a human awareness list.</div>
+      <div style="position:relative;z-index:1;margin-top:16px; font-family:'DM Mono',monospace; font-size:0.68rem; color:#3b82f6; letter-spacing:0.08em; text-transform:uppercase;">Brief Interpreter →</div>
     </div>
 
     <div onclick="enterCopyLab()" style="
-      flex:1; background:#0d1526; border:1.5px solid #1e2d4d;
-      border-radius:16px; padding:32px 28px; cursor:pointer;
+      background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:28px 24px; cursor:pointer;
       transition:all 0.2s; position:relative; overflow:hidden;
       display:flex; flex-direction:column;
     " onmouseover="this.style.borderColor='#22c55e';this.style.background='rgba(34,197,94,0.05)'"
        onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
-      <!-- BETA watermark pattern -->
-      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;">
-        <div style="position:absolute;inset:-20px;display:flex;flex-wrap:wrap;gap:18px;transform:rotate(-20deg);transform-origin:center;opacity:0.07;">
-          <span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span>
-        </div>
-      </div>
+      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;"><div style="position:absolute;inset:-20px;display:flex;flex-wrap:wrap;gap:18px;transform:rotate(-20deg);transform-origin:center;opacity:0.07;"><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span></div></div>
       <div style="position:absolute;top:12px;right:12px;font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;background:rgba(251,191,36,0.12);color:#f59e0b;border:1px solid rgba(251,191,36,0.25);padding:2px 7px;border-radius:4px;z-index:1;">Beta</div>
-      <div style="position:relative;z-index:1;font-size:1.8rem; margin-bottom:14px;">✍️</div>
-      <div style="position:relative;z-index:1;font-family:'DM Serif Display',serif; font-size:1.4rem; color:#f0f4ff; margin-bottom:8px;">Copy <span style="color:#22c55e;">Lab</span></div>
-      <div style="position:relative;z-index:1;font-family:'DM Sans',sans-serif; font-size:0.82rem; color:#6b7fa8; line-height:1.5; flex:1;">Generate retailer-ready product content — titles, bullets, and descriptions — guided by your brand rules and content guidelines.</div>
-      <div style="position:relative;z-index:1;margin-top:20px; font-family:'DM Mono',monospace; font-size:0.7rem; color:#22c55e; letter-spacing:0.08em; text-transform:uppercase;">Content Generator →</div>
+      <div style="position:relative;z-index:1;font-size:1.6rem; margin-bottom:12px;">✍️</div>
+      <div style="position:relative;z-index:1;font-family:'DM Serif Display',serif; font-size:1.3rem; color:#f0f4ff; margin-bottom:6px;">Copy <span style="color:#22c55e;">Lab</span></div>
+      <div style="position:relative;z-index:1;font-family:'DM Sans',sans-serif; font-size:0.8rem; color:#6b7fa8; line-height:1.5; flex:1;">Generate retailer-ready product content — titles, bullets, and descriptions — guided by your brand rules and content guidelines.</div>
+      <div style="position:relative;z-index:1;margin-top:16px; font-family:'DM Mono',monospace; font-size:0.68rem; color:#22c55e; letter-spacing:0.08em; text-transform:uppercase;">Content Generator →</div>
+    </div>
+
+    <div onclick="enterAdaptLab()" style="
+      background:#0d1526; border:1.5px solid #1e2d4d;
+      border-radius:16px; padding:28px 24px; cursor:pointer;
+      transition:all 0.2s; position:relative; overflow:hidden;
+      display:flex; flex-direction:column;
+    " onmouseover="this.style.borderColor='#a78bfa';this.style.background='rgba(167,139,250,0.05)'"
+       onmouseout="this.style.borderColor='#1e2d4d';this.style.background='#0d1526'">
+      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;"><div style="position:absolute;inset:-20px;display:flex;flex-wrap:wrap;gap:18px;transform:rotate(-20deg);transform-origin:center;opacity:0.07;"><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span><span style="font-size:0.55rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.12em;color:#f59e0b;white-space:nowrap;">BETA</span></div></div>
+      <div style="position:absolute;top:12px;right:12px;font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;background:rgba(251,191,36,0.12);color:#f59e0b;border:1px solid rgba(251,191,36,0.25);padding:2px 7px;border-radius:4px;z-index:1;">Beta</div>
+      <div style="position:relative;z-index:1;font-size:1.6rem; margin-bottom:12px;">🔄</div>
+      <div style="position:relative;z-index:1;font-family:'DM Serif Display',serif; font-size:1.3rem; color:#f0f4ff; margin-bottom:6px;">Adapt <span style="color:#a78bfa;">Lab</span></div>
+      <div style="position:relative;z-index:1;font-family:'DM Sans',sans-serif; font-size:0.8rem; color:#6b7fa8; line-height:1.5; flex:1;">Adapt existing base copy for a new product variant. Same structure, same tone — just updated to fit the new product's specifics.</div>
+      <div style="position:relative;z-index:1;margin-top:16px; font-family:'DM Mono',monospace; font-size:0.68rem; color:#a78bfa; letter-spacing:0.08em; text-transform:uppercase;">Content Adapter →</div>
     </div>
 
   </div>
@@ -1856,6 +1861,14 @@ async function checkPassword() {
     <div class="step-pill" id="cl-nav-2"><div class="step-num">2</div> Generating</div>
     <div class="step-divider"></div>
     <div class="step-pill" id="cl-nav-3"><div class="step-num">3</div> Review</div>
+  </div>
+  <!-- Adapt Lab steps -->
+  <div class="nav-steps" id="nav-steps-al" style="display:none;">
+    <div class="step-pill" id="al-nav-1"><div class="step-num">1</div> Setup</div>
+    <div class="step-divider"></div>
+    <div class="step-pill" id="al-nav-2"><div class="step-num">2</div> Adapting</div>
+    <div class="step-divider"></div>
+    <div class="step-pill" id="al-nav-3"><div class="step-num">3</div> Review</div>
   </div>
   <!-- Prompt Vault steps -->
   <div class="nav-steps" id="nav-steps-pv" style="display:none;">
@@ -2406,14 +2419,18 @@ async function checkPassword() {
   <!-- Save/load bar -->
   <div class="cl-save-bar">
     <span class="cl-save-bar-label">💾 Save your inputs or restore a previous session</span>
+    <button class="btn btn-ghost btn-sm" onclick="clDownloadTemplate()" title="Download blank CSV template">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Template
+    </button>
     <button class="btn btn-ghost btn-sm" onclick="clSaveInputs()">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Download inputs
+      Save CSV
     </button>
     <label class="btn btn-ghost btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 13V6M5 9l3-3 3 3M3 3h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Load inputs
-      <input type="file" id="cl-load-input" accept=".json" style="display:none;" onchange="clLoadInputs(event)">
+      Load CSV
+      <input type="file" id="cl-load-input" accept=".csv" style="display:none;" onchange="clLoadInputs(event)">
     </label>
   </div>
 
@@ -2682,7 +2699,10 @@ async function checkPassword() {
   <div class="cl-review-card" id="cl-card-desc">
     <div class="cl-review-card-header">
       <div class="cl-review-card-label">Description</div>
-      <div class="cl-char-counter" id="cl-desc-counter">0 / 0 chars</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="cl-char-counter" id="cl-desc-word-counter">0 words</div>
+        <div class="cl-char-counter" id="cl-desc-counter">0 / 0 chars</div>
+      </div>
     </div>
     <div class="cl-review-content">
       <textarea class="cl-editable" id="cl-out-desc" rows="6" oninput="clUpdateCounter('desc')"></textarea>
@@ -4301,51 +4321,99 @@ function clCollectInputs() {
   };
 }
 
-function clSaveInputs() {
-  const data = clCollectInputs();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+// Copy Lab CSV fields definition
+const CL_CSV_FIELDS = [
+  'retailer','titleLimit','bulletCharLimit','bulletMin','bulletMax','descLimit',
+  'productTitle','brand','itemId','category',
+  'titleCaps','titleStructure','titleInclude','titleAvoid',
+  'bulletHeader','bulletAvoid',
+  'bulletFocus1','bulletFocus2','bulletFocus3','bulletFocus4','bulletFocus5',
+  'bulletFocus6','bulletFocus7','bulletFocus8','bulletFocus9','bulletFocus10',
+  'descStructure','descAlways',
+  'tone','taglines','neverDo','extraInstructions'
+];
+
+function clDownloadTemplate() {
+  const headers = CL_CSV_FIELDS;
+  const example = [
+    'Amazon','200','250','1','5','2000',
+    'ChapStick Classic Original Lip Balm 0.15 oz','ChapStick','B001ETQ9WQ','Lip Balm — Classics',
+    'Title Case','Brand → Type → Feature → Size','Pack of','for men',
+    'ALL CAPS','amazing',
+    "America's #1 Lip Balm Brand",'Clinically proven benefits','Hydration you can count on','Crave-worthy flavors','Just one swipe to happy lips',
+    '','','','','',
+    'hook → features → who it\'s for','For 145 years we\'ve been the name you believe in. Clinically proven to relieve and prevent dry and chapped lips.',
+    'Direct, confident, upbeat, cheeky','Hydration You Can Count On. Just One Swipe to Happy Lips.','no exclamation marks','Paste brand guidelines here'
+  ];
+  const csv = [
+    headers.map(h => `"${h}"`).join(','),
+    example.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  ].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `copy-lab-inputs-${Date.now()}.json`;
-  a.click();
-  showToast('Inputs saved!', 'success');
+  a.href = url; a.download = 'copy-lab-template.csv'; a.click();
+  showToast('Template downloaded!', 'success');
+}
+
+function clSaveInputs() {
+  const d = clCollectInputs();
+  const bulletFocuses = d.bulletFocuses || [];
+  const row = [
+    d.retailer,
+    d.limits.titleLimit || '',
+    d.limits.bulletCharLimit || '',
+    d.limits.bulletMin || '',
+    d.limits.bulletMax || '',
+    d.limits.descLimit || '',
+    d.productTitle, d.brand, d.itemId, d.category,
+    d.titleCaps, d.titleStructure, d.titleInclude, d.titleAvoid,
+    d.bulletHeader, d.bulletAvoid,
+    ...Array.from({length:10}, (_,i) => bulletFocuses[i] || ''),
+    d.descStructure, d.descAlways,
+    d.tone, d.taglines, d.neverDo, d.extraInstructions
+  ];
+  const csv = [
+    CL_CSV_FIELDS.map(h => `"${h}"`).join(','),
+    row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
+  ].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `copy-lab-inputs-${Date.now()}.csv`; a.click();
+  showToast('Inputs saved as CSV!', 'success');
 }
 
 function clLoadInputs(event) {
   const file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const d = JSON.parse(e.target.result);
-      if (d.retailer) {
-        document.getElementById('cl-retailer').value = d.retailer;
-        clRetailerChanged();
-      }
-      if (d.limits) {
-        if (d.limits.titleLimit) document.getElementById('cl-title-limit').value = d.limits.titleLimit;
-        if (d.limits.bulletCharLimit) document.getElementById('cl-bullet-char-limit').value = d.limits.bulletCharLimit;
-        if (d.limits.bulletMin) document.getElementById('cl-bullet-min').value = d.limits.bulletMin;
-        if (d.limits.bulletMax) {
-          document.getElementById('cl-bullet-max').value = d.limits.bulletMax;
-          clBuildBulletFocuses(d.limits.bulletMax);
-        }
-        if (d.limits.descLimit) document.getElementById('cl-desc-limit').value = d.limits.descLimit;
-      }
-      const fields = ['productTitle','brand','itemId','category','titleCaps','titleStructure','titleInclude','titleAvoid','bulletHeader','bulletAvoid','descStructure','descAlways','tone','taglines','neverDo','extraInstructions'];
-      const idMap = { productTitle:'cl-product-title', brand:'cl-brand', itemId:'cl-item-id', category:'cl-category', titleCaps:'cl-title-caps', titleStructure:'cl-title-structure', titleInclude:'cl-title-include', titleAvoid:'cl-title-avoid', bulletHeader:'cl-bullet-header', bulletAvoid:'cl-bullet-avoid', descStructure:'cl-desc-structure', descAlways:'cl-desc-always', tone:'cl-tone', taglines:'cl-taglines', neverDo:'cl-never-do', extraInstructions:'cl-extra-instructions' };
-      fields.forEach(f => { if (d[f] !== undefined) { const el = document.getElementById(idMap[f]); if (el) el.value = d[f]; }});
-      if (Array.isArray(d.bulletFocuses)) {
-        d.bulletFocuses.forEach((val, i) => {
-          const el = document.getElementById(`cl-bullet-focus-${i+1}`);
-          if (el) el.value = val;
-        });
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      const d = results.data[0];
+      if (!d) { showToast('Could not read CSV', 'error'); return; }
+      const idMap = {
+        retailer: 'cl-retailer',
+        productTitle: 'cl-product-title', brand: 'cl-brand', itemId: 'cl-item-id', category: 'cl-category',
+        titleCaps: 'cl-title-caps', titleStructure: 'cl-title-structure', titleInclude: 'cl-title-include', titleAvoid: 'cl-title-avoid',
+        bulletHeader: 'cl-bullet-header', bulletAvoid: 'cl-bullet-avoid',
+        descStructure: 'cl-desc-structure', descAlways: 'cl-desc-always',
+        tone: 'cl-tone', taglines: 'cl-taglines', neverDo: 'cl-never-do', extraInstructions: 'cl-extra-instructions'
+      };
+      if (d.retailer) { document.getElementById('cl-retailer').value = d.retailer; clRetailerChanged(); }
+      const numFields = { titleLimit:'cl-title-limit', bulletCharLimit:'cl-bullet-char-limit', bulletMin:'cl-bullet-min', bulletMax:'cl-bullet-max', descLimit:'cl-desc-limit' };
+      Object.entries(numFields).forEach(([key, id]) => { if (d[key]) document.getElementById(id).value = d[key]; });
+      if (d.bulletMax) clBuildBulletFocuses(parseInt(d.bulletMax) || 5);
+      Object.entries(idMap).forEach(([key, id]) => { if (d[key] !== undefined) { const el = document.getElementById(id); if (el) el.value = d[key]; }});
+      for (let i = 1; i <= 10; i++) {
+        const val = d[`bulletFocus${i}`];
+        if (val !== undefined) { const el = document.getElementById(`cl-bullet-focus-${i}`); if (el) el.value = val; }
       }
       showToast('Inputs restored!', 'success');
-    } catch(err) { showToast('Could not read file', 'error'); }
-  };
-  reader.readAsText(file);
+    },
+    error: () => showToast('Could not read CSV', 'error')
+  });
   event.target.value = '';
 }
 
@@ -4584,6 +4652,9 @@ function clUpdateCounter(field) {
     const val = document.getElementById('cl-out-desc').value;
     const limit = clState.limits.descLimit;
     const counter = document.getElementById('cl-desc-counter');
+    const wordCounter = document.getElementById('cl-desc-word-counter');
+    const wordCount = val.trim() ? val.trim().split(/\s+/).length : 0;
+    if (wordCounter) wordCounter.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
     if (limit) {
       counter.textContent = `${val.length} / ${limit} chars`;
       counter.className = 'cl-char-counter' + (val.length > limit ? ' over' : val.length > 0 ? ' good' : '');
@@ -4874,6 +4945,10 @@ function returnToModeSelector() {
   document.getElementById('page-cl-generating').style.display = 'none';
   document.getElementById('page-cl-review').style.display = 'none';
   document.getElementById('nav-steps-cl').style.display = 'none';
+  document.getElementById('page-al-setup').style.display = 'none';
+  document.getElementById('page-al-adapting').style.display = 'none';
+  document.getElementById('page-al-review').style.display = 'none';
+  document.getElementById('nav-steps-al').style.display = 'none';
   document.getElementById('mode-selector').style.display = 'flex';
 }
 
@@ -5690,5 +5765,737 @@ function pvExportAwarenessPDF() {
   showToast('Awareness Notes PDF exported!', 'success');
 }
 </script>
-</body>
-</html>
+<!-- ===================== ADAPT LAB PAGES ===================== -->
+
+<!-- Page AL-1: Setup -->
+<div id="page-al-setup" style="display:none; max-width:780px; margin:0 auto; padding:60px 40px;">
+  <div style="margin-bottom:36px;">
+    <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Adapt Lab</div>
+    <h1 style="font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--text);letter-spacing:-0.02em;margin-bottom:10px;">Adapt base copy for a <em style="color:#a78bfa;">new product</em></h1>
+    <p style="font-size:0.92rem;color:var(--muted);line-height:1.6;max-width:540px;">Paste your approved base copy, describe the new product's specifics, and the AI will adapt it — same structure and tone, updated details.</p>
+  </div>
+
+  <!-- Save/load bar -->
+  <div class="cl-save-bar">
+    <span class="cl-save-bar-label">💾 Save your inputs or restore a previous session</span>
+    <button class="btn btn-ghost btn-sm" onclick="alDownloadTemplate()" title="Download blank CSV template">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Template
+    </button>
+    <button class="btn btn-ghost btn-sm" onclick="alSaveInputs()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Save CSV
+    </button>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 13V6M5 9l3-3 3 3M3 3h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Load CSV
+      <input type="file" id="al-load-input" accept=".csv" style="display:none;" onchange="alLoadInputs(event)">
+    </label>
+  </div>
+
+  <!-- RETAILER -->
+  <div class="cl-section">
+    <div class="cl-section-title" style="color:#a78bfa;">Retailer</div>
+    <div class="cl-field" style="margin-bottom:16px;">
+      <label class="cl-label">Retailer</label>
+      <select class="cl-select" id="al-retailer" onchange="alRetailerChanged()">
+        <option value="">— Select retailer —</option>
+        <option value="Amazon">Amazon</option>
+        <option value="Walmart">Walmart</option>
+        <option value="Home Depot">Home Depot</option>
+        <option value="Costco">Costco</option>
+        <option value="Best Buy">Best Buy</option>
+        <option value="Wayfair">Wayfair</option>
+        <option value="Lowes">Lowe's</option>
+        <option value="Sams Club">Sam's Club</option>
+        <option value="Target">Target</option>
+        <option value="Mercado Livre">Mercado Livre Brazil</option>
+        <option value="Build.com">Build.com</option>
+        <option value="MediaMarkt">MediaMarkt</option>
+        <option value="Currys">Currys</option>
+        <option value="Kroger">Kroger</option>
+        <option value="Ulta">Ulta</option>
+        <option value="DTC">DTC</option>
+        <option value="Custom">Custom</option>
+      </select>
+    </div>
+    <div class="cl-retailer-strip" id="al-retailer-strip" style="display:none;">
+      <div class="cl-retailer-stat"><div class="cl-retailer-stat-label">Title limit</div><div class="cl-retailer-stat-val" id="al-rs-title">—</div></div>
+      <div class="cl-retailer-stat"><div class="cl-retailer-stat-label">Bullets</div><div class="cl-retailer-stat-val" id="al-rs-bullets">—</div></div>
+      <div class="cl-retailer-stat"><div class="cl-retailer-stat-label">Bullet length</div><div class="cl-retailer-stat-val" id="al-rs-bulletchar">—</div></div>
+      <div class="cl-retailer-stat"><div class="cl-retailer-stat-label">Description</div><div class="cl-retailer-stat-val" id="al-rs-desc">—</div></div>
+    </div>
+    <div class="cl-grid" id="al-retailer-overrides" style="display:none;">
+      <div class="cl-field"><label class="cl-label">Title char limit <span class="cl-optional">editable</span></label><input type="number" class="cl-num-input" id="al-title-limit" style="width:100%;" min="1"></div>
+      <div class="cl-field"><label class="cl-label">Bullet char limit <span class="cl-optional">editable</span></label><input type="number" class="cl-num-input" id="al-bullet-char-limit" style="width:100%;" min="1"></div>
+      <div class="cl-field"><label class="cl-label">Min bullets <span class="cl-optional">editable</span></label><input type="number" class="cl-num-input" id="al-bullet-min" style="width:100%;" min="1"></div>
+      <div class="cl-field"><label class="cl-label">Max bullets <span class="cl-optional">editable</span></label><input type="number" class="cl-num-input" id="al-bullet-max" style="width:100%;" min="1"></div>
+      <div class="cl-field"><label class="cl-label">Description char limit <span class="cl-optional">editable</span></label><input type="number" class="cl-num-input" id="al-desc-limit" style="width:100%;" min="1"></div>
+    </div>
+  </div>
+
+  <!-- BASE COPY -->
+  <div class="cl-section">
+    <div class="cl-section-title" style="color:#a78bfa;">Base Copy</div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">Paste the approved copy this new product should be adapted from.</div>
+    <div class="cl-field" style="margin-bottom:14px;">
+      <label class="cl-label">Base Title</label>
+      <input type="text" class="cl-input" id="al-base-title" placeholder="Paste the existing approved title">
+    </div>
+    <div class="cl-field" style="margin-bottom:14px;">
+      <label class="cl-label">Base Bullets <span class="cl-optional">one per line</span></label>
+      <textarea class="cl-textarea" id="al-base-bullets" style="min-height:140px;" placeholder="1. First bullet&#10;2. Second bullet&#10;3. Third bullet…"></textarea>
+    </div>
+    <div class="cl-field">
+      <label class="cl-label">Base Description</label>
+      <textarea class="cl-textarea" id="al-base-desc" style="min-height:120px;" placeholder="Paste the existing approved description"></textarea>
+    </div>
+  </div>
+
+  <!-- NEW PRODUCT DETAILS -->
+  <div class="cl-section">
+    <div class="cl-section-title" style="color:#a78bfa;">New Product Details</div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">What's different or specific about this new product? The AI will swap these in.</div>
+    <div class="cl-grid">
+      <div class="cl-field full">
+        <label class="cl-label">New product title / name <span class="cl-optional">optional — leave blank and AI uses the details below</span></label>
+        <input type="text" class="cl-input" id="al-new-title" placeholder="e.g. ChapStick Classic Cherry Lip Balm, 3 ct">
+      </div>
+      <div class="cl-field full">
+        <label class="cl-label">New product specifics <span class="cl-optional">describe what's different — flavor, size, scent, ingredients, count, etc.</span></label>
+        <textarea class="cl-textarea" id="al-new-details" style="min-height:100px;" placeholder="e.g. Cherry flavor instead of Original&#10;Pack of 3 instead of single&#10;Contains SPF 15&#10;New ingredient: Vitamin E"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOCUS / INSTRUCTIONS -->
+  <div class="cl-section">
+    <div class="cl-section-title" style="color:#a78bfa;">Adaptation Focus <span style="font-size:0.65rem;font-weight:400;color:var(--border);text-transform:none;letter-spacing:0;">optional</span></div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">Tell the AI what to emphasize or include in each section. For overall notes, the AI will decide where each detail fits best.</div>
+    <div class="cl-field" style="margin-bottom:12px;">
+      <label class="cl-label">Overall PDP notes <span class="cl-optional">AI decides where each fits</span></label>
+      <textarea class="cl-textarea" id="al-overall-notes" style="min-height:80px;" placeholder="e.g. Emphasize the cherry flavor throughout, mention the fun/playful angle, make sure SPF mention appears early"></textarea>
+    </div>
+    <div class="cl-field" style="margin-bottom:12px;">
+      <label class="cl-label">Title focus <span class="cl-optional">optional</span></label>
+      <input type="text" class="cl-input" id="al-title-focus" placeholder="e.g. Lead with Cherry, include SPF 15">
+    </div>
+    <div class="cl-field" style="margin-bottom:12px;">
+      <label class="cl-label">Bullets focus <span class="cl-optional">optional</span></label>
+      <textarea class="cl-textarea" id="al-bullets-focus" style="min-height:80px;" placeholder="e.g. Bullet 1 should mention cherry flavor, keep the clinically proven claim in bullet 2"></textarea>
+    </div>
+    <div class="cl-field">
+      <label class="cl-label">Description focus <span class="cl-optional">optional</span></label>
+      <textarea class="cl-textarea" id="al-desc-focus" style="min-height:80px;" placeholder="e.g. Open with the flavor angle, keep the heritage line, close with the pack count"></textarea>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="display:flex;gap:12px;align-items:center;padding-top:8px;padding-bottom:60px;">
+    <button class="btn btn-ghost" onclick="returnToModeSelector()">← Back</button>
+    <button class="btn" id="al-generate-btn" onclick="alStartAdapting()" style="background:#a78bfa;color:#fff;font-weight:600;padding:14px 32px;font-size:0.95rem;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Adapt Content
+    </button>
+  </div>
+</div>
+
+<!-- Page AL-2: Adapting -->
+<div id="page-al-adapting" style="display:none;">
+  <div style="max-width:600px;margin:0 auto;padding:120px 40px;text-align:center;">
+    <div style="width:80px;height:80px;margin:0 auto 40px;position:relative;">
+      <div style="position:absolute;inset:0;border-radius:50%;border:3px solid var(--border);border-top-color:#a78bfa;animation:spin 1s linear infinite;"></div>
+      <div style="position:absolute;inset:10px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--orange);animation:spin 0.7s linear infinite reverse;"></div>
+    </div>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--text);margin-bottom:12px;">Adapting content…</h2>
+    <p style="font-size:0.9rem;color:var(--muted);margin-bottom:32px;" id="al-gen-status">Getting ready</p>
+    <div class="progress-bar-wrap" style="margin-bottom:28px;">
+      <div class="progress-bar-fill" id="al-progress-bar" style="background:#a78bfa;"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;text-align:left;">
+      <div class="proc-step" id="al-step-1"><span class="proc-dot"></span><span>Reading base copy and new details</span></div>
+      <div class="proc-step" id="al-step-2"><span class="proc-dot"></span><span>Adapting title</span></div>
+      <div class="proc-step" id="al-step-3"><span class="proc-dot"></span><span>Adapting bullets</span></div>
+      <div class="proc-step" id="al-step-4"><span class="proc-dot"></span><span>Adapting description</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Page AL-3: Review -->
+<div id="page-al-review" style="display:none; max-width:900px; margin:0 auto; padding:40px;">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:20px;">
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:#a78bfa;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Adapt Lab — Review</div>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--text);letter-spacing:-0.02em;">Review & Refine</h1>
+      <div style="font-size:0.82rem;color:var(--muted);margin-top:6px;" id="al-review-retailer-label"></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;">
+      <button class="btn btn-ghost btn-sm" onclick="alBackToSetup()">← Edit Brief</button>
+      <button class="btn btn-ghost btn-sm" onclick="alExportCSV()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export CSV
+      </button>
+      <button class="btn btn-sm" onclick="alExportPDF()" style="background:#a78bfa;color:#fff;font-weight:600;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div class="cl-review-card">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Title</div>
+      <div class="cl-char-counter" id="al-title-counter">0 / 0 chars</div>
+    </div>
+    <div class="cl-review-content">
+      <textarea class="cl-editable" id="al-out-title" rows="2" oninput="alUpdateCounter('title')"></textarea>
+    </div>
+    <div class="cl-rerun-bar">
+      <div class="cl-spin" id="al-spin-title"></div>
+      <input type="text" class="cl-rerun-input" id="al-rerun-title-input" placeholder="Optional instruction… e.g. lead with the flavor name">
+      <button class="cl-rerun-btn" id="al-rerun-title-btn" onclick="alRerun('title')" style="border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Re-run
+      </button>
+    </div>
+  </div>
+
+  <!-- Bullets -->
+  <div class="cl-review-card">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Bullet Points</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="cl-char-counter" id="al-bullets-counter">0 bullets</div>
+        <button class="cl-rerun-btn" id="al-rerun-bullets-btn" onclick="alRerun('bullets')" style="padding:5px 12px;border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);">
+          <div class="cl-spin" id="al-spin-bullets"></div>
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Re-run all
+        </button>
+      </div>
+    </div>
+    <div class="cl-review-content" id="al-bullets-container"></div>
+    <div class="cl-rerun-bar">
+      <input type="text" class="cl-rerun-input" id="al-rerun-bullets-input" placeholder="Instruction for re-run… e.g. swap bullet 2 to focus on SPF">
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="cl-review-card">
+    <div class="cl-review-card-header">
+      <div class="cl-review-card-label">Description</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="cl-char-counter" id="al-desc-word-counter">0 words</div>
+        <div class="cl-char-counter" id="al-desc-counter">0 / 0 chars</div>
+      </div>
+    </div>
+    <div class="cl-review-content">
+      <textarea class="cl-editable" id="al-out-desc" rows="6" oninput="alUpdateCounter('desc')"></textarea>
+    </div>
+    <div class="cl-rerun-bar">
+      <div class="cl-spin" id="al-spin-desc"></div>
+      <input type="text" class="cl-rerun-input" id="al-rerun-desc-input" placeholder="Optional instruction… e.g. open with the flavor, keep the heritage line">
+      <button class="cl-rerun-btn" id="al-rerun-desc-btn" onclick="alRerun('desc')" style="border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Re-run
+      </button>
+    </div>
+  </div>
+
+  <div style="height:60px;"></div>
+</div>
+
+<script>
+// ============================================================
+// ADAPT LAB
+// ============================================================
+
+let alState = {
+  retailer: '',
+  limits: {},
+  generatedContent: { title: '', bullets: [], desc: '' },
+  rerunInstructions: { title: '', bullets: '', desc: '' },
+  lastInputs: null,
+};
+
+function enterAdaptLab() {
+  document.getElementById('mode-selector').style.display = 'none';
+  document.querySelector('nav').style.display = 'flex';
+  document.getElementById('nav-steps-vv').style.display = 'none';
+  document.getElementById('nav-steps-pv').style.display = 'none';
+  document.getElementById('nav-steps-cl').style.display = 'none';
+  document.getElementById('nav-steps-al').style.display = 'flex';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-prompt-vault').style.display = 'none';
+  document.getElementById('page-cl-setup').style.display = 'none';
+  document.getElementById('page-cl-generating').style.display = 'none';
+  document.getElementById('page-cl-review').style.display = 'none';
+  document.getElementById('page-al-setup').style.display = 'block';
+  document.getElementById('page-al-adapting').style.display = 'none';
+  document.getElementById('page-al-review').style.display = 'none';
+  document.getElementById('nav-retailer-chip').style.display = 'none';
+  alSetNavStep(1);
+}
+
+function alSetNavStep(n) {
+  ['al-nav-1','al-nav-2','al-nav-3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('active','done');
+    if (i + 1 < n) el.classList.add('done');
+    if (i + 1 === n) el.classList.add('active');
+  });
+}
+
+function alRetailerChanged() {
+  const val = document.getElementById('al-retailer').value;
+  const strip = document.getElementById('al-retailer-strip');
+  const overrides = document.getElementById('al-retailer-overrides');
+  if (!val) { strip.style.display = 'none'; overrides.style.display = 'none'; return; }
+  const specs = val === 'Custom' ? { titleLimit: 200, bulletCharLimit: 250, bulletMin: 1, bulletMax: 5, descLimit: 2000 } : (CL_RETAILERS[val] || {});
+  alState.retailer = val;
+  alState.limits = { ...specs };
+  document.getElementById('al-rs-title').textContent = specs.titleLimit ? specs.titleLimit + ' chars' : '—';
+  document.getElementById('al-rs-bullets').textContent = (specs.bulletMin || '1') + '–' + (specs.bulletMax || '?');
+  document.getElementById('al-rs-bulletchar').textContent = specs.bulletCharLimit ? specs.bulletCharLimit + ' chars' : '—';
+  document.getElementById('al-rs-desc').textContent = specs.descLimit ? specs.descLimit + ' chars' : '—';
+  strip.style.display = 'grid';
+  overrides.style.display = 'grid';
+  document.getElementById('al-title-limit').value = specs.titleLimit || '';
+  document.getElementById('al-bullet-char-limit').value = specs.bulletCharLimit || '';
+  document.getElementById('al-bullet-min').value = specs.bulletMin || '';
+  document.getElementById('al-bullet-max').value = specs.bulletMax || '';
+  document.getElementById('al-desc-limit').value = specs.descLimit || '';
+}
+
+function alReadLimits() {
+  return {
+    titleLimit: parseInt(document.getElementById('al-title-limit').value) || alState.limits.titleLimit || 200,
+    bulletCharLimit: parseInt(document.getElementById('al-bullet-char-limit').value) || alState.limits.bulletCharLimit || 250,
+    bulletMin: parseInt(document.getElementById('al-bullet-min').value) || alState.limits.bulletMin || 1,
+    bulletMax: parseInt(document.getElementById('al-bullet-max').value) || alState.limits.bulletMax || 5,
+    descLimit: parseInt(document.getElementById('al-desc-limit').value) || alState.limits.descLimit || 2000,
+  };
+}
+
+function alCollectInputs() {
+  return {
+    retailer: document.getElementById('al-retailer').value,
+    limits: alReadLimits(),
+    baseTitle: document.getElementById('al-base-title').value,
+    baseBullets: document.getElementById('al-base-bullets').value,
+    baseDesc: document.getElementById('al-base-desc').value,
+    newTitle: document.getElementById('al-new-title').value,
+    newDetails: document.getElementById('al-new-details').value,
+    overallNotes: document.getElementById('al-overall-notes').value,
+    titleFocus: document.getElementById('al-title-focus').value,
+    bulletsFocus: document.getElementById('al-bullets-focus').value,
+    descFocus: document.getElementById('al-desc-focus').value,
+  };
+}
+
+// Adapt Lab CSV fields definition
+const AL_CSV_FIELDS = [
+  'retailer','titleLimit','bulletCharLimit','bulletMin','bulletMax','descLimit',
+  'baseTitle','baseBullets','baseDesc',
+  'newTitle','newDetails',
+  'overallNotes','titleFocus','bulletsFocus','descFocus'
+];
+
+function alDownloadTemplate() {
+  const headers = AL_CSV_FIELDS;
+  const example = [
+    'Amazon','200','250','1','5','2000',
+    'ChapStick Classic Original Lip Balm 0.15 oz',
+    '1. Clinically proven to relieve and prevent dry and chapped lips\n2. Protects lips from environmental stressors\n3. Leaves lips moisturized for up to 24 hours\n4. Formulated without parabens sulfates and phthalates\n5. Just one swipe to happy lips',
+    'For 145 years ChapStick has been the trusted name in lip care. Clinically proven to relieve and prevent dry and chapped lips.',
+    'ChapStick Classic Cherry Lip Balm 0.15 oz',
+    'Cherry flavor instead of Original\nSame formula same benefits',
+    'Emphasize the cherry flavor throughout','Lead with Cherry flavor','Bullet 1 should mention cherry flavor','Open with the cherry flavor angle'
+  ];
+  const csv = [
+    headers.map(h => `"${h}"`).join(','),
+    example.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  ].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'adapt-lab-template.csv'; a.click();
+  showToast('Template downloaded!', 'success');
+}
+
+function alSaveInputs() {
+  const d = alCollectInputs();
+  const row = [
+    d.retailer,
+    d.limits.titleLimit || '', d.limits.bulletCharLimit || '', d.limits.bulletMin || '', d.limits.bulletMax || '', d.limits.descLimit || '',
+    d.baseTitle, d.baseBullets, d.baseDesc,
+    d.newTitle, d.newDetails,
+    d.overallNotes, d.titleFocus, d.bulletsFocus, d.descFocus
+  ];
+  const csv = [
+    AL_CSV_FIELDS.map(h => `"${h}"`).join(','),
+    row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
+  ].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `adapt-lab-inputs-${Date.now()}.csv`; a.click();
+  showToast('Inputs saved as CSV!', 'success');
+}
+
+function alLoadInputs(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      const d = results.data[0];
+      if (!d) { showToast('Could not read CSV', 'error'); return; }
+      if (d.retailer) { document.getElementById('al-retailer').value = d.retailer; alRetailerChanged(); }
+      const numFields = { titleLimit:'al-title-limit', bulletCharLimit:'al-bullet-char-limit', bulletMin:'al-bullet-min', bulletMax:'al-bullet-max', descLimit:'al-desc-limit' };
+      Object.entries(numFields).forEach(([key, id]) => { if (d[key]) document.getElementById(id).value = d[key]; });
+      const idMap = {
+        baseTitle:'al-base-title', baseBullets:'al-base-bullets', baseDesc:'al-base-desc',
+        newTitle:'al-new-title', newDetails:'al-new-details',
+        overallNotes:'al-overall-notes', titleFocus:'al-title-focus', bulletsFocus:'al-bullets-focus', descFocus:'al-desc-focus'
+      };
+      Object.entries(idMap).forEach(([key, id]) => { if (d[key] !== undefined) { const el = document.getElementById(id); if (el) el.value = d[key]; }});
+      showToast('Inputs restored!', 'success');
+    },
+    error: () => showToast('Could not read CSV', 'error')
+  });
+  event.target.value = '';
+}
+
+function alBuildSystemPrompt(inputs, limits, rerunInstruction) {
+  return `You are an expert e-commerce content adapter for ${inputs.retailer || 'a retailer'}.
+
+YOUR JOB: Adapt the provided base copy for a new product. Keep the same structure, tone, flow, and style as the base. Only change what the new product details require.
+
+CORE RULES:
+1. STAY CLOSE TO THE BASE: The adapted copy should feel nearly identical to the base — same sentence structures, same rhythm, same voice. Swap in the new product's specifics, nothing more.
+2. CLAIM INTEGRITY: Only state what is explicitly provided. Do not invent benefits or extend claims beyond what's given.
+3. USE ALL NEW DETAILS: Every piece of new product information provided must appear somewhere in the adapted copy.
+4. NO EM DASHES: Never use em dashes (—). Use commas or colons instead.
+5. BULLETS NEVER END IN A PERIOD: No terminal punctuation on bullet points.
+
+CHARACTER LIMITS:
+- Title: max ${limits.titleLimit} characters
+- Each bullet: max ${limits.bulletCharLimit} characters
+- Bullets: ${limits.bulletMin}–${limits.bulletMax} bullets total
+- Description: max ${limits.descLimit || 'no hard limit'} characters
+
+${rerunInstruction ? `SPECIFIC INSTRUCTION FOR THIS RE-RUN: ${rerunInstruction}` : ''}`;
+}
+
+function alBuildPrompt(inputs, limits, field, rerunInstruction) {
+  const context = `
+BASE COPY (approved — use as the template):
+Title: ${inputs.baseTitle || '(not provided)'}
+Bullets:
+${inputs.baseBullets || '(not provided)'}
+Description:
+${inputs.baseDesc || '(not provided)'}
+
+NEW PRODUCT DETAILS (what's different):
+${inputs.newTitle ? `New product name/title: ${inputs.newTitle}` : ''}
+${inputs.newDetails ? `New specifics:\n${inputs.newDetails}` : ''}
+
+OVERALL PDP NOTES (apply across all sections as appropriate):
+${inputs.overallNotes || '(none)'}`;
+
+  if (field === 'title') {
+    return `${context}
+
+TITLE ADAPTATION NOTES: ${inputs.titleFocus || 'none — adapt naturally'}
+Max ${limits.titleLimit} characters.
+
+Write ONLY the adapted title. No label, no explanation.`;
+  }
+  if (field === 'bullets') {
+    return `${context}
+
+BULLET ADAPTATION NOTES: ${inputs.bulletsFocus || 'none — adapt naturally'}
+Write ${limits.bulletMin}–${limits.bulletMax} bullets, each max ${limits.bulletCharLimit} characters.
+Do NOT end any bullet with a period. Do NOT use em dashes.
+
+Write ONLY the bullets as a numbered list (1. 2. 3. etc.), one per line.`;
+  }
+  if (field === 'desc') {
+    return `${context}
+
+DESCRIPTION ADAPTATION NOTES: ${inputs.descFocus || 'none — adapt naturally'}
+Max ${limits.descLimit || 'no hard limit'} characters. Write in flowing prose.
+Do NOT use em dashes.
+
+Write ONLY the adapted description. No label, no explanation.`;
+  }
+  return '';
+}
+
+async function alStartAdapting() {
+  const inputs = alCollectInputs();
+  if (!inputs.retailer) { showToast('Please select a retailer first', 'error'); return; }
+  if (!inputs.baseTitle && !inputs.baseBullets && !inputs.baseDesc) { showToast('Please paste at least some base copy', 'error'); return; }
+  if (!inputs.newDetails && !inputs.newTitle) { showToast('Please describe the new product details', 'error'); return; }
+
+  const limits = alReadLimits();
+  alState.limits = limits;
+  alState.retailerName = inputs.retailer;
+
+  document.getElementById('page-al-setup').style.display = 'none';
+  document.getElementById('page-al-adapting').style.display = 'block';
+  alSetNavStep(2);
+
+  const setStep = (id) => {
+    ['al-step-1','al-step-2','al-step-3','al-step-4'].forEach(s => {
+      const el = document.getElementById(s);
+      if (!el) return;
+      if (s === id) { el.classList.remove('done'); el.classList.add('active'); }
+      else if (el.classList.contains('active')) { el.classList.remove('active'); el.classList.add('done'); }
+    });
+  };
+  const setProgress = (pct, msg) => {
+    document.getElementById('al-progress-bar').style.width = pct + '%';
+    document.getElementById('al-gen-status').textContent = msg;
+  };
+
+  setStep('al-step-1');
+  setProgress(10, 'Reading base copy and new details…');
+  const system = alBuildSystemPrompt(inputs, limits, null);
+
+  try {
+    setStep('al-step-2');
+    setProgress(25, 'Adapting title…');
+    const titleData = await callClaude(alBuildPrompt(inputs, limits, 'title'), system);
+    const title = titleData.content.map(c => c.text||'').join('').trim();
+
+    setStep('al-step-3');
+    setProgress(52, 'Adapting bullets…');
+    const bulletsData = await callClaude(alBuildPrompt(inputs, limits, 'bullets'), system);
+    const bulletsRaw = bulletsData.content.map(c => c.text||'').join('').trim();
+    const bullets = clParseBullets(bulletsRaw);
+
+    setStep('al-step-4');
+    setProgress(78, 'Adapting description…');
+    const descData = await callClaude(alBuildPrompt(inputs, limits, 'desc'), system);
+    const desc = descData.content.map(c => c.text||'').join('').trim();
+
+    setProgress(100, 'Done!');
+    document.getElementById('al-step-4').classList.remove('active');
+    document.getElementById('al-step-4').classList.add('done');
+
+    alState.generatedContent = { title, bullets, desc };
+    alState.lastInputs = inputs;
+
+    setTimeout(() => alShowReview(), 600);
+  } catch(err) {
+    showToast('Error: ' + err.message, 'error');
+    document.getElementById('page-al-adapting').style.display = 'none';
+    document.getElementById('page-al-setup').style.display = 'block';
+    alSetNavStep(1);
+  }
+}
+
+function alShowReview() {
+  document.getElementById('page-al-adapting').style.display = 'none';
+  document.getElementById('page-al-review').style.display = 'block';
+  alSetNavStep(3);
+
+  const { title, bullets, desc } = alState.generatedContent;
+  const limits = alState.limits;
+  document.getElementById('al-review-retailer-label').textContent =
+    alState.retailerName ? `Retailer: ${alState.retailerName} · Title ≤${limits.titleLimit} chars · Bullets ${limits.bulletMin}–${limits.bulletMax} × ≤${limits.bulletCharLimit} chars · Desc ≤${limits.descLimit || '∞'} chars` : '';
+
+  document.getElementById('al-out-title').value = title;
+  alUpdateCounter('title');
+  alRenderBullets(bullets);
+  document.getElementById('al-out-desc').value = desc;
+  alUpdateCounter('desc');
+
+  ['title','bullets','desc'].forEach(f => {
+    const el = document.getElementById(`al-rerun-${f}-input`);
+    if (el && alState.rerunInstructions[f]) el.value = alState.rerunInstructions[f];
+  });
+}
+
+function alRenderBullets(bullets) {
+  const container = document.getElementById('al-bullets-container');
+  container.innerHTML = '';
+  const limit = alState.limits.bulletCharLimit || 250;
+  bullets.forEach((b, i) => {
+    const over = b.length > limit;
+    const row = document.createElement('div');
+    row.className = 'cl-bullet-edit-row';
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);';
+    row.innerHTML = `
+      <div class="cl-bullet-num" style="padding-top:6px;">${i+1}.</div>
+      <textarea class="cl-editable" style="flex:1;min-height:36px;" oninput="alUpdateBulletChar(this,${i})">${b}</textarea>
+      <div class="cl-bullet-char ${over ? 'over' : ''}" id="al-bchar-${i}" style="padding-top:6px;">${b.length}/${limit}</div>
+      <button class="cl-rerun-btn" style="padding:5px 10px;flex-shrink:0;margin-top:2px;border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.1);" onclick="alRerunSingleBullet(${i})" id="al-rerun-b${i}-btn" title="Re-run this bullet">
+        <div class="cl-spin" id="al-spin-b${i}" style="width:10px;height:10px;border-width:1.5px;"></div>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M13 8A5 5 0 112.5 5.5M2 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+    container.appendChild(row);
+  });
+  document.getElementById('al-bullets-counter').textContent = `${bullets.length} bullet${bullets.length !== 1 ? 's' : ''}`;
+}
+
+function alUpdateBulletChar(el, idx) {
+  const limit = alState.limits.bulletCharLimit || 250;
+  const counter = document.getElementById(`al-bchar-${idx}`);
+  if (counter) { counter.textContent = `${el.value.length}/${limit}`; counter.classList.toggle('over', el.value.length > limit); }
+  alState.generatedContent.bullets = alGetCurrentBullets();
+}
+
+function alGetCurrentBullets() {
+  return Array.from(document.querySelectorAll('#al-bullets-container .cl-bullet-edit-row textarea')).map(r => r.value);
+}
+
+function alUpdateCounter(field) {
+  if (field === 'title') {
+    const val = document.getElementById('al-out-title').value;
+    const limit = alState.limits.titleLimit || 200;
+    const counter = document.getElementById('al-title-counter');
+    counter.textContent = `${val.length} / ${limit} chars`;
+    counter.className = 'cl-char-counter' + (val.length > limit ? ' over' : val.length > 0 ? ' good' : '');
+    alState.generatedContent.title = val;
+  } else if (field === 'desc') {
+    const val = document.getElementById('al-out-desc').value;
+    const limit = alState.limits.descLimit;
+    const wordCount = val.trim() ? val.trim().split(/\s+/).length : 0;
+    const wc = document.getElementById('al-desc-word-counter');
+    if (wc) wc.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
+    const counter = document.getElementById('al-desc-counter');
+    if (limit) {
+      counter.textContent = `${val.length} / ${limit} chars`;
+      counter.className = 'cl-char-counter' + (val.length > limit ? ' over' : val.length > 0 ? ' good' : '');
+    } else { counter.textContent = `${val.length} chars`; }
+    alState.generatedContent.desc = val;
+  }
+}
+
+async function alRerunSingleBullet(idx) {
+  const btn = document.getElementById(`al-rerun-b${idx}-btn`);
+  const spin = document.getElementById(`al-spin-b${idx}`);
+  btn.disabled = true; spin.style.display = 'block';
+  const instruction = document.getElementById('al-rerun-bullets-input')?.value.trim() || '';
+  const inputs = alState.lastInputs || alCollectInputs();
+  const limits = alState.limits;
+  const currentBullets = alGetCurrentBullets();
+  const system = alBuildSystemPrompt(inputs, limits, instruction);
+  const prompt = `Rewrite ONLY bullet point ${idx+1} from the following adapted bullet list.
+
+Current bullet ${idx+1}: "${currentBullets[idx] || ''}"
+All current bullets for context:
+${currentBullets.map((b,i) => `${i+1}. ${b}`).join('\n')}
+
+Base bullet ${idx+1} for reference: "${(inputs.baseBullets||'').split('\n').filter(l=>l.trim())[idx] || '(not available)'}"
+New product details: ${inputs.newDetails || ''}
+
+RULES: Max ${limits.bulletCharLimit} chars. No period at end. No em dashes.
+${instruction ? `Specific instruction: ${instruction}` : ''}
+
+Return ONLY the bullet text — no number, no label.`;
+  try {
+    const data = await callClaude(prompt, system);
+    const newBullet = data.content.map(c => c.text||'').join('').trim().replace(/^\d+[\.\)]\s*/, '');
+    const rows = document.querySelectorAll('#al-bullets-container .cl-bullet-edit-row textarea');
+    if (rows[idx]) { rows[idx].value = newBullet; alUpdateBulletChar(rows[idx], idx); }
+    alState.generatedContent.bullets = alGetCurrentBullets();
+    showToast(`Bullet ${idx+1} updated`, 'success');
+  } catch(err) { showToast('Re-run failed: ' + err.message, 'error'); }
+  finally { btn.disabled = false; spin.style.display = 'none'; }
+}
+
+async function alRerun(field) {
+  const instructionEl = document.getElementById(`al-rerun-${field}-input`);
+  const instruction = instructionEl ? instructionEl.value.trim() : '';
+  alState.rerunInstructions[field] = instruction;
+  const btn = document.getElementById(`al-rerun-${field}-btn`);
+  const spin = document.getElementById(`al-spin-${field}`);
+  if (btn) btn.disabled = true;
+  if (spin) spin.style.display = 'block';
+  const inputs = alState.lastInputs || alCollectInputs();
+  const limits = alState.limits;
+  const system = alBuildSystemPrompt(inputs, limits, instruction);
+  const prompt = alBuildPrompt(inputs, limits, field) + (instruction ? `\nSPECIFIC INSTRUCTION: ${instruction}` : '');
+  try {
+    const data = await callClaude(prompt, system);
+    const text = data.content.map(c => c.text||'').join('').trim();
+    if (field === 'title') { document.getElementById('al-out-title').value = text; alUpdateCounter('title'); }
+    else if (field === 'bullets') { const b = clParseBullets(text); alRenderBullets(b); alState.generatedContent.bullets = b; }
+    else if (field === 'desc') { document.getElementById('al-out-desc').value = text; alUpdateCounter('desc'); }
+    showToast('Content updated!', 'success');
+  } catch(err) { showToast('Re-run failed: ' + err.message, 'error'); }
+  finally { if (btn) btn.disabled = false; if (spin) spin.style.display = 'none'; }
+}
+
+function alBackToSetup() {
+  document.getElementById('page-al-review').style.display = 'none';
+  document.getElementById('page-al-setup').style.display = 'block';
+  alSetNavStep(1);
+}
+
+function alExportCSV() {
+  const retailer = alState.retailerName || 'content';
+  const bullets = alGetCurrentBullets();
+  const title = document.getElementById('al-out-title')?.value || '';
+  const desc = document.getElementById('al-out-desc')?.value || '';
+  const maxBullets = Math.max(bullets.length, 5);
+  const headers = ['item_id','title'];
+  for (let i = 1; i <= maxBullets; i++) headers.push(`bullet_${i}`);
+  headers.push('description');
+  const row = [alState.lastInputs?.itemId||'', title, ...bullets, ...Array(Math.max(0,maxBullets-bullets.length)).fill(''), desc];
+  const csv = [headers.map(h=>`"${h}"`).join(','), row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`adapt-lab-${retailer.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}.csv`; a.click();
+  showToast('CSV exported!','success');
+}
+
+function alExportPDF() {
+  const { jsPDF } = window.jspdf;
+  if (!jsPDF) { showToast('PDF library not loaded','error'); return; }
+  const retailer = alState.retailerName || 'Content';
+  const bullets = alGetCurrentBullets();
+  const title = document.getElementById('al-out-title')?.value || '';
+  const desc = document.getElementById('al-out-desc')?.value || '';
+  const limits = alState.limits;
+  const doc = new jsPDF({unit:'pt',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth(), pageH=doc.internal.pageSize.getHeight(), margin=48, contentW=pageW-margin*2;
+  doc.setFillColor(8,13,26); doc.rect(0,0,pageW,pageH,'F');
+  let y=margin;
+  const checkPage=(needed=30)=>{ if(y+needed>pageH-margin){doc.addPage();doc.setFillColor(8,13,26);doc.rect(0,0,pageW,pageH,'F');y=margin;}};
+  const writeSection=(label,content,limit)=>{
+    checkPage(50);
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(107,127,168);doc.text(label.toUpperCase(),margin,y);
+    if(limit){const cs=`${content.length}/${limit} chars`;doc.setTextColor(content.length>limit?239:107,content.length>limit?68:127,content.length>limit?68:168);doc.text(cs,pageW-margin,y,{align:'right'});}
+    y+=14;doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(220,228,255);
+    doc.splitTextToSize(content,contentW).forEach(l=>{checkPage(16);doc.text(l,margin,y);y+=15;});
+    y+=14;doc.setDrawColor(30,45,77);doc.line(margin,y-7,pageW-margin,y-7);y+=8;
+  };
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(167,139,250);doc.text('Adapt Lab',margin,y);y+=22;
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(107,127,168);doc.text(`${retailer} · ${new Date().toLocaleDateString()}`,margin,y);y+=24;
+  doc.setDrawColor(30,45,77);doc.line(margin,y,pageW-margin,y);y+=20;
+  writeSection('Title',title,limits.titleLimit);
+  checkPage(50);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(107,127,168);doc.text('BULLET POINTS',margin,y);y+=14;
+  bullets.forEach((b,i)=>{
+    checkPage(20);
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(167,139,250);doc.text(`${i+1}.`,margin,y);
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(220,228,255);
+    const bLines=doc.splitTextToSize(b,contentW-20);
+    bLines.forEach((l,li)=>{checkPage(16);doc.text(l,margin+18,y+li*15);});
+    doc.setFontSize(8);doc.setTextColor(b.length>limits.bulletCharLimit?239:107,b.length>limits.bulletCharLimit?68:127,b.length>limits.bulletCharLimit?68:168);
+    doc.text(`${b.length}/${limits.bulletCharLimit}`,pageW-margin,y,{align:'right'});
+    y+=bLines.length*15+6;
+  });
+  y+=8;
+  writeSection('Description',desc,limits.descLimit);
+  doc.save(`adapt-lab-${retailer.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}.pdf`);
+  showToast('PDF exported!','success');
+}
+</script>
