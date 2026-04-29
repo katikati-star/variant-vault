@@ -6310,33 +6310,41 @@ OVERALL NOTES: ${inputs.overallNotes || 'none'}`;
   if (field === 'title') {
     return `${context}
 
-TITLE NOTES: ${inputs.titleFocus || 'adapt naturally'}
+TASK: Write ONLY the adapted product title.
+Notes: ${inputs.titleFocus || 'adapt naturally'}
 Max ${limits.titleLimit} characters.
 
-CRITICAL: Output ONLY the title text. No labels, no explanation, no quotes, no markdown. Start your response with the first word of the title.`;
+DO NOT write bullets. DO NOT write a description. DO NOT write any label or explanation.
+Your entire response must be a single line: the title text only.`;
   }
+
   if (field === 'bullets') {
     return `${context}
 
-BULLET NOTES: ${inputs.bulletsFocus || 'adapt naturally'}
-Write exactly ${limits.bulletMin}–${limits.bulletMax} bullets, each max ${limits.bulletCharLimit} characters.
+TASK: Write ONLY the adapted bullet points. Nothing else.
+Notes: ${inputs.bulletsFocus || 'adapt naturally'}
+Write ${limits.bulletMin}–${limits.bulletMax} bullets. Each bullet max ${limits.bulletCharLimit} characters.
 Do NOT end any bullet with a period. Do NOT use em dashes (—).
 
-CRITICAL: Output ONLY a numbered list. Nothing else — no intro sentence, no labels, no "Here are the bullets", no markdown headers, no separators.
-Format exactly:
-1. First bullet text
-2. Second bullet text
-3. Third bullet text`;
+DO NOT write a title. DO NOT write a description. DO NOT write any intro sentence or label.
+Your entire response must be ONLY a numbered list in this exact format:
+1. Bullet text here
+2. Bullet text here
+3. Bullet text here`;
   }
+
   if (field === 'desc') {
     return `${context}
 
-DESCRIPTION NOTES: ${inputs.descFocus || 'adapt naturally'}
-Max ${limits.descLimit || 'no hard limit'} characters. Flowing prose.
+TASK: Write ONLY the adapted product description. Nothing else.
+Notes: ${inputs.descFocus || 'adapt naturally'}
+Max ${limits.descLimit || 'no hard limit'} characters. Flowing prose sentences.
 Do NOT use em dashes (—).
 
-CRITICAL: Output ONLY the description text. No labels, no explanation, no "Here is the description". Start your response with the first word of the description.`;
+DO NOT write a title. DO NOT write bullet points. DO NOT write any label, intro sentence, or numbered list.
+Your entire response must be the description prose only — start immediately with the first sentence.`;
   }
+
   return '';
 }
 
@@ -6375,7 +6383,7 @@ async function alStartAdapting() {
     setStep('al-step-2');
     setProgress(25, 'Adapting title…');
     const titleData = await callClaude(alBuildPrompt(inputs, limits, 'title'), system);
-    const title = titleData.content.map(c => c.text||'').join('').trim();
+    const title = alCleanTitle(titleData.content.map(c => c.text||'').join('').trim());
 
     setStep('al-step-3');
     setProgress(52, 'Adapting bullets…');
@@ -6386,7 +6394,7 @@ async function alStartAdapting() {
     setStep('al-step-4');
     setProgress(78, 'Adapting description…');
     const descData = await callClaude(alBuildPrompt(inputs, limits, 'desc'), system);
-    const desc = descData.content.map(c => c.text||'').join('').trim();
+    const desc = alCleanDesc(descData.content.map(c => c.text||'').join('').trim());
 
     setProgress(100, 'Done!');
     document.getElementById('al-step-4').classList.remove('active');
@@ -6591,13 +6599,44 @@ ${instruction ? `Specific instruction: ${instruction}` : ''}
 Return ONLY the bullet text — no number, no label.`;
   try {
     const data = await callClaude(prompt, system);
-    const newBullet = data.content.map(c => c.text||'').join('').trim().replace(/^\d+[\.\)]\s*/, '');
-    const rows = document.querySelectorAll('#al-bullets-container .cl-bullet-edit-row textarea');
+    const newBullet = data.content.map(c => c.text||'').join('').trim()
+      .replace(/^\d+[\.\)]\s*/, '').replace(/\.$/, '').split('\n')[0].trim();
+    const rows = document.querySelectorAll('#al-bullets-container textarea');
     if (rows[idx]) { rows[idx].value = newBullet; alUpdateBulletChar(rows[idx], idx); }
     alState.generatedContent.bullets = alGetCurrentBullets();
     showToast(`Bullet ${idx+1} updated`, 'success');
   } catch(err) { showToast('Re-run failed: ' + err.message, 'error'); }
   finally { btn.disabled = false; spin.style.display = 'none'; }
+}
+
+// ---- Output cleaners ----
+function alCleanTitle(raw) {
+  // Strip any label prefix like "Title:" or "Here is the title:"
+  return raw
+    .replace(/^(title|adapted title|here is (the )?( adapted)?title)[:\s]*/i, '')
+    .replace(/^\*+|\*+$/g, '')
+    .split('\n')[0]  // take only first line — title is never multi-line
+    .trim();
+}
+
+function alCleanDesc(raw) {
+  // Strip leading numbered list lines (bullets bled in), label lines, and markdown
+  const lines = raw.split('\n');
+  // Find the first line that looks like prose (not a numbered bullet, not a label)
+  let startIdx = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i].trim();
+    if (!l) continue;
+    // Skip lines that look like bullet points (1. text, 2. text)
+    if (/^\d+[\.\)]\s+\S/.test(l)) continue;
+    // Skip label lines
+    if (/^(description|adapted description|here (is|are)|bullets?|title)[:\s]/i.test(l)) continue;
+    // Skip pure separator lines
+    if (/^[-–—*#\s]+$/.test(l)) continue;
+    startIdx = i;
+    break;
+  }
+  return lines.slice(startIdx).join('\n').trim();
 }
 
 async function alRerun(field) {
@@ -6614,10 +6653,22 @@ async function alRerun(field) {
   const prompt = alBuildPrompt(inputs, limits, field) + (instruction ? `\nSPECIFIC INSTRUCTION: ${instruction}` : '');
   try {
     const data = await callClaude(prompt, system);
-    const text = data.content.map(c => c.text||'').join('').trim();
-    if (field === 'title') { document.getElementById('al-out-title').value = text; alUpdateCounter('title'); }
-    else if (field === 'bullets') { const b = clParseBullets(text); alRenderBullets(b); alState.generatedContent.bullets = b; }
-    else if (field === 'desc') { document.getElementById('al-out-desc').value = text; alUpdateCounter('desc'); }
+    const raw = data.content.map(c => c.text||'').join('').trim();
+    if (field === 'title') {
+      const clean = alCleanTitle(raw);
+      document.getElementById('al-out-title').value = clean;
+      alUpdateCounter('title');
+      alRefreshTitleDiff();
+    } else if (field === 'bullets') {
+      const b = clParseBullets(raw);
+      alRenderBullets(b);
+      alState.generatedContent.bullets = b;
+    } else if (field === 'desc') {
+      const clean = alCleanDesc(raw);
+      document.getElementById('al-out-desc').value = clean;
+      alUpdateCounter('desc');
+      alRefreshDescDiff();
+    }
     showToast('Content updated!', 'success');
   } catch(err) { showToast('Re-run failed: ' + err.message, 'error'); }
   finally { if (btn) btn.disabled = false; if (spin) spin.style.display = 'none'; }
