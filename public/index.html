@@ -4322,28 +4322,39 @@ function clCollectInputs() {
 }
 
 // Copy Lab CSV fields definition
-const CL_CSV_FIELDS = [
+const CL_CSV_FIXED_FIELDS = [
   'retailer','titleLimit','bulletCharLimit','bulletMin','bulletMax','descLimit',
   'productTitle','brand','itemId','category',
   'titleCaps','titleStructure','titleInclude','titleAvoid',
   'bulletHeader','bulletAvoid',
-  'bulletFocus1','bulletFocus2','bulletFocus3','bulletFocus4','bulletFocus5',
-  'bulletFocus6','bulletFocus7','bulletFocus8','bulletFocus9','bulletFocus10',
+  // bullet_focus_1..N inserted dynamically
   'descStructure','descAlways',
   'tone','taglines','neverDo','extraInstructions'
 ];
 
+function clGetCsvHeaders(bulletCount) {
+  const focusCols = Array.from({length: bulletCount}, (_, i) => `bullet_focus_${i+1}`);
+  return ['retailer','titleLimit','bulletCharLimit','bulletMin','bulletMax','descLimit',
+    'productTitle','brand','itemId','category',
+    'titleCaps','titleStructure','titleInclude','titleAvoid',
+    'bulletHeader','bulletAvoid',
+    ...focusCols,
+    'descStructure','descAlways',
+    'tone','taglines','neverDo','extraInstructions'];
+}
+
 function clDownloadTemplate() {
-  const headers = CL_CSV_FIELDS;
+  const bulletMax = parseInt(document.getElementById('cl-bullet-max')?.value) || 5;
+  const headers = clGetCsvHeaders(bulletMax);
+  const focusExamples = Array.from({length: bulletMax}, (_, i) => `Bullet ${i+1} focus here`);
   const example = [
-    'Amazon','200','250','1','5','2000',
+    'Amazon','200','250','1',String(bulletMax),'2000',
     'ChapStick Classic Original Lip Balm 0.15 oz','ChapStick','B001ETQ9WQ','Lip Balm — Classics',
     'Title Case','Brand → Type → Feature → Size','Pack of','for men',
     'ALL CAPS','amazing',
-    "America's #1 Lip Balm Brand",'Clinically proven benefits','Hydration you can count on','Crave-worthy flavors','Just one swipe to happy lips',
-    '','','','','',
-    'hook → features → who it\'s for','For 145 years we\'ve been the name you believe in. Clinically proven to relieve and prevent dry and chapped lips.',
-    'Direct, confident, upbeat, cheeky','Hydration You Can Count On. Just One Swipe to Happy Lips.','no exclamation marks','Paste brand guidelines here'
+    ...focusExamples,
+    'hook → features → who it\'s for','For 145 years we\'ve been the name you believe in.',
+    'Direct, confident, upbeat, cheeky','Hydration You Can Count On.','no exclamation marks','Paste brand guidelines here'
   ];
   const csv = [
     headers.map(h => `"${h}"`).join(','),
@@ -4359,22 +4370,21 @@ function clDownloadTemplate() {
 function clSaveInputs() {
   const d = clCollectInputs();
   const bulletFocuses = d.bulletFocuses || [];
+  const bulletMax = d.limits.bulletMax || bulletFocuses.length || 5;
+  const headers = clGetCsvHeaders(bulletMax);
+  const focusValues = Array.from({length: bulletMax}, (_, i) => bulletFocuses[i] || '');
   const row = [
     d.retailer,
-    d.limits.titleLimit || '',
-    d.limits.bulletCharLimit || '',
-    d.limits.bulletMin || '',
-    d.limits.bulletMax || '',
-    d.limits.descLimit || '',
+    d.limits.titleLimit || '', d.limits.bulletCharLimit || '', d.limits.bulletMin || '', d.limits.bulletMax || '', d.limits.descLimit || '',
     d.productTitle, d.brand, d.itemId, d.category,
     d.titleCaps, d.titleStructure, d.titleInclude, d.titleAvoid,
     d.bulletHeader, d.bulletAvoid,
-    ...Array.from({length:10}, (_,i) => bulletFocuses[i] || ''),
+    ...focusValues,
     d.descStructure, d.descAlways,
     d.tone, d.taglines, d.neverDo, d.extraInstructions
   ];
   const csv = [
-    CL_CSV_FIELDS.map(h => `"${h}"`).join(','),
+    headers.map(h => `"${h}"`).join(','),
     row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
   ].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
@@ -4393,21 +4403,21 @@ function clLoadInputs(event) {
     complete: (results) => {
       const d = results.data[0];
       if (!d) { showToast('Could not read CSV', 'error'); return; }
-      const idMap = {
-        retailer: 'cl-retailer',
-        productTitle: 'cl-product-title', brand: 'cl-brand', itemId: 'cl-item-id', category: 'cl-category',
-        titleCaps: 'cl-title-caps', titleStructure: 'cl-title-structure', titleInclude: 'cl-title-include', titleAvoid: 'cl-title-avoid',
-        bulletHeader: 'cl-bullet-header', bulletAvoid: 'cl-bullet-avoid',
-        descStructure: 'cl-desc-structure', descAlways: 'cl-desc-always',
-        tone: 'cl-tone', taglines: 'cl-taglines', neverDo: 'cl-never-do', extraInstructions: 'cl-extra-instructions'
-      };
       if (d.retailer) { document.getElementById('cl-retailer').value = d.retailer; clRetailerChanged(); }
       const numFields = { titleLimit:'cl-title-limit', bulletCharLimit:'cl-bullet-char-limit', bulletMin:'cl-bullet-min', bulletMax:'cl-bullet-max', descLimit:'cl-desc-limit' };
       Object.entries(numFields).forEach(([key, id]) => { if (d[key]) document.getElementById(id).value = d[key]; });
-      if (d.bulletMax) clBuildBulletFocuses(parseInt(d.bulletMax) || 5);
+      const bulletMax = parseInt(d.bulletMax) || 5;
+      clBuildBulletFocuses(bulletMax);
+      const idMap = {
+        productTitle:'cl-product-title', brand:'cl-brand', itemId:'cl-item-id', category:'cl-category',
+        titleCaps:'cl-title-caps', titleStructure:'cl-title-structure', titleInclude:'cl-title-include', titleAvoid:'cl-title-avoid',
+        bulletHeader:'cl-bullet-header', bulletAvoid:'cl-bullet-avoid',
+        descStructure:'cl-desc-structure', descAlways:'cl-desc-always',
+        tone:'cl-tone', taglines:'cl-taglines', neverDo:'cl-never-do', extraInstructions:'cl-extra-instructions'
+      };
       Object.entries(idMap).forEach(([key, id]) => { if (d[key] !== undefined) { const el = document.getElementById(id); if (el) el.value = d[key]; }});
-      for (let i = 1; i <= 10; i++) {
-        const val = d[`bulletFocus${i}`];
+      for (let i = 1; i <= bulletMax; i++) {
+        const val = d[`bullet_focus_${i}`];
         if (val !== undefined) { const el = document.getElementById(`cl-bullet-focus-${i}`); if (el) el.value = val; }
       }
       showToast('Inputs restored!', 'success');
@@ -5843,8 +5853,11 @@ function pvExportAwarenessPDF() {
       <input type="text" class="cl-input" id="al-base-title" placeholder="Paste the existing approved title">
     </div>
     <div class="cl-field" style="margin-bottom:14px;">
-      <label class="cl-label">Base Bullets <span class="cl-optional">one per line</span></label>
-      <textarea class="cl-textarea" id="al-base-bullets" style="min-height:140px;" placeholder="1. First bullet&#10;2. Second bullet&#10;3. Third bullet…"></textarea>
+      <label class="cl-label">Base Bullets <span class="cl-optional" id="al-base-bullets-hint">select a retailer to set bullet count</span></label>
+      <div class="cl-bullets-grid" id="al-base-bullets-container">
+        <!-- dynamically populated based on bullet count -->
+        <div style="font-size:0.8rem;color:var(--muted);padding:10px 0;">Select a retailer above to generate bullet fields.</div>
+      </div>
     </div>
     <div class="cl-field">
       <label class="cl-label">Base Description</label>
@@ -6066,6 +6079,7 @@ function alRetailerChanged() {
   document.getElementById('al-bullet-min').value = specs.bulletMin || '';
   document.getElementById('al-bullet-max').value = specs.bulletMax || '';
   document.getElementById('al-desc-limit').value = specs.descLimit || '';
+  alBuildBaseBulletFields(specs.bulletMax || 5);
 }
 
 function alReadLimits() {
@@ -6078,12 +6092,38 @@ function alReadLimits() {
   };
 }
 
+function alBuildBaseBulletFields(count, existing) {
+  const container = document.getElementById('al-base-bullets-container');
+  const hint = document.getElementById('al-base-bullets-hint');
+  if (hint) hint.textContent = `${count} bullet${count !== 1 ? 's' : ''} for this retailer`;
+  container.innerHTML = '';
+  for (let i = 1; i <= Math.min(count, 10); i++) {
+    const row = document.createElement('div');
+    row.className = 'cl-bullet-row';
+    row.innerHTML = `
+      <div class="cl-bullet-label">B${i}</div>
+      <textarea class="cl-textarea" id="al-base-bullet-${i}" style="min-height:52px;" placeholder="Bullet ${i} from base copy…">${existing && existing[i-1] ? existing[i-1] : ''}</textarea>
+    `;
+    container.appendChild(row);
+  }
+}
+
+function alGetBaseBullets() {
+  const bullets = [];
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById(`al-base-bullet-${i}`);
+    if (el) bullets.push(el.value);
+    else break;
+  }
+  return bullets;
+}
+
 function alCollectInputs() {
   return {
     retailer: document.getElementById('al-retailer').value,
     limits: alReadLimits(),
     baseTitle: document.getElementById('al-base-title').value,
-    baseBullets: document.getElementById('al-base-bullets').value,
+    baseBullets: alGetBaseBullets(),
     baseDesc: document.getElementById('al-base-desc').value,
     newTitle: document.getElementById('al-new-title').value,
     newDetails: document.getElementById('al-new-details').value,
@@ -6095,23 +6135,34 @@ function alCollectInputs() {
 }
 
 // Adapt Lab CSV fields definition
-const AL_CSV_FIELDS = [
+const AL_CSV_FIXED_FIELDS = [
   'retailer','titleLimit','bulletCharLimit','bulletMin','bulletMax','descLimit',
-  'baseTitle','baseBullets','baseDesc',
+  'baseTitle',
+  // base_bullet_1 through base_bullet_10 inserted dynamically
+  'baseDesc',
   'newTitle','newDetails',
   'overallNotes','titleFocus','bulletsFocus','descFocus'
 ];
 
+function alGetCsvHeaders(bulletCount) {
+  const bulletCols = Array.from({length: bulletCount}, (_, i) => `base_bullet_${i+1}`);
+  return ['retailer','titleLimit','bulletCharLimit','bulletMin','bulletMax','descLimit',
+    'baseTitle', ...bulletCols, 'baseDesc',
+    'newTitle','newDetails','overallNotes','titleFocus','bulletsFocus','descFocus'];
+}
+
 function alDownloadTemplate() {
-  const headers = AL_CSV_FIELDS;
+  const bulletMax = parseInt(document.getElementById('al-bullet-max')?.value) || 5;
+  const headers = alGetCsvHeaders(bulletMax);
+  const bulletExamples = Array.from({length: bulletMax}, (_, i) => `Base bullet ${i+1} text here`);
   const example = [
-    'Amazon','200','250','1','5','2000',
+    'Amazon','200','250','1',String(bulletMax),'2000',
     'ChapStick Classic Original Lip Balm 0.15 oz',
-    '1. Clinically proven to relieve and prevent dry and chapped lips\n2. Protects lips from environmental stressors\n3. Leaves lips moisturized for up to 24 hours\n4. Formulated without parabens sulfates and phthalates\n5. Just one swipe to happy lips',
-    'For 145 years ChapStick has been the trusted name in lip care. Clinically proven to relieve and prevent dry and chapped lips.',
+    ...bulletExamples,
+    'For 145 years ChapStick has been the trusted name in lip care.',
     'ChapStick Classic Cherry Lip Balm 0.15 oz',
-    'Cherry flavor instead of Original\nSame formula same benefits',
-    'Emphasize the cherry flavor throughout','Lead with Cherry flavor','Bullet 1 should mention cherry flavor','Open with the cherry flavor angle'
+    'Cherry flavor instead of Original',
+    'Emphasize the cherry flavor throughout','Lead with Cherry flavor','Bullet 1 should mention cherry','Open with the cherry flavor angle'
   ];
   const csv = [
     headers.map(h => `"${h}"`).join(','),
@@ -6126,15 +6177,21 @@ function alDownloadTemplate() {
 
 function alSaveInputs() {
   const d = alCollectInputs();
+  const bullets = Array.isArray(d.baseBullets) ? d.baseBullets : [];
+  const bulletMax = d.limits.bulletMax || bullets.length || 5;
+  const headers = alGetCsvHeaders(bulletMax);
+  const bulletValues = Array.from({length: bulletMax}, (_, i) => bullets[i] || '');
   const row = [
     d.retailer,
     d.limits.titleLimit || '', d.limits.bulletCharLimit || '', d.limits.bulletMin || '', d.limits.bulletMax || '', d.limits.descLimit || '',
-    d.baseTitle, d.baseBullets, d.baseDesc,
+    d.baseTitle,
+    ...bulletValues,
+    d.baseDesc,
     d.newTitle, d.newDetails,
     d.overallNotes, d.titleFocus, d.bulletsFocus, d.descFocus
   ];
   const csv = [
-    AL_CSV_FIELDS.map(h => `"${h}"`).join(','),
+    headers.map(h => `"${h}"`).join(','),
     row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
   ].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
@@ -6156,8 +6213,16 @@ function alLoadInputs(event) {
       if (d.retailer) { document.getElementById('al-retailer').value = d.retailer; alRetailerChanged(); }
       const numFields = { titleLimit:'al-title-limit', bulletCharLimit:'al-bullet-char-limit', bulletMin:'al-bullet-min', bulletMax:'al-bullet-max', descLimit:'al-desc-limit' };
       Object.entries(numFields).forEach(([key, id]) => { if (d[key]) document.getElementById(id).value = d[key]; });
+      // Rebuild bullet fields if bulletMax given
+      const bulletMax = parseInt(d.bulletMax) || 5;
+      // Collect base bullet values from CSV columns
+      const bulletValues = [];
+      for (let i = 1; i <= bulletMax; i++) {
+        bulletValues.push(d[`base_bullet_${i}`] || '');
+      }
+      alBuildBaseBulletFields(bulletMax, bulletValues);
       const idMap = {
-        baseTitle:'al-base-title', baseBullets:'al-base-bullets', baseDesc:'al-base-desc',
+        baseTitle:'al-base-title', baseDesc:'al-base-desc',
         newTitle:'al-new-title', newDetails:'al-new-details',
         overallNotes:'al-overall-notes', titleFocus:'al-title-focus', bulletsFocus:'al-bullets-focus', descFocus:'al-desc-focus'
       };
@@ -6191,11 +6256,15 @@ ${rerunInstruction ? `SPECIFIC INSTRUCTION FOR THIS RE-RUN: ${rerunInstruction}`
 }
 
 function alBuildPrompt(inputs, limits, field, rerunInstruction) {
+  const baseBulletsText = Array.isArray(inputs.baseBullets)
+    ? inputs.baseBullets.map((b, i) => `${i+1}. ${b}`).filter(b => b.trim().length > 3).join('\n')
+    : inputs.baseBullets || '(not provided)';
+
   const context = `
 BASE COPY (approved — use as the template):
 Title: ${inputs.baseTitle || '(not provided)'}
 Bullets:
-${inputs.baseBullets || '(not provided)'}
+${baseBulletsText}
 Description:
 ${inputs.baseDesc || '(not provided)'}
 
@@ -6238,7 +6307,7 @@ Write ONLY the adapted description. No label, no explanation.`;
 async function alStartAdapting() {
   const inputs = alCollectInputs();
   if (!inputs.retailer) { showToast('Please select a retailer first', 'error'); return; }
-  if (!inputs.baseTitle && !inputs.baseBullets && !inputs.baseDesc) { showToast('Please paste at least some base copy', 'error'); return; }
+  if (!inputs.baseTitle && (!inputs.baseBullets || !inputs.baseBullets.some(b => b.trim())) && !inputs.baseDesc) { showToast('Please paste at least some base copy', 'error'); return; }
   if (!inputs.newDetails && !inputs.newTitle) { showToast('Please describe the new product details', 'error'); return; }
 
   const limits = alReadLimits();
@@ -6392,7 +6461,7 @@ Current bullet ${idx+1}: "${currentBullets[idx] || ''}"
 All current bullets for context:
 ${currentBullets.map((b,i) => `${i+1}. ${b}`).join('\n')}
 
-Base bullet ${idx+1} for reference: "${(inputs.baseBullets||'').split('\n').filter(l=>l.trim())[idx] || '(not available)'}"
+Base bullet ${idx+1} for reference: "${Array.isArray(inputs.baseBullets) ? (inputs.baseBullets[idx] || '(not available)') : '(not available)'}"
 New product details: ${inputs.newDetails || ''}
 
 RULES: Max ${limits.bulletCharLimit} chars. No period at end. No em dashes.
