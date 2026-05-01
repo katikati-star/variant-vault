@@ -1622,11 +1622,31 @@
 </head>
 <body>
 
+<!-- PASSWORD SCREEN -->
+<div id="password-screen" style="
+  position:fixed;inset:0;z-index:10000;
+  background:#080d1a;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+">
+  <div style="width:100%;max-width:340px;padding:0 24px;text-align:center;">
+    <div style="font-family:'DM Serif Display',serif;font-size:2.4rem;color:#f0f4ff;margin-bottom:10px;letter-spacing:-0.02em;">The Refinery</div>
+    <div id="pw-greeting" style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#6b7fa8;margin-bottom:40px;font-style:italic;min-height:24px;">...</div>
+    <input type="password" id="pw-input" placeholder="Password"
+      style="width:100%;background:#0d1526;border:1.5px solid #1e2d4d;border-radius:10px;padding:13px 18px;color:#f0f4ff;font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.2s;margin-bottom:10px;text-align:center;letter-spacing:0.1em;"
+      onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#1e2d4d'"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pw-error" style="font-size:0.78rem;color:#ef4444;min-height:18px;margin-bottom:10px;"></div>
+    <button onclick="checkPw()" style="width:100%;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:13px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.2s;"
+      onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">Enter</button>
+  </div>
+</div>
+
 <!-- MODE SELECTOR -->
 <div id="mode-selector" style="
   position: fixed; inset: 0; z-index: 9998;
   background: #080d1a;
-  display: flex; align-items: center; justify-content: center;
+  display: none; align-items: center; justify-content: center;
   flex-direction: column;
 ">
   <div style="font-family:'DM Serif Display',serif; font-size:2.6rem; color:#f0f4ff; text-align:center; margin-bottom:10px; letter-spacing:-0.02em;">
@@ -4833,6 +4853,62 @@ function clExportPDF() {
 }
 
 // ============================================================
+// ============================================================
+// PASSWORD & GREETING
+// ============================================================
+
+const GREETINGS = [
+  "Hello.", "Good to see you.", "Welcome back.", "Hi there.",
+  "Ready when you are.", "Hey.", "Welcome.", "Good day.",
+  "Nice to have you here.", "Let's make something good.",
+  "Hello, friend.", "Glad you're here.", "Come on in.",
+  "Hey, you made it.", "What are we building today?"
+];
+
+function checkPw() {
+  const val = document.getElementById('pw-input').value.trim();
+  if (val === 'KatiKati') {
+    const screen = document.getElementById('password-screen');
+    screen.style.transition = 'opacity 0.5s ease';
+    screen.style.opacity = '0';
+    setTimeout(() => {
+      screen.style.display = 'none';
+      document.getElementById('mode-selector').style.display = 'flex';
+    }, 500);
+  } else {
+    const err = document.getElementById('pw-error');
+    const inp = document.getElementById('pw-input');
+    err.textContent = 'Incorrect password.';
+    inp.style.borderColor = '#ef4444';
+    inp.value = '';
+    setTimeout(() => {
+      err.textContent = '';
+      inp.style.borderColor = '#1e2d4d';
+    }, 2000);
+  }
+}
+
+// Load greeting on page load
+window.addEventListener('DOMContentLoaded', async () => {
+  const el = document.getElementById('pw-greeting');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 30,
+        messages: [{ role: 'user', content: 'Give me a single short greeting for a login screen. 2-5 words max. No quotes. Just the greeting itself. Examples: "Hello.", "Good to see you.", "Welcome back.", "Ready when you are." Be varied and natural.' }]
+      })
+    });
+    const data = await res.json();
+    const greeting = data.content?.[0]?.text?.trim() || GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+    el.textContent = greeting;
+  } catch {
+    el.textContent = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+  }
+});
+
 function enterVariantVault() {
   document.getElementById('mode-selector').style.display = 'none';
   document.querySelector('nav').style.display = 'flex';
@@ -5061,29 +5137,39 @@ async function pvRunInterpreter() {
   pvLog('Calling Claude AI...', 'info');
   pvSetStep(2);
 
-  const systemPrompt = `You are an expert at interpreting creative briefs and brand guidelines for e-commerce content writing. Extract clear, structured AI instructions a content-writing AI can follow without any ambiguity.
+  const systemPrompt = `You are an expert at interpreting creative briefs and brand guidelines and converting them into precise AI writing instructions. Your output will be fed directly into an AI content writer as its system prompt. Write every instruction as a direct, imperative command the AI must follow — no explanations, no hedging, no passive voice.
 
-RULES FOR INSTRUCTIONS:
+WRITING STYLE FOR INSTRUCTIONS:
+- Write in second person imperative: "Do not use...", "Always capitalize...", "Begin bullet 1 with...", "Include [X] in the description."
+- Be specific and concrete. Bad: "Consider the brand tone." Good: "Write in a confident, direct tone. Avoid passive voice."
+- No reasoning or justification. Bad: "Since Amazon limits titles to 200 chars, keep titles short." Good: "Keep the title under 200 characters."
+- No conditional phrasing: never use "if", "when applicable", "unless specified", "where relevant". Every rule is absolute.
+- No filler phrases like "ensure that", "make sure to", "it is important to". Just the directive.
+- If a rule has examples, state them: "Do not use [X, Y, Z]. Use [A, B] instead."
+
+RULES FOR EXTRACTION:
 1. Conservative — only extract what is explicitly stated. Do not infer or fill gaps.
-2. Every instruction is an unconditional directive. Never use "if", "unless", "when applicable", "unless verified", or any conditional phrasing. Instructions are absolute rules with no exceptions stated.
-3. Do not include any explanation of why a rule exists. No "because Amazon...", no "since the label...", no reasoning. Just the directive.
-4. Any rule requiring label verification, product-type checking, or human judgment goes to awareness_notes only — never in instructions.
-5. GEO user descriptor rules go to awareness_notes only.
-6. Fertilizer keyword placement rules go to awareness_notes only.
-7. Self-contained instructions — no cross-references between fields.
-8. For nuanced language rules, include concrete examples: "Do not use [X, Y, Z]. Use [A, B] instead."
-9. Bullet fields (bullet_1–5): only populate if the brief gives explicit positional guidance for THAT specific bullet. Add bullet_6–10 only if explicitly mentioned.
-10. CRITICAL — No duplication across fields: if a rule belongs in bullet_1 or bullet_5, do NOT also put it in all_bullets. The all_bullets field is only for rules that apply to every bullet equally. Product name placement in specific bullets goes ONLY in the individual bullet field, not all_bullets.
+2. Any rule requiring label verification, product-type checking, or human judgment goes to awareness_notes only — never in instructions.
+3. GEO user descriptor rules go to awareness_notes only.
+4. Fertilizer keyword placement rules go to awareness_notes only.
+5. Self-contained instructions — no cross-references between fields.
+6. Bullet fields (bullet_1–5): only populate if the brief gives explicit positional guidance for THAT specific bullet. Add bullet_6–10 only if explicitly mentioned.
+7. No duplication across fields: if a rule belongs in bullet_1 or bullet_5, do NOT also put it in all_bullets. The all_bullets field is only for rules that apply to every bullet equally.
 
 AWARENESS NOTES RULES:
 - Start each note with **Bold Headline:** in 3–5 words capturing the core issue.
-- State what to watch for directly and clearly. Do not write "A human must..." — just describe the issue and what to look out for.
+- State what to watch for directly and clearly. Do not write "A human must..." — just describe the issue.
 - Cover: label-dependent claims, product-type distinctions, nuanced terminology traps, conditionally acceptable phrases, anything the AI might get wrong.
 
+AWARENESS NOTES AS PROMPTS:
+Any item in awareness_notes that contains a clear actionable rule (e.g. a Do Not Say word, a claim to avoid, a formatting rule) should ALSO appear as an instruction in the relevant field (all_content, title, all_bullets, description, etc.).
+
 DO NOT SAY / CAN SAY TABLE:
-At the end of awareness_notes, include one entry formatted as a markdown table:
-"**Do Not Say / Can Say:** | Do Not Say | Can Say |\\n|---|---|\\n| [prohibited] | [acceptable] |"
-Extract all clear prohibited/acceptable pairs. Each pair must appear only once — do not duplicate rows.
+At the end of awareness_notes, include one entry formatted as a markdown table. The LEFT column is ALWAYS "Do Not Say" (prohibited words/phrases). The RIGHT column is ALWAYS "Can Say" (acceptable alternatives). Format exactly:
+"**Do Not Say / Can Say:** | Do Not Say | Can Say |\n|---|---|\n| prohibited_word | acceptable_alternative |"
+If there is no acceptable alternative, use "N/A" in the Can Say column.
+If there is no prohibited word, use "N/A" in the Do Not Say column.
+Extract all clear prohibited/acceptable pairs. Each pair must appear only once. Do not swap the columns — prohibited always left, acceptable always right.
 
 Reply ONLY with valid JSON, no markdown, no explanation:
 {
@@ -5098,7 +5184,7 @@ Reply ONLY with valid JSON, no markdown, no explanation:
   "description": "instruction text or null",
   "hidden": "instruction text or null",
   "keyword_selection": "instruction text or null",
-  "awareness_notes": ["**Headline:** Explanation here.", "**Do Not Say / Can Say:** | Do Not Say | Can Say |\\n|---|---|\\n| prohibited | acceptable |"]
+  "awareness_notes": ["**Headline:** Explanation here.", "**Do Not Say / Can Say:** | Do Not Say | Can Say |\n|---|---|\n| prohibited | acceptable |"]
 }`;
 
   // Also store system prompt for addendum runs
@@ -5215,11 +5301,16 @@ function pvRenderOutput(result) {
       el.dataset.noteIdx = noteIdx;
 
       if (isTable) {
-        // Parse markdown table and render as two-column HTML table
+        // Parse markdown table - LEFT col = Do Not Say, RIGHT col = Can Say
         const rows = body.match(/\|(.+)\|/g) || [];
         const dataRows = rows.filter(r => {
           const cells = r.split('|').map(c => c.trim()).filter(Boolean);
-          return cells.length >= 2 && !cells[0].match(/^-+$/) && cells[0].toLowerCase() !== 'do not say';
+          // Skip header row and separator row
+          if (cells.length < 2) return false;
+          if (cells[0].match(/^-+$/)) return false;
+          const c0 = cells[0].toLowerCase();
+          if (c0 === 'do not say' || c0 === 'prohibited' || c0 === 'word' || c0 === 'term') return false;
+          return true;
         });
         // Deduplicate by Do Not Say value
         const seen = new Set();
@@ -5237,12 +5328,17 @@ function pvRenderOutput(result) {
               <th style="text-align:left;padding:6px 8px;color:#f87171;border-bottom:1px solid rgba(245,158,11,0.2);width:50%;">Do Not Say</th>
               <th style="text-align:left;padding:6px 8px;color:#4ade80;border-bottom:1px solid rgba(245,158,11,0.2);width:50%;">Can Say</th>
             </tr>`;
+        if (uniqueRows.length === 0) {
+          tableHtml += `<tr><td colspan="2" style="padding:8px;color:var(--muted);font-style:italic;font-size:0.8rem;">No pairs extracted.</td></tr>`;
+        }
         uniqueRows.forEach((r, i) => {
           const cells = r.split('|').map(c => c.trim()).filter(Boolean);
+          const doNotSay = cells[0] || 'N/A';
+          const canSay = cells[1] || 'N/A';
           const bg = i % 2 === 0 ? 'rgba(0,0,0,0.1)' : 'transparent';
           tableHtml += `<tr style="background:${bg}">
-            <td style="padding:5px 8px;color:#fca5a5;vertical-align:top;">${cells[0] || ''}</td>
-            <td style="padding:5px 8px;color:#86efac;vertical-align:top;">${cells[1] || ''}</td>
+            <td style="padding:5px 8px;color:#fca5a5;vertical-align:top;">${doNotSay}</td>
+            <td style="padding:5px 8px;color:#86efac;vertical-align:top;">${canSay === 'N/A' ? '<span style="color:var(--muted);">N/A</span>' : canSay}</td>
           </tr>`;
         });
         tableHtml += '</table>';
