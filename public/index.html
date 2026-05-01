@@ -4696,6 +4696,8 @@ function alCopyBullets() {
   const text = bullets.map((b, i) => `${i+1}. ${b}`).join('\n');
   navigator.clipboard.writeText(text).then(() => showToast('Bullets copied!', 'success'));
 }
+
+function clExportCSV() {
   const retailer = clState.retailerName || clState.retailer || 'content';
   const bullets = clGetCurrentBullets();
   const title = document.getElementById('cl-out-title')?.value || '';
