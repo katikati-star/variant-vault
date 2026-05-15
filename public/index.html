@@ -2413,6 +2413,24 @@
         <label class="cl-label">Product Category / Type <span class="cl-optional">optional</span></label>
         <input type="text" class="cl-input" id="cl-category" placeholder="e.g. Lip Balm — Classics, or Medicated, or Squeeze Tubes">
       </div>
+      <div class="cl-field full">
+        <label class="cl-label">Packaging Image <span class="cl-optional">optional — AI will read claims, ingredients, and features directly from the pack</span></label>
+        <div id="cl-image-drop" onclick="document.getElementById('cl-image-input').click()" style="border:1.5px dashed var(--border);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface);"
+          onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='var(--border)'"
+          ondragover="event.preventDefault();this.style.borderColor='#22c55e'" ondragleave="this.style.borderColor='var(--border)'"
+          ondrop="event.preventDefault();clHandleImageDrop(event)">
+          <div id="cl-image-preview" style="display:none;position:relative;">
+            <img id="cl-image-thumb" style="max-height:140px;max-width:100%;border-radius:6px;object-fit:contain;" />
+            <button onclick="event.stopPropagation();clClearImage()" style="position:absolute;top:-8px;right:-8px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:0.75rem;line-height:22px;">✕</button>
+          </div>
+          <div id="cl-image-placeholder" style="color:var(--muted);font-size:0.82rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom:6px;opacity:0.4;"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div>Drop image here or click to upload</div>
+            <div style="font-size:0.72rem;color:var(--border);margin-top:4px;">JPG, JPEG, PNG, WEBP, GIF</div>
+          </div>
+        </div>
+        <input type="file" id="cl-image-input" accept=".jpg,.jpeg,.png,.webp,.gif,image/*" style="display:none;" onchange="clHandleImageFile(event)">
+      </div>
     </div>
   </div>
 
@@ -4078,8 +4096,88 @@ function showToast(msg, type = '') {
 }
 
 // ============================================================
-// COPY LAB
+// IMAGE HANDLING
 // ============================================================
+
+let clPackagingImage = null; // { base64, mediaType }
+let alPackagingImage = null;
+
+function imageFileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve({ base64: e.target.result.split(',')[1], mediaType: file.type || 'image/jpeg' });
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function clHandleImageFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  clPackagingImage = await imageFileToBase64(file);
+  document.getElementById('cl-image-thumb').src = URL.createObjectURL(file);
+  document.getElementById('cl-image-preview').style.display = 'block';
+  document.getElementById('cl-image-placeholder').style.display = 'none';
+}
+
+function clHandleImageDrop(event) {
+  const file = event.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  document.getElementById('cl-image-input').files; // trigger
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  document.getElementById('cl-image-input').files = dt.files;
+  clHandleImageFile({ target: { files: [file] } });
+}
+
+function clClearImage() {
+  clPackagingImage = null;
+  document.getElementById('cl-image-input').value = '';
+  document.getElementById('cl-image-preview').style.display = 'none';
+  document.getElementById('cl-image-placeholder').style.display = 'block';
+  document.getElementById('cl-image-thumb').src = '';
+}
+
+async function alHandleImageFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  alPackagingImage = await imageFileToBase64(file);
+  document.getElementById('al-image-thumb').src = URL.createObjectURL(file);
+  document.getElementById('al-image-preview').style.display = 'block';
+  document.getElementById('al-image-placeholder').style.display = 'none';
+}
+
+function alHandleImageDrop(event) {
+  const file = event.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  alHandleImageFile({ target: { files: [file] } });
+}
+
+function alClearImage() {
+  alPackagingImage = null;
+  document.getElementById('al-image-input').value = '';
+  document.getElementById('al-image-preview').style.display = 'none';
+  document.getElementById('al-image-placeholder').style.display = 'block';
+  document.getElementById('al-image-thumb').src = '';
+}
+
+// Image-aware Claude call
+async function callClaudeWithImage(prompt, system, imageData) {
+  if (!imageData) return callClaude(prompt, system);
+  const content = [
+    { type: 'image', source: { type: 'base64', media_type: imageData.mediaType, data: imageData.base64 } },
+    { type: 'text', text: prompt }
+  ];
+  const response = await fetch('/api/group', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: content, system, hasImage: true })
+  });
+  if (!response.ok) throw new Error(`API error ${response.status}`);
+  return response.json();
+}
+
+
 
 const CL_RETAILERS = {
   'Amazon':         { titleLimit: 200, bulletCharLimit: 250, bulletMin: 1,  bulletMax: 10, descLimit: 2000 },
@@ -4335,7 +4433,8 @@ function clLoadInputs(event) {
 // ---- Build the AI system prompt ----
 function clBuildSystemPrompt(inputs, limits, rerunField, rerunInstruction) {
   const retailerName = inputs.retailer || 'the retailer';
-  const base = `You are an expert e-commerce product content writer for ${retailerName}.
+  const imageNote = clPackagingImage ? `\nPACKAGING IMAGE: A product packaging image has been provided. Use it as a visual reference — read claims, ingredients, certifications, and features directly from the pack. Only use what you can actually see. Do not invent or assume anything not visible.` : '';
+  const base = `You are an expert e-commerce product content writer for ${retailerName}.${imageNote}
 
 CORE RULES — follow these without exception:
 1. CLAIM INTEGRITY: Only state what is explicitly provided in the inputs. Do NOT extend, infer, or elaborate on claims. If the input says "moisturizing", write "moisturizing" — not "deeply moisturizing" or "moisturizing for sensitive skin". Safe general category associations are fine (e.g. "great for homeowners" on a shovel) but specific benefit claims must come from the inputs only.
@@ -4439,25 +4538,29 @@ async function clStartGeneration() {
   setStep('cl-step-1');
   setProgress(10, 'Building your content brief…');
   const system = clBuildSystemPrompt(inputs, limits, null, null);
+  const img = clPackagingImage;
+  if (img) {
+    system && (system + '\nA packaging image has been provided. Reference it carefully — only use claims, ingredients, and features you can actually see on the packaging.');
+  }
 
   try {
     setStep('cl-step-2');
     setProgress(20, 'Writing title…');
     const titlePrompt = clBuildPrompt(inputs, limits, 'title');
-    const titleData = await callClaude(titlePrompt, system);
+    const titleData = await callClaudeWithImage(titlePrompt, system, img);
     const title = titleData.content.map(c => c.text||'').join('').trim();
 
     setStep('cl-step-3');
     setProgress(45, 'Writing bullets…');
     const bulletsPrompt = clBuildPrompt(inputs, limits, 'bullets');
-    const bulletsData = await callClaude(bulletsPrompt, system);
+    const bulletsData = await callClaudeWithImage(bulletsPrompt, system, img);
     const bulletsRaw = bulletsData.content.map(c => c.text||'').join('').trim();
     const bullets = clParseBullets(bulletsRaw);
 
     setStep('cl-step-4');
     setProgress(75, 'Writing description…');
     const descPrompt = clBuildPrompt(inputs, limits, 'desc');
-    const descData = await callClaude(descPrompt, system);
+    const descData = await callClaudeWithImage(descPrompt, system, img);
     const desc = descData.content.map(c => c.text||'').join('').trim();
 
     setProgress(100, 'Done!');
@@ -5938,6 +6041,24 @@ function pvExportAwarenessPDF() {
         <label class="cl-label">New product specifics <span class="cl-optional">describe what's different — flavor, size, scent, ingredients, count, etc.</span></label>
         <textarea class="cl-textarea" id="al-new-details" style="min-height:100px;" placeholder="e.g. Cherry flavor instead of Original&#10;Pack of 3 instead of single&#10;Contains SPF 15&#10;New ingredient: Vitamin E"></textarea>
       </div>
+      <div class="cl-field full">
+        <label class="cl-label">New product packaging image <span class="cl-optional">optional — AI will read claims, ingredients, and features directly from the pack</span></label>
+        <div id="al-image-drop" onclick="document.getElementById('al-image-input').click()" style="border:1.5px dashed var(--border);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface);"
+          onmouseover="this.style.borderColor='#a78bfa'" onmouseout="this.style.borderColor='var(--border)'"
+          ondragover="event.preventDefault();this.style.borderColor='#a78bfa'" ondragleave="this.style.borderColor='var(--border)'"
+          ondrop="event.preventDefault();alHandleImageDrop(event)">
+          <div id="al-image-preview" style="display:none;position:relative;">
+            <img id="al-image-thumb" style="max-height:140px;max-width:100%;border-radius:6px;object-fit:contain;" />
+            <button onclick="event.stopPropagation();alClearImage()" style="position:absolute;top:-8px;right:-8px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:0.75rem;line-height:22px;">✕</button>
+          </div>
+          <div id="al-image-placeholder" style="color:var(--muted);font-size:0.82rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom:6px;opacity:0.4;"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div>Drop image here or click to upload</div>
+            <div style="font-size:0.72rem;color:var(--border);margin-top:4px;">JPG, JPEG, PNG, WEBP, GIF</div>
+          </div>
+        </div>
+        <input type="file" id="al-image-input" accept=".jpg,.jpeg,.png,.webp,.gif,image/*" style="display:none;" onchange="alHandleImageFile(event)">
+      </div>
     </div>
   </div>
 
@@ -6332,7 +6453,8 @@ function alLoadInputs(event) {
 }
 
 function alBuildSystemPrompt(inputs, limits, rerunInstruction) {
-  return `You are an expert e-commerce content adapter for ${inputs.retailer || 'a retailer'}.
+  const imageNote = alPackagingImage ? `\nPACKAGING IMAGE: A product packaging image has been provided. Use it as a visual reference — read claims, ingredients, certifications, and features directly from the pack. Only use what you can actually see.` : '';
+  return `You are an expert e-commerce content adapter for ${inputs.retailer || 'a retailer'}.${imageNote}
 
 YOUR JOB: Adapt the provided base copy for a new product. Keep the same structure, tone, flow, and style as the base. Only change what the new product details require.
 
@@ -6441,22 +6563,23 @@ async function alStartAdapting() {
   setStep('al-step-1');
   setProgress(10, 'Reading base copy and new details…');
   const system = alBuildSystemPrompt(inputs, limits, null);
+  const img = alPackagingImage;
 
   try {
     setStep('al-step-2');
     setProgress(25, 'Adapting title…');
-    const titleData = await callClaude(alBuildPrompt(inputs, limits, 'title'), system);
+    const titleData = await callClaudeWithImage(alBuildPrompt(inputs, limits, 'title'), system, img);
     const title = alCleanTitle(titleData.content.map(c => c.text||'').join('').trim());
 
     setStep('al-step-3');
     setProgress(52, 'Adapting bullets…');
-    const bulletsData = await callClaude(alBuildPrompt(inputs, limits, 'bullets'), system);
+    const bulletsData = await callClaudeWithImage(alBuildPrompt(inputs, limits, 'bullets'), system, img);
     const bulletsRaw = bulletsData.content.map(c => c.text||'').join('').trim();
     const bullets = clParseBullets(bulletsRaw);
 
     setStep('al-step-4');
     setProgress(78, 'Adapting description…');
-    const descData = await callClaude(alBuildPrompt(inputs, limits, 'desc'), system);
+    const descData = await callClaudeWithImage(alBuildPrompt(inputs, limits, 'desc'), system, img);
     const desc = alCleanDesc(descData.content.map(c => c.text||'').join('').trim());
 
     setProgress(100, 'Done!');
