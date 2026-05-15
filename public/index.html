@@ -4515,7 +4515,6 @@ async function clStartGeneration() {
   const limits = clReadLimits();
   clState.limits = limits;
   clState.retailerName = inputs.retailer;
-  logActivity('Copy Lab', `Generated content for ${inputs.retailer}${inputs.productTitle ? ' · ' + inputs.productTitle.substring(0,40) : ''}`);
 
   // Switch to generating page
   document.getElementById('page-cl-setup').style.display = 'none';
@@ -6543,7 +6542,7 @@ async function alStartAdapting() {
   const limits = alReadLimits();
   alState.limits = limits;
   alState.retailerName = inputs.retailer;
-  logActivity('Adapt Lab', `Adapted content for ${inputs.retailer}${inputs.newTitle ? ' · ' + inputs.newTitle.substring(0,40) : ''}`);
+  document.getElementById('page-al-setup').style.display = 'none';
   document.getElementById('page-al-adapting').style.display = 'block';
   alSetNavStep(2);
 
