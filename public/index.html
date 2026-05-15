@@ -4538,28 +4538,37 @@ async function clStartGeneration() {
   setProgress(10, 'Building your content brief…');
   const system = clBuildSystemPrompt(inputs, limits, null, null);
   const img = clPackagingImage;
-  if (img) {
-    system && (system + '\nA packaging image has been provided. Reference it carefully — only use claims, ingredients, and features you can actually see on the packaging.');
-  }
 
   try {
+    // Extract packaging info from image once, then pass as text to all subsequent calls
+    let packagingContext = '';
+    if (img) {
+      setProgress(14, 'Reading packaging image…');
+      const extractData = await callClaudeWithImage(
+        'Look at this product packaging image carefully. List everything you can read on it: product name, claims, ingredients, certifications, size/count, flavor, scent, and any other text or information visible. Be thorough and exact — copy text as written.',
+        'You are a precise product analyst. Extract only what is literally visible on the packaging. No inferences.',
+        img
+      );
+      packagingContext = '\n\nPACKAGING IMAGE CONTENTS (read from the provided image):\n' + extractData.content.map(c => c.text||'').join('').trim();
+    }
+
     setStep('cl-step-2');
-    setProgress(20, 'Writing title…');
-    const titlePrompt = clBuildPrompt(inputs, limits, 'title');
-    const titleData = await callClaudeWithImage(titlePrompt, system, img);
+    setProgress(30, 'Writing title…');
+    const titlePrompt = clBuildPrompt(inputs, limits, 'title') + packagingContext;
+    const titleData = await callClaude(titlePrompt, system);
     const title = titleData.content.map(c => c.text||'').join('').trim();
 
     setStep('cl-step-3');
-    setProgress(45, 'Writing bullets…');
-    const bulletsPrompt = clBuildPrompt(inputs, limits, 'bullets');
-    const bulletsData = await callClaudeWithImage(bulletsPrompt, system, img);
+    setProgress(55, 'Writing bullets…');
+    const bulletsPrompt = clBuildPrompt(inputs, limits, 'bullets') + packagingContext;
+    const bulletsData = await callClaude(bulletsPrompt, system);
     const bulletsRaw = bulletsData.content.map(c => c.text||'').join('').trim();
     const bullets = clParseBullets(bulletsRaw);
 
     setStep('cl-step-4');
-    setProgress(75, 'Writing description…');
-    const descPrompt = clBuildPrompt(inputs, limits, 'desc');
-    const descData = await callClaudeWithImage(descPrompt, system, img);
+    setProgress(80, 'Writing description…');
+    const descPrompt = clBuildPrompt(inputs, limits, 'desc') + packagingContext;
+    const descData = await callClaude(descPrompt, system);
     const desc = descData.content.map(c => c.text||'').join('').trim();
 
     setProgress(100, 'Done!');
@@ -6565,20 +6574,35 @@ async function alStartAdapting() {
   const img = alPackagingImage;
 
   try {
+    // If image provided, extract packaging info first as text, then use that text for all calls
+    let packagingContext = '';
+    if (img) {
+      setProgress(15, 'Reading packaging image…');
+      const extractData = await callClaudeWithImage(
+        'Look at this product packaging image carefully. List everything you can read on it: product name, claims, ingredients, certifications, size/count, flavor, scent, and any other text or information visible. Be thorough and exact — copy text as written.',
+        'You are a precise product analyst. Extract only what is literally visible on the packaging. No inferences.',
+        img
+      );
+      packagingContext = '\n\nPACKAGING IMAGE CONTENTS (read from the provided image):\n' + extractData.content.map(c => c.text||'').join('').trim();
+    }
+
+    // Inject packaging context into prompts as text
+    const buildPromptWithContext = (field) => alBuildPrompt(inputs, limits, field) + packagingContext;
+
     setStep('al-step-2');
-    setProgress(25, 'Adapting title…');
-    const titleData = await callClaudeWithImage(alBuildPrompt(inputs, limits, 'title'), system, img);
+    setProgress(30, 'Adapting title…');
+    const titleData = await callClaude(buildPromptWithContext('title'), system);
     const title = alCleanTitle(titleData.content.map(c => c.text||'').join('').trim());
 
     setStep('al-step-3');
-    setProgress(52, 'Adapting bullets…');
-    const bulletsData = await callClaudeWithImage(alBuildPrompt(inputs, limits, 'bullets'), system, img);
+    setProgress(55, 'Adapting bullets…');
+    const bulletsData = await callClaude(buildPromptWithContext('bullets'), system);
     const bulletsRaw = bulletsData.content.map(c => c.text||'').join('').trim();
     const bullets = clParseBullets(bulletsRaw);
 
     setStep('al-step-4');
-    setProgress(78, 'Adapting description…');
-    const descData = await callClaudeWithImage(alBuildPrompt(inputs, limits, 'desc'), system, img);
+    setProgress(80, 'Adapting description…');
+    const descData = await callClaude(buildPromptWithContext('desc'), system);
     const desc = alCleanDesc(descData.content.map(c => c.text||'').join('').trim());
 
     setProgress(100, 'Done!');
